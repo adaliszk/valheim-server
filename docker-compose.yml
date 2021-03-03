@@ -1,0 +1,63 @@
+# ==============================================================================
+version: "3.6"
+
+# ==============================================================================
+x-enabled-server: &enabled-server
+  stop_signal: SIGTERM
+  healthcheck:
+    test: [ "CMD", "health" ]
+    interval: 30s
+    timeout: 15s
+    retries: 5
+    start_period: 10s
+  environment:
+    SERVER_PASSWORD: "1"
+  volumes:
+    - ./temp/valheim:/home/steam/.config/unity3d/IronGate/Valheim
+    - ./temp/server-configs:/home/steam/.config/unity3d/IronGate/Valheim/configs:ro
+    - ./temp/mod-configs:/home/steam/valheim-server/BepInEx/config-ro:ro
+    - mod-configs:/home/steam/valheim-server/BepInEx/config
+    - ./temp/logs:/tmp/valheim
+  ports:
+    - 2456:2456/udp
+    - 2457:2457/udp
+    - 2458:2458/udp
+
+x-disabled-server: &disabled-server
+  command: noop
+  volumes:
+    - valheim-data:/home/steam/.config/unity3d/IronGate/Valheim
+    - valheim-logs:/tmp/valheim
+
+# ==============================================================================
+volumes:
+  valheim-data: {}
+  valheim-logs: {}
+  mod-configs: {}
+
+# ==============================================================================
+services:
+
+  dos2unix:
+    image: adaliszk/valheim-server:${ENV_TAG:-dos2unix}"
+    build: docker/dos2unix
+
+  env:
+    image: "adaliszk/valheim-server:${ENV_TAG:-env}"
+    build: docker/env
+    depends_on:
+      - dos2unix
+
+  vanilla:
+    image: "adaliszk/valheim-server:${VANILLA_TAG:-latest}"
+    build: server/vanilla
+    <<: *enabled-server
+    depends_on:
+      - env
+
+#  valheim-plus:
+#    image: "adaliszk/valheim-server:${PLUS_TAG:-plus0.9}"
+#    build: server/valheim-plus
+#    <<: *active-server
+#    depends_on:
+#      - vanilla

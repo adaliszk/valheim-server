@@ -1,0 +1,33 @@
+{{- define "server.selectorLabels" -}}
+cwl.network/type: Game
+cwl.network/game: Valheim
+cwl.network/name: {{ .Values.server.name }}
+{{- end }}
+
+{{- define "server.labels" -}}
+{{ include "server.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{- define "server_name" -}}
+valheim-{{ .Values.server.name | lower }}-server
+{{- end }}
+
+{{- define "mods_config_name" -}}
+{{ .Values.server.name | lower | default "valheim" }}-mod-configs
+{{- end }}
+
+{{- define "server_config_name" -}}
+{{ .Values.server.name | lower | default "valheim" }}-server-configs
+{{- end }}
+
+{{- define "pvc_map_name" -}}
+{{ .Values.server.name | lower | default "valheim" }}-{{ .Values.map.name | lower | default "default" }}-{{ .Values.map.storageClass | default "standard" }}
+{{- end }}
+
+{{- define "pvc_logs_name" -}}
+{{ .Values.server.name | lower | default "valheim" }}-logs-{{ .Values.map.storageClass | default "standard" }}
+{{- end }}
