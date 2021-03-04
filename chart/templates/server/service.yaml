@@ -1,3 +1,6 @@
+  
+{{- if .Values.service.enabled -}}
+
 ---
 apiVersion: v1
 kind: Service
@@ -5,25 +8,25 @@ metadata:
   name: {{ include "server_name" . }}
   labels:
     {{- include "server.labels" . | nindent 4 }}
+    {{- with .Values.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with .Values.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
-  type: LoadBalancer
-  sessionAffinity: ClientIP
-  externalTrafficPolicy: Cluster
+  {{- $type := default "LoadBalancer" .Values.service.type }}
+  type: {{ $type }}
+  {{- with .Values.service.spec }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
   selector:
     {{- include "server.selectorLabels" . | nindent 4 }}
   ports:
+    {{- range $key, $value := .Values.service.ports }}
+    - name: {{ $key }}
+{{ toYaml $value | indent 6 }}
+    {{- end }}
 
-    - port: 2456
-      targetPort: 2456
-      protocol: UDP
-      name: valheim
-
-    - port: 2457
-      targetPort: 2457
-      protocol: UDP
-      name: msqp
-
-    - port: 27015
-      targetPort: 2457
-      protocol: UDP
-      name: msqp-default
+{{- end }}

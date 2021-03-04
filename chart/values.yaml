@@ -35,6 +35,37 @@ image:
   pullPolicy: IfNotPresent
   pullSecrets: []
 
+service:
+  enabled: true
+  type: LoadBalancer
+
+  ports:
+    valheim:
+      port: 2456
+      targetPort: 2456
+      protocol: UDP
+    msqp:
+      port: 2457
+      targetPort: 2457
+      protocol: UDP
+    msqp-default:
+      port: 27015
+      targetPort: 2457
+      protocol: UDP
+
+  # Additional annotations (e.g. for cloud provider specific config)
+  annotations: {}
+
+  # Additional service labels (e.g. for filtering Service by custom labels)
+  labels: {}
+
+  # Additional entries here will be added to the service spec. Cannot contains
+  # type, selector or ports entries.
+  spec: {}
+    # externalTrafficPolicy: Cluster
+    # loadBalancerIP: "1.2.3.4"
+    # clusterIP: "2.3.4.5"
+
 # Valheim Plus configuration (if you use the :plus* tags)
 # for further information please refer to: https://github.com/valheimPlus/ValheimPlus#features
 plus:
