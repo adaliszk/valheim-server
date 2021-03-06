@@ -1,7 +1,7 @@
 # Download Modpack
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 FROM alpine:latest as valheim-plus
-ENV MOD_SOURCE="https://github.com/valheimPlus/ValheimPlus/releases/download/0.9/UnixServer.tar.gz" \
+ENV MOD_SOURCE="https://github.com/valheimPlus/ValheimPlus/releases/download/0.9.4/UnixServer.tar.gz" \
     MOD_PATH="/valheim-plus.tar.gz"
 
 ADD ${MOD_SOURCE} ${MOD_PATH}
@@ -13,7 +13,7 @@ RUN mkdir -p "/modpack" && tar -xvf ${MOD_PATH} -C "/modpack"
 FROM adaliszk/valheim-server:latest as server-modded
 ENV MOD_CONFIG_PATH="${SERVER_PATH}/BepInEx/config" \
     MOD_PATH="/home/steam/valheim-plus" \
-    MOD_VERSION="0.9"
+    MOD_VERSION="0.9.4"
 
 COPY --from=valheim-plus /modpack ${MOD_PATH}
 RUN cp -rfa "${MOD_PATH}/." "${SERVER_PATH}/" && chown -R "1001:1001" ${SERVER_PATH} \
