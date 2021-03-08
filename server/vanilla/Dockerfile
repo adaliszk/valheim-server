@@ -32,7 +32,8 @@ FROM server-vanilla as server
 ENV DEFAULT_SERVER_NAME="Valheim" \
     DEFAULT_SERVER_MOTD="Valheim v${SERVER_VERSION}" \
     DEFAULT_SERVER_WORLD="Dedicated" \
-    DEFAULT_SERVER_PASSWORD="p4ssw0rd"
+    DEFAULT_SERVER_PASSWORD="p4ssw0rd" \
+    DEFAULT_SERVER_PUBLIC="1"
 
 COPY --from=unix /srv-scripts /srv
 COPY --from=unix /sbin-scripts/docker-entrypoint.sh /sbin/docker-entrypoint
