@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         name: [ "python3.6", "python3.7", "python3.8", "python3.9" ]
-        system: [ "ubuntu-latest", "windows-latest" ]
+        os: ["linux", "windows"]
         include:
           - name: python3.6
             py-version: 3.6
@@ -30,8 +30,12 @@ jobs:
             py-version: 3.8
           - name: python3.9
             py-version: 3.9
+          - os: linux
+            runs-on: "ubuntu-latest"
+          - os: windows
+            runs-on: "windows-latest"
 
-    runs-on: "${{ matrix.system }}"
+    runs-on: "${{ matrix.runs-on }}"
     name: "Test"
 
     steps:
