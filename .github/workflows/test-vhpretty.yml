@@ -17,6 +17,22 @@ jobs:
 
   test-vhpretty:
     runs-on: ubuntu-latest
+    name: "Test"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        name: [ "python3.6", "python3.7", "python3.8", "python3.9" ]
+        include:
+          - name: python3.6
+            py-version: 3.6
+          - name: python3.7
+            py-version: 3.7
+          - name: python3.8
+            py-version: 3.8
+          - name: python3.9
+            py-version: 3.9
+
     steps:
       - name: "Checkout"
         uses: actions/checkout@v2
@@ -24,7 +40,7 @@ jobs:
       - name: "Set up Python"
         uses: actions/setup-python@v2
         with:
-         python-version: "3.7"
+         python-version: "${{ matrix.py-version }}"
 
       - name: "Install pipenv"
         run: |
