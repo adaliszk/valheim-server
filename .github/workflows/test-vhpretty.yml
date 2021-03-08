@@ -4,10 +4,16 @@ name: "Test VhPretty"
 # =============================================================================
 on:
   pull_request:
+    paths:
+      - tools/vhpretty/**/*
+      - tools/vhpretty/*
     types:
       - synchronize
       - opened
   push:
+    paths:
+      - tools/vhpretty/**/*
+      - tools/vhpretty/*
     branches:
       - develop
       - stable
