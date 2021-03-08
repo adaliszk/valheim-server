@@ -1,8 +1,17 @@
-# Work in Progress!
+[![:latest image size](https://img.shields.io/docker/image-size/adaliszk/valheim-server/latest?style=for-the-badge)](https://hub.docker.com/r/adaliszk/valheim-server)
+![build status](https://img.shields.io/github/workflow/status/adaliszk/valheim-server/build?style=for-the-badge)
+
+# Valheim Server
+for standalone docker deployments or kubernetes helm deployments.
+
+
+
+
+### Work in Progress!
 
 While this code works on most cases, I still in progress of adding:
 
-- [ ] Add CI/CD pipeline for GitHub
+- [x] Add CI/CD pipeline for GitHub
 - [ ] Publish the Chart so you could use it without cloning the repo
 - [ ] Collect metrics using MTail
 - [ ] Monitor health of the connections and hardware
@@ -12,7 +21,7 @@ While this code works on most cases, I still in progress of adding:
 Currently, the Chart is deployed to GKE, but want to add support for other setups.
 Pull Request are welcomed!
 
-# What has been done?
+### What has been done?
 
 - The `/home/steam/.config/unity3d/IronGate/Valheim` stores your server configs, worlds and backups
 - The `/tmp/valheim` stores log files like the raw server output and various processed logs

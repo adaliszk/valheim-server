@@ -1,49 +1,80 @@
 # Install Vanilla Server
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-FROM adaliszk/valheim-server:env as server-vanilla
-ENV SERVER_VERSION="0.147.3@v2" \
-    SERVER_BUILD_VERSION="6315977@v2" \
-    SERVER_PATH="/home/steam/valheim-server" \
-    SERVER_DATA_PATH="/home/steam/.config/unity3d/IronGate/Valheim" \
-    LOG_PATH="/tmp/valheim"
+FROM steamcmd/steamcmd:ubuntu as steam
+ENV APP_ID="896660" \
+    APP_VERSION="0.147.3" \
+    APP_BUILD="6315977" \
+    APP_PATH="/server"
 
-RUN /sbin/steamcmd +login anonymous +force_install_dir "${SERVER_PATH}" +app_update 896660 +quit \
- && mkdir -p ${SERVER_DATA_PATH}  && chown -R "${UID}:${GID}" "${SERVER_PATH}" \
- && rm -f "${SERVER_PATH}/*.sh" && rm -f "${SERVER_PATH}/*.pdf" \
- && echo "Files in ${SERVER_PATH}" && ls -la "${SERVER_PATH}"
+RUN apt-get -y install bash
+RUN steamcmd +login anonymous +force_install_dir "${APP_PATH}" +app_update ${APP_ID} +quit
+RUN bash -c "rm -rf ${APP_PATH}/*.{sh,pdf}"
+RUN tar -czvf "${APP_PATH}/valheim_server_Data.tar.gz" -C "${APP_PATH}" "valheim_server_Data" \
+ && rm -rf "${APP_PATH}/valheim_server_Data"
 
-
-# Fix Unix permissions for the Windows peeps out there
+# Fix file format and permissions for the Windows peeps out there
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 FROM adaliszk/valheim-server:dos2unix as unix
 
-COPY sbin /sbin-scripts
 COPY server /server-scripts
 COPY srv /srv-scripts
 
 RUN dos2unix /server-scripts/** && chmod +x /server-scripts/** \
- && dos2unix /sbin-scripts/** && chmod +x /sbin-scripts/** \
  && dos2unix /srv-scripts/** && chmod +x /srv-scripts/**
-
 
 # Set up the Runtime Environment
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-FROM server-vanilla as server
-ENV DEFAULT_SERVER_NAME="Valheim" \
-    DEFAULT_SERVER_MOTD="Valheim v${SERVER_VERSION}" \
-    DEFAULT_SERVER_WORLD="Dedicated" \
-    DEFAULT_SERVER_PASSWORD="p4ssw0rd" \
-    DEFAULT_SERVER_PUBLIC="1"
+FROM debian:stable-slim as runtime
+ENV SERVER_PATH="/server" \
+    CONFIG_PATH="/config" \
+    SCRIPTS_PATH="/scripts" \
+    BACKUP_PATH="/backups" \
+    DATA_PATH="/data" \
+    LOG_PATH="/logs" \
+    DEFAULT_NAME="Valheim" \
+    DEFAULT_MOTD="Valheim Vanilla Server" \
+    DEFAULT_WORLD="Dedicated" \
+    DEFAULT_PASSWORD="p4ssw0rd" \
+    DEFAULT_PUBLIC="1"
 
+RUN addgroup -g 1001 -S container && adduser -u 1001 -S container -G container \
+ && apk add --no-cache bash net-tools python3 sed \
+ && bash -c "mkdir -p {${CONFIG_PATH},${SERVER_PATH},${BACKUP_PATH},${DATA_PATH},${LOG_PATH}}" \
+ && chown 1001:1001 ${CONFIG_PATH} ${SERVER_PATH} ${BACKUP_PATH} ${DATA_PATH} ${LOG_PATH}
+
+COPY --from=steam --chown=1001 /server /server
+COPY --from=unix --chown=1001 /server-scripts /scripts
 COPY --from=unix /srv-scripts /srv
-COPY --from=unix /sbin-scripts/docker-entrypoint.sh /sbin/docker-entrypoint
-COPY --from=unix /sbin-scripts/valheim-console.py /sbin/valheim-console
-ENTRYPOINT ["/sbin/docker-entrypoint"]
 
-COPY --from=unix --chown=1001 /server-scripts /home/steam/scripts
+VOLUME ["/config", "/data", "/backups", "/logs"]
+ENTRYPOINT ["/srv/docker-entrypoint.sh"]
 
-#USER 1001
+USER 1001
 HEALTHCHECK CMD ["health"]
-STOPSIGNAL SIGTERM
-EXPOSE 2456-2458/udp
+STOPSIGNAL SIGINT
+EXPOSE 2456-2457/udp
 CMD ["start"]
+
+#FROM server-vanilla as server
+#ENV DEFAULT_SERVER_NAME="Valheim" \
+#    DEFAULT_SERVER_MOTD="Valheim v${SERVER_VERSION}" \
+#    DEFAULT_SERVER_WORLD="Dedicated" \
+#    DEFAULT_SERVER_PASSWORD="p4ssw0rd"
+#
+#COPY --from=unix /srv-scripts /srv
+#COPY --from=unix /sbin-scripts/docker-entrypoint.sh /sbin/docker-entrypoint
+#COPY --from=unix /sbin-scripts/valheim-console.py /sbin/valheim-console
+#ENTRYPOINT ["/sbin/docker-entrypoint"]
+#
+#COPY --from=unix --chown=1001 /server-scripts /home/steam/scripts
+#
+#VOLUME [
+#    "/home/steam/valheim-data",
+#    "/home/steam/valheim-backups"
+#]
+#
+#USER 1001
+#HEALTHCHECK CMD ["health"]
+#STOPSIGNAL SIGTERM
+#EXPOSE 2456-2458/udp
+#CMD ["start"]

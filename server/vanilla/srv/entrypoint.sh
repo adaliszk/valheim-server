@@ -9,7 +9,7 @@ log "CMD: ${CMD}"
 
 
 function script {
-  echo "/home/steam/scripts/${1}.sh"
+  echo "${SCRIPTS_PATH}/${1}.sh"
 }
 
 
@@ -18,12 +18,14 @@ function run {
   if [ -f "${SCRIPT}" ];
     then
       log "Executing \"${1}\" script..."
-      bash -c "${SCRIPT}" 2>&1 | tee "${LOG_PATH}/server-raw.log" | format-output &
-      SERVER=$!
+      bash -c "${SCRIPT}" "${*:2}" 2>&1
 
-      tail -f "${LOG_PATH}/output.log" 2> /dev/null &
-      wait "$SERVER"
-      kill -TERM $! 2>/dev/null
+#      bash -c "${SCRIPT}" "${*:2}" 2>&1 | tee "${LOG_PATH}/server-raw.log" | format-output &
+#      SERVER=$!
+#
+#      tail -f "${LOG_PATH}/output.log" 2> /dev/null &
+#      wait "$SERVER"
+#      kill -TERM $! 2>/dev/null
     fi
 }
 
@@ -41,17 +43,14 @@ function term {
 trap term SIGINT SIGQUIT SIGTERM
 
 
-log "Creating data folders..."
-for FOLDER in {worlds,backups}
-do
-  mkdir -p "${SERVER_DATA_PATH}/${FOLDER}"
-done
-
-
 log "Creating output log files..."
 for LOG_FILE in {server-raw,server,output,error,backup,health,exit}
 do
   touch "${LOG_PATH}/${LOG_FILE}.log"
 done
 
-run "${CMD}"
+echo "Uncompressing Server Files in $(pwd)"
+tar -xzf "${SERVER_PATH}/valheim_server_Data.tar.gz"
+ls -la
+
+run "${CMD}" "${*:2}"
