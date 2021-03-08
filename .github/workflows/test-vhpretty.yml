@@ -16,13 +16,11 @@ on:
 jobs:
 
   test-vhpretty:
-    runs-on: ubuntu-latest
-    name: "Test"
 
     strategy:
-      fail-fast: false
       matrix:
         name: [ "python3.6", "python3.7", "python3.8", "python3.9" ]
+        system: [ "ubuntu-latest", "windows-latest" ]
         include:
           - name: python3.6
             py-version: 3.6
@@ -32,6 +30,9 @@ jobs:
             py-version: 3.8
           - name: python3.9
             py-version: 3.9
+
+    runs-on: "${{ matrix.system }}"
+    name: "Test"
 
     steps:
       - name: "Checkout"
@@ -51,7 +52,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.local/share/virtualenvs
-          key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
+          key: ${{ runner.os }}-pipenv-py${{ matrix.py-version }}-${{ hashFiles('**/Pipfile.lock') }}
 
       - name: "Install Dependencies (if not cached)"
         if: steps.pipenv-cache.outputs.cache-hit != 'true'
