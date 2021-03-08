@@ -1,51 +1,41 @@
 # =============================================================================
-name: "VhPretty - Build"
+name: "VhPretty - Integration Test"
 
 # =============================================================================
 on:
-  # allow manual trigger
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "Semantic version you want to use"
-        default: "latest"
-        required: true
-
-  # build when a release is made
-  release:
-    types:
-      - created
-      - edited
-
-  # do a build just in case for each PR
-  # @TODO: remove this if workflow_run works just fine
-  pull_request:
+  push:
     paths:
       - tools/vhpretty/**/*
       - tools/vhpretty/*
-    types:
-      - synchronize
-      - opened
+    branches:
+      - develop
+      - stable
 
 # =============================================================================
 jobs:
 
-  build-vhpretty:
+  test-vhpretty:
 
     strategy:
       matrix:
-        os: [ "linux", "windows" ]
+        name: [ "python3.6", "python3.7", "python3.8", "python3.9" ]
+        os: ["linux", "windows"]
         include:
+          - name: python3.6
+            py-version: 3.6
+          - name: python3.7
+            py-version: 3.7
+          - name: python3.8
+            py-version: 3.8
+          - name: python3.9
+            py-version: 3.9
           - os: linux
             runs-on: "ubuntu-latest"
           - os: windows
             runs-on: "windows-latest"
 
     runs-on: "${{ matrix.runs-on }}"
-    name: "Build"
-
-    env:
-      binary_name: "vhpretty_${{ matrix.os }}_x86_64"
+    name: "Test"
 
     steps:
       - name: "Checkout"
@@ -54,7 +44,7 @@ jobs:
       - name: "Set up Python"
         uses: actions/setup-python@v2
         with:
-          python-version: "3.6"
+         python-version: "${{ matrix.py-version }}"
 
       - name: "Install pipenv"
         run: |
@@ -73,23 +63,7 @@ jobs:
           cd tools/vhpretty
           pipenv install --dev
 
-      - name: "Build: ${{ env.binary_name }}"
+      - name: "Run Tests"
         run: |
           cd tools/vhpretty
-          pipenv run build -n vhpretty
-
-      - name: "Upload ${{ env.binary_name }}"
-        uses: actions/upload-artifact@v2
-        with:
-            name: ${{ env.binary_name }}
-            path: tools/vhpretty/dist/vhpretty*
-
-
-  add-to-release:
-    needs: [ build-vhpretty ]
-    runs-on: "ubuntu-latest"
-    if: ${{ github.event_name == "release" }}
-
-    name: "Attach the Build to the Release"
-    steps:
-      - run: "echo ${{ github.event_name }}"
+          pipenv run test
