@@ -1,0 +1,71 @@
+# =============================================================================
+name: "Build VhPretty"
+
+# =============================================================================
+on:
+  workflow_run:
+    workflows: [ "Test VhPretty" ]
+    types:
+      - completed
+  release:
+    types:
+      - created
+
+# =============================================================================
+jobs:
+
+  build-vhpretty:
+
+    strategy:
+      matrix:
+        name: [ "python3.6", "python3.7", "python3.8", "python3.9" ]
+        os: [ "linux", "windows" ]
+        include:
+          - name: python3.6
+            py-version: 3.6
+          - name: python3.7
+            py-version: 3.7
+          - name: python3.8
+            py-version: 3.8
+          - name: python3.9
+            py-version: 3.9
+          - os: linux
+            runs-on: "ubuntu-latest"
+          - os: windows
+            runs-on: "windows-latest"
+
+    runs-on: "${{ matrix.runs-on }}"
+    name: "Build"
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v2
+        with:
+          python-version: "${{ matrix.py-version }}"
+
+      - name: "Install pipenv"
+        run: |
+          python -m pip install --upgrade pipenv wheel
+
+      - id: pipenv-cache
+        name: "Use Pipenv Cache"
+        uses: actions/cache@v1
+        with:
+          path: ~/.local/share/virtualenvs
+          key: ${{ runner.os }}-pipenv-py${{ matrix.py-version }}-${{ hashFiles('**/Pipfile.lock') }}
+
+      - name: "Install Dependencies (if not cached)"
+        if: steps.pipenv-cache.outputs.cache-hit != 'true'
+        run: |
+          cd tools/vhpretty
+          pipenv install --dev
+
+      - name: "Build: ${{ env.binary_name }}"
+        env:
+          binary_name: "vhpretty_py${{ matrix.py-version }}_${{ matrix.os }}"
+        run: |
+          cd tools/vhpretty
+          pipenv run build -n ${{ env.binary_name }}

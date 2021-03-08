@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [scripts]
-build = "pyinstaller -n vhpretty -F source/main.py"
+build = "pyinstaller -F source/main.py"
 test = "coverage run -m unittest discover source -p \"*_test.py\""
 report = "coverage report"
 
