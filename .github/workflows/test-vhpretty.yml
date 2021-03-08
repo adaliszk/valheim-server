@@ -1,0 +1,51 @@
+# =============================================================================
+name: "Test VhPretty"
+
+# =============================================================================
+on:
+  pull_request:
+    types:
+      - synchronize
+      - opened
+  push:
+    branches:
+      - develop
+      - stable
+
+# =============================================================================
+jobs:
+
+  test-vhpretty:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v2
+        with:
+         python-version: "3.7"
+
+      - name: "Install pipenv"
+        run: |
+          python -m pip install --upgrade pipenv wheel
+
+      - name: "Change workdir to VhPretty"
+        run: |
+          cd tools/vhpretty
+
+      - id: pipenv-cache
+        name: "Use Pipenv Cache"
+        uses: actions/cache@v1
+        with:
+          path: ~/.local/share/virtualenvs
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
+
+      - name: "Install Dependencies (if not cached)"
+        if: steps.pipenv-cache.outputs.cache-hit != 'true'
+        run: |
+          pipenv install --deploy --dev
+
+      - name: "Run Tests"
+        run: |
+          pipenv run test

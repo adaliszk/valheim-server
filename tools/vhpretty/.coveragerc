@@ -1,0 +1,4 @@
+[run]
+source = ./source
+omit =
+    *_test.py
