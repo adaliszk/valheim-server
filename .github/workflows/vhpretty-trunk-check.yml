@@ -1,15 +1,8 @@
 # =============================================================================
-name: "VhPretty - Unit Test"
+name: "VhPretty"
 
 # =============================================================================
 on:
-  pull_request:
-    paths:
-      - tools/vhpretty/**/*
-      - tools/vhpretty/*
-    types:
-      - synchronize
-      - opened
   push:
     paths:
       - tools/vhpretty/**/*
@@ -25,11 +18,17 @@ jobs:
 
     strategy:
       matrix:
-        name: [ "python3.6" ]
+        name: [ "python3.6", "python3.7", "python3.8", "python3.9" ]
         os: ["linux", "windows"]
         include:
           - name: python3.6
             py-version: 3.6
+          - name: python3.7
+            py-version: 3.7
+          - name: python3.8
+            py-version: 3.8
+          - name: python3.9
+            py-version: 3.9
           - os: linux
             runs-on: "ubuntu-latest"
           - os: windows
