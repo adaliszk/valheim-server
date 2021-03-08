@@ -3,20 +3,35 @@ name: "Build VhPretty"
 
 # =============================================================================
 on:
+  # allow manual trigger
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Semantic version you want to use"
+        default: "latest"
+        required: true
+
   # build after testing passed
   workflow_run:
     workflows: [ "Test VhPretty" ]
-    branches: [ develop, stable ]
+    paths:
+      - tools/vhpretty/**/*
+      - tools/vhpretty/*
     types:
       - completed
 
-  # build and attach the files
+  # build when a release is made
   release:
     types:
       - created
+      - edited
 
   # do a build just in case for each PR
+  # @TODO: remove this if workflow_run works just fine
   pull_request:
+    paths:
+      - tools/vhpretty/**/*
+      - tools/vhpretty/*
     types:
       - synchronize
       - opened
@@ -70,10 +85,19 @@ jobs:
       - name: "Build: ${{ env.binary_name }}"
         run: |
           cd tools/vhpretty
-          pipenv run build -n ${{ env.binary_name }}
+          pipenv run build -n vhpretty
 
       - name: "Upload ${{ env.binary_name }}"
         uses: actions/upload-artifact@v2
         with:
             name: ${{ env.binary_name }}
             path: tools/vhpretty/dist/${{ env.binary_name }}*
+
+
+  add-to-release:
+    needs: [ build-vhpretty ]
+    runs-on: "ubuntu-latest"
+
+    name: "Attach the Build to the Release"
+    steps:
+      - run: "echo ${{ github.event_name }}"
