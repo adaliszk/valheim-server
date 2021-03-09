@@ -84,9 +84,17 @@ jobs:
           IMAGE_TAG=$(cat ./${{ matrix.path }}/Dockertag)
           echo "image_tag=$IMAGE_TAG" >> $GITHUB_ENV
 
-      - name: "Build ${{ env.image_name }}:${{ matrix.tag }}"
+      - name: "Build :${{ matrix.tag }}"
         uses: docker/build-push-action@v2
         with:
           context: ./${{ matrix.path }}
           tags: ${{ env.image_name }}:${{ env.image_tag }}
           push: false
+
+      - if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
+        name: "Push :${{ matrix.tag }}"
+        uses: docker/build-push-action@v2
+        with:
+          context: ./${{ matrix.path }}
+          tags: ${{ env.image_name }}:${{ env.image_tag }}
+          push: true
