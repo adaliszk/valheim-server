@@ -36,8 +36,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: "Hadolint"
-        run: |
-          docker run --rm -i hadolint/hadolint < ${{ matrix.image_path }}/Dockerfile
+        uses: brpaz/hadolint-action@v1.2.1
+        with:
+          dockerfile: ${{ matrix.image_path }}/Dockerfile
 
   #
   # STAGE: BUILD

@@ -6,7 +6,7 @@ ENV APP_ID="896660" \
     APP_BUILD="6315977" \
     APP_PATH="/server"
 
-# hadolint ignore=DL3018
+# hadolint ignore=DL3018,DL3008
 RUN apt-get -y install --no-install-recommends bash
 RUN steamcmd +login anonymous +force_install_dir "${APP_PATH}" +app_update ${APP_ID} +quit
 RUN bash -c "rm -rf ${APP_PATH}/*.{sh,pdf}"
@@ -39,7 +39,7 @@ ENV SERVER_NAME="Valheim" \
     DATA_PATH="/data" \
     LOG_PATH="/logs"
 
-# hadolint ignore=DL3018
+# hadolint ignore=DL3018,DL3008
 RUN addgroup --gid 1001 container && useradd -u 1001 --gid 1001 -ms /bin/bash container  \
  && apt-get update && apt-get -y install --no-install-recommends \
     bash python3 sed tzdata coreutils net-tools dnsutils nmap \
