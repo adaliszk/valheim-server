@@ -81,8 +81,8 @@ jobs:
 
       - name: "Get the tag from Dockertag"
         run: |
-          image_tag=$(cat ${{ matrix.path }}/Dockertag)
-          echo "image_tag=$image_tag" >> $GITHUB_ENV
+          IMAGE_TAG=$(cat ./${{ matrix.path }}/Dockertag)
+          echo "image_tag=$IMAGE_TAG" >> $GITHUB_ENV
 
       - name: "Build ${{ env.image_name }}:${{ matrix.tag }}"
         uses: docker/build-push-action@v2
