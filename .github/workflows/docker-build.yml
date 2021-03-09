@@ -87,5 +87,6 @@ jobs:
       - name: "Build ${{ env.image_name }}:${{ matrix.tag }}"
         uses: docker/build-push-action@v2
         with:
+          context: ./${{ matrix.path }}
           tags: ${{ env.image_name }}:${{ env.image_tag }}
           push: false
