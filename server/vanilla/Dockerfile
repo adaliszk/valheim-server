@@ -1,5 +1,5 @@
 # Install Vanilla Server
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# =================================================================================================
 FROM steamcmd/steamcmd:ubuntu as steam
 ENV APP_ID="896660" \
     APP_VERSION="0.147.3" \
@@ -14,7 +14,7 @@ RUN tar -czvf "${APP_PATH}/valheim_server_Data.tar.gz" -C "${APP_PATH}" "valheim
  && rm -rf "${APP_PATH}/valheim_server_Data"
 
 # Fix file format and permissions for the Windows peeps out there
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# =================================================================================================
 FROM adaliszk/valheim-server:dos2unix as unix
 
 COPY server /server-scripts
@@ -24,7 +24,7 @@ RUN dos2unix /server-scripts/** && chmod +x /server-scripts/** \
  && dos2unix /srv-scripts/** && chmod +x /srv-scripts/**
 
 # Set up the Runtime Environment
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# =================================================================================================
 FROM debian:stable-slim as runtime
 ENV SERVER_NAME="Valheim" \
     SERVER_MOTD="Valheim Vanilla Server" \
@@ -59,27 +59,3 @@ HEALTHCHECK CMD ["health"]
 STOPSIGNAL SIGINT
 EXPOSE 2456-2457/udp
 CMD ["start"]
-
-#FROM server-vanilla as server
-#ENV DEFAULT_SERVER_NAME="Valheim" \
-#    DEFAULT_SERVER_MOTD="Valheim v${SERVER_VERSION}" \
-#    DEFAULT_SERVER_WORLD="Dedicated" \
-#    DEFAULT_SERVER_PASSWORD="p4ssw0rd"
-#
-#COPY --from=unix /srv-scripts /srv
-#COPY --from=unix /sbin-scripts/docker-entrypoint.sh /sbin/docker-entrypoint
-#COPY --from=unix /sbin-scripts/valheim-console.py /sbin/valheim-console
-#ENTRYPOINT ["/sbin/docker-entrypoint"]
-#
-#COPY --from=unix --chown=1001 /server-scripts /home/steam/scripts
-#
-#VOLUME [
-#    "/home/steam/valheim-data",
-#    "/home/steam/valheim-backups"
-#]
-#
-#USER 1001
-#HEALTHCHECK CMD ["health"]
-#STOPSIGNAL SIGTERM
-#EXPOSE 2456-2458/udp
-#CMD ["start"]

@@ -44,17 +44,17 @@ for line in fileinput.input():
 
     # remove DATETIME prefix as this is added outside of the STDOUT
     datePrefix = re.compile(r'^\d+/\d+/\d+ \d+:\d+:\d+:', re.IGNORECASE)
-    if re.match(datePrefix, line):
+    if re.search(datePrefix, line):
         line = re.sub(datePrefix, r'', line)
 
     # remove Noisy prefixes
     noisyPrefix = re.compile(r'^\[Subsystems]|-', re.IGNORECASE)
-    if re.match(noisyPrefix, line):
+    if re.search(noisyPrefix, line):
         line = re.sub(noisyPrefix, r'', line)
 
     # trim needless space within the line
     needlessSpace = re.compile(r'\s{2,}', re.IGNORECASE)
-    if re.match(needlessSpace, line):
+    if re.search(needlessSpace, line):
         line = re.sub(needlessSpace, r' ', line)
 
     # remove WHITESPACE and format the line to look nice
@@ -73,20 +73,20 @@ for line in fileinput.input():
         prefix = levels.get(match.group(1), "I")
         line = re.sub(bepInExRegex, r'\2> \3', line)
 
-    debugRegex = re.compile(r'^(Section not|Loading config|Loading key|Load DLL:|Base:|Redirecting to)', re.IGNORECASE)
-    if re.match(debugRegex, line):
+    debugRegex = re.compile(r'(Section not|Loading config|Loading key|Load DLL:|Base:|Redirecting to)', re.IGNORECASE)
+    if re.search(debugRegex, line):
         prefix = "D"
 
-    warningRegex = re.compile(r'^(Warning|Failed|Missing|Fallback)', re.IGNORECASE)
-    if re.match(warningRegex, line):
+    warningRegex = re.compile(r'(Warning|Failed|Missing|Fallback)', re.IGNORECASE)
+    if re.search(warningRegex, line):
         prefix = "W"
 
-    errorRegex = re.compile(r'^Error', re.IGNORECASE)
-    if re.match(errorRegex, line):
+    errorRegex = re.compile(r'Error', re.IGNORECASE)
+    if re.search(errorRegex, line):
         prefix = "E"
 
     severityRegex = re.compile(r'(Error|Warning|Failed|Missing|Fallback|)', re.IGNORECASE)
-    if re.match(severityRegex, line) or prefix in ["W", "E"]:
+    if re.search(severityRegex, line) or prefix in ["W", "E"]:
         log_error(line)
 
     if prefix not in ["D"]:

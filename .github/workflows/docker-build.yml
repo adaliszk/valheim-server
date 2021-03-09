@@ -52,7 +52,7 @@ jobs:
   #
   # STAGE: BUILD
   #
-  build-dos2unix:
+  build:
     needs: [ "lint" ]
     strategy:
       matrix:
@@ -98,3 +98,37 @@ jobs:
           context: ./${{ matrix.path }}
           tags: ${{ env.image_name }}:${{ env.image_tag }}
           push: true
+
+  #
+  # STAGE: PUSH
+  #
+  push-latest:
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
+    needs: [ "build" ]
+    strategy:
+      matrix:
+        tag: [ "vanilla" ]
+        include:
+          - tag: "vanilla"
+            path: "server/vanilla"
+
+    runs-on: ubuntu-latest
+    name: "Push :Latest"
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+
+      - name: "Get the tag from Dockertag"
+        run: |
+          IMAGE_TAG=$(cat ./${{ matrix.path }}/Dockertag)
+          echo "image_tag=$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: "Tag & Push :Latest"
+        uses: tinact/docker.image-retag@master
+        with:
+          image_name: ${{ env.image_name }}
+          image_old_tag: ${{ env.image_tag }}
+          image_new_tag: latest
+          registry: ${{ env.image_name }}
+          registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          registry_password: ${{ secrets.DOCKERHUB_TOKEN }}

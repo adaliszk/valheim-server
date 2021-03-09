@@ -5,7 +5,7 @@ function add-timestamp {
 }
 
 function valheim-console {
-  /srv/valheim-console.py
+  /srv/vhpretty.py
 }
 
 function tee-backup {
