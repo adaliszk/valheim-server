@@ -34,6 +34,5 @@ function check-port {
 check-server-connected
 check-port 2456
 check-port 2457
-check-port 2458
 
 exit $STATUS

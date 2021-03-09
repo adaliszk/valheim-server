@@ -18,15 +18,15 @@ jobs:
   #
   # STAGE: LINT
   #
-  lint-dockerfiles:
+  lint:
     strategy:
       matrix:
         image: [ "dos2unix", "vanilla" ]
         include:
           - image: "dos2unix"
-            image_path: "docker/dos2unix"
+            path: "docker/dos2unix"
           - image: "vanilla"
-            image_path: "server/vanilla"
+            path: "server/vanilla"
 
     runs-on: ubuntu-latest
     name: "Lint"
@@ -35,14 +35,19 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v2
 
+      - name: "Shellcheck"
+        uses: azohra/shell-linter@latest
+        with:
+          path: "${{ matrix.path }}/*.sh"
+
       - name: "Hadolint"
         uses: brpaz/hadolint-action@v1.2.1
         with:
-          dockerfile: ${{ matrix.image_path }}/Dockerfile
+          dockerfile: ${{ matrix.path }}/Dockerfile
 
   #
   # STAGE: BUILD
   #
 #  build-dos2unix:
-#    needs: [ "lint-dockerfiles" ]
+#    needs: [ "lint" ]
 #    runs-on: ubuntu-latest
