@@ -1,0 +1,47 @@
+# =================================================================================================
+name: "Docker Build"
+
+# =================================================================================================
+on:
+  pull_request:
+    types:
+      - synchronize
+      - opened
+  push:
+    branches:
+      - develop
+      - stable
+
+# =================================================================================================
+jobs:
+
+  #
+  # STAGE: LINT
+  #
+  lint-dockerfiles:
+    strategy:
+      matrix:
+        image: [ "dos2unix", "vanilla" ]
+        include:
+          - image: "dos2unix"
+            image_path: "docker/dos2unix"
+          - image: "vanilla"
+            image_path: "server/vanilla"
+
+    runs-on: ubuntu-latest
+    name: "Lint"
+    steps:
+
+      - name: "Checkout"
+        uses: actions/checkout@v2
+
+      - name: "Hadolint"
+        run: |
+          docker run --rm -i hadolint/hadolint < ${{ matrix.image_path }}/Dockerfile
+
+  #
+  # STAGE: BUILD
+  #
+#  build-dos2unix:
+#    needs: [ "lint-dockerfiles" ]
+#    runs-on: ubuntu-latest

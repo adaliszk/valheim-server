@@ -25,22 +25,24 @@ RUN dos2unix /server-scripts/** && chmod +x /server-scripts/** \
 # Set up the Runtime Environment
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 FROM debian:stable-slim as runtime
-ENV SERVER_PATH="/server" \
+ENV SERVER_NAME="Valheim" \
+    SERVER_MOTD="Valheim Vanilla Server" \
+    SERVER_WORLD="Dedicated" \
+    SERVER_PASSWORD="p4ssw0rd" \
+    SERVER_PUBLIC="1" \
+    TZ="Europe/Berlin" \
+    SERVER_PATH="/server" \
     CONFIG_PATH="/config" \
     SCRIPTS_PATH="/scripts" \
     BACKUP_PATH="/backups" \
     DATA_PATH="/data" \
-    LOG_PATH="/logs" \
-    DEFAULT_NAME="Valheim" \
-    DEFAULT_MOTD="Valheim Vanilla Server" \
-    DEFAULT_WORLD="Dedicated" \
-    DEFAULT_PASSWORD="p4ssw0rd" \
-    DEFAULT_PUBLIC="1"
+    LOG_PATH="/logs"
 
-RUN addgroup -g 1001 -S container && adduser -u 1001 -S container -G container \
- && apk add --no-cache bash net-tools python3 sed \
+RUN addgroup --gid 1001 container && useradd -u 1001 --gid 1001 -ms /bin/bash container  \
+ && apt-get update && apt-get -y install bash python3 sed tzdata coreutils net-tools dnsutils nmap \
  && bash -c "mkdir -p {${CONFIG_PATH},${SERVER_PATH},${BACKUP_PATH},${DATA_PATH},${LOG_PATH}}" \
- && chown 1001:1001 ${CONFIG_PATH} ${SERVER_PATH} ${BACKUP_PATH} ${DATA_PATH} ${LOG_PATH}
+ && chown 1001:1001 ${CONFIG_PATH} ${SERVER_PATH} ${BACKUP_PATH} ${DATA_PATH} ${LOG_PATH} \
+ && rm -rf /var/lib/apt/lists/*
 
 COPY --from=steam --chown=1001 /server /server
 COPY --from=unix --chown=1001 /server-scripts /scripts
