@@ -3,7 +3,7 @@ appVersion: "1.16.0"
 
 name: Valheim Server
 type: application
-version: "0.8.2"
+version: "0.8.3"
 
 description: >
   Valheim Server on Kubernetes

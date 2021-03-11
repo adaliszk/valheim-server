@@ -5,6 +5,7 @@ name: "Helm Build"
 on:
   pull_request:
     paths:
+      - .github/workflows/helm-build.yml
       - chart/**/*
       - chart/*
     types:
@@ -12,6 +13,7 @@ on:
       - opened
   push:
     paths:
+      - .github/workflows/helm-build.yml
       - chart/**/*
       - chart/*
     branches:
@@ -25,7 +27,13 @@ jobs:
     runs-on: ubuntu-latest
     name: "Lint"
     steps:
-      - run: "exit 0"
+      - name: "Checkout"
+        uses: actions/checkout@v2
+
+      - name: "Lint"
+        uses: WyriHaximus/github-action-helm3@v2
+        with:
+          exec: helm lint ./chart
 
   bundle:
     needs: [ lint ]
@@ -34,8 +42,13 @@ jobs:
     steps:
       - name: "Checkout"
         uses: actions/checkout@v2
-      - run: "cd chart && helm package ."
-      - run: "ls -la chart"
+
+      - name: "Lint"
+        uses: WyriHaximus/github-action-helm3@v2
+        with:
+          exec: helm package ./chart
+
+      - run: "ls -la ."
 
   upload:
     needs: [ bundle ]
