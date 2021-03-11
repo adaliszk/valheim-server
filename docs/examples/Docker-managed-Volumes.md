@@ -98,14 +98,18 @@ The available variables are:
 If you happened to host multiple servers or just want to have an easy way to edit the configs right after logging into 
 your server machine, a viable option is to mount the configuration files on the host machine:
 ```bash
-docker run -p 2456-2457:2456-2457/udp -v /path/to/adminlist.txt:/data/adminlist.txt adaliszk/valheim-server -name "My Server" -password "MyPassword"
+docker run -p 2456-2457:2456-2457/udp \
+  -v /path/to/adminlist.txt:/data/adminlist.txt \
+  adaliszk/valheim-server -name "My Server" -password "MyPassword"
 ```
 
 **Note**: Make sure that the configuration files are readable AND writable, the server does not work with read-only files,
 however, you can use the `/config` location to initialize your files in a read-only mode. The downside for that is that 
 the changes made by the servers - via the `F5` commands - will not be persisted.
 ```bash
-docker run -p 2456-2457:2456-2457/udp -v /path/to/adminlist.txt:/config/adminlist.txt:ro adaliszk/valheim-server -name "My Server" -password "MyPassword"
+docker run -p 2456-2457:2456-2457/udp \
+  -v /path/to/adminlist.txt:/config/adminlist.txt:ro \
+  adaliszk/valheim-server -name "My Server" -password "MyPassword"
 ```
 
 
