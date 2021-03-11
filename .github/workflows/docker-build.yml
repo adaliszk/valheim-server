@@ -32,11 +32,6 @@ jobs:
     strategy:
       matrix:
         tag: [ "dos2unix", "vanilla" ]
-        include:
-          - tag: "dos2unix"
-            path: "images/dos2unix"
-          - tag: "vanilla"
-            path: "images/vanilla"
 
     runs-on: ubuntu-latest
     name: "Lint"
@@ -48,12 +43,12 @@ jobs:
         uses: ludeeus/action-shellcheck@master
         continue-on-error: true
         with:
-          scandir: "./${{ matrix.path }}"
+          scandir: "./images/${{ matrix.tag }}"
 
       - name: "Hadolint"
         uses: brpaz/hadolint-action@v1.2.1
         with:
-          dockerfile: "${{ matrix.path }}/Dockerfile"
+          dockerfile: "./images/${{ matrix.tag }}/Dockerfile"
 
   #
   # STAGE: BUILD
@@ -63,11 +58,6 @@ jobs:
     strategy:
       matrix:
         tag: [ "dos2unix", "vanilla" ]
-        include:
-          - tag: "dos2unix"
-            path: "docker/dos2unix"
-          - tag: "vanilla"
-            path: "server/vanilla"
 
     runs-on: ubuntu-latest
     name: "Build"
@@ -87,13 +77,13 @@ jobs:
 
       - name: "Get the tag from Dockertag"
         run: |
-          IMAGE_TAG=$(cat ./${{ matrix.path }}/Dockertag)
+          IMAGE_TAG=$(cat ./images/${{ matrix.tag }}/Dockertag)
           echo "image_tag=$IMAGE_TAG" >> $GITHUB_ENV
 
       - name: "Build :${{ matrix.tag }}"
         uses: docker/build-push-action@v2
         with:
-          context: ./${{ matrix.path }}
+          context: ./images/${{ matrix.tag }}
           tags: ${{ env.image_name }}:${{ env.image_tag }}
           push: false
 
@@ -101,7 +91,7 @@ jobs:
         name: "Push :${{ matrix.tag }}"
         uses: docker/build-push-action@v2
         with:
-          context: ./${{ matrix.path }}
+          context: ./images/${{ matrix.tag }}
           tags: ${{ env.image_name }}:${{ env.image_tag }}
           push: true
 
@@ -114,9 +104,6 @@ jobs:
     strategy:
       matrix:
         tag: [ "vanilla" ]
-        include:
-          - tag: "vanilla"
-            path: "images/vanilla"
 
     runs-on: ubuntu-latest
     name: "Push :Latest"
@@ -126,7 +113,7 @@ jobs:
 
       - name: "Get the tag from Dockertag"
         run: |
-          IMAGE_TAG=$(cat ./${{ matrix.path }}/Dockertag)
+          IMAGE_TAG=$(cat ./images/${{ matrix.tag }}/Dockertag)
           echo "image_tag=$IMAGE_TAG" >> $GITHUB_ENV
 
       - name: "Tag & Push :Latest"
