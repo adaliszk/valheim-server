@@ -1,0 +1,129 @@
+# =================================================================================================
+name: "Docker Build"
+
+# =================================================================================================
+on:
+  pull_request:
+    paths:
+      - .github/workflows/docker-build.yml
+      - images/**/*
+      - images/*
+    types:
+      - synchronize
+      - opened
+  push:
+    paths:
+      - .github/workflows/docker-build.yml
+      - images/**/*
+      - images/*
+    branches:
+      - develop
+      - stable
+
+# =================================================================================================
+env:
+  image_name: "adaliszk/valheim-server"
+
+# =================================================================================================
+jobs:
+
+  #
+  # STAGE: LINT
+  #
+  lint:
+    strategy:
+      matrix:
+        tag: [ "dos2unix", "vanilla" ]
+
+    runs-on: ubuntu-latest
+    name: "Lint"
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+
+      - name: "Shellcheck"
+        uses: ludeeus/action-shellcheck@master
+        continue-on-error: true
+        with:
+          scandir: "./images/${{ matrix.tag }}"
+
+      - name: "Hadolint"
+        uses: brpaz/hadolint-action@v1.2.1
+        with:
+          dockerfile: "./images/${{ matrix.tag }}/Dockerfile"
+
+  #
+  # STAGE: BUILD
+  #
+  build:
+    needs: [ "lint" ]
+    strategy:
+      matrix:
+        tag: [ "dos2unix", "vanilla" ]
+
+    runs-on: ubuntu-latest
+    name: "Build"
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+
+      - name: "Set up Docker Buildx"
+        uses: docker/setup-buildx-action@v1
+
+      - if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
+        name: "Login to DockerHub"
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: "Get the tag from Dockertag"
+        run: |
+          IMAGE_TAG=$(cat ./images/${{ matrix.tag }}/Dockertag)
+          echo "image_tag=$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: "Build :${{ matrix.tag }}"
+        uses: docker/build-push-action@v2
+        with:
+          context: ./images/${{ matrix.tag }}
+          tags: ${{ env.image_name }}:${{ env.image_tag }}
+          push: false
+
+      - if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
+        name: "Push :${{ matrix.tag }}"
+        uses: docker/build-push-action@v2
+        with:
+          context: ./images/${{ matrix.tag }}
+          tags: ${{ env.image_name }}:${{ env.image_tag }}
+          push: true
+
+  #
+  # STAGE: PUSH
+  #
+  push-latest:
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
+    needs: [ "build" ]
+    strategy:
+      matrix:
+        tag: [ "vanilla" ]
+
+    runs-on: ubuntu-latest
+    name: "Push :Latest"
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+
+      - name: "Get the tag from Dockertag"
+        run: |
+          IMAGE_TAG=$(cat ./images/${{ matrix.tag }}/Dockertag)
+          echo "image_tag=$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: "Tag & Push :Latest"
+        uses: tinact/docker.image-retag@master
+        with:
+          image_name: ${{ env.image_name }}
+          image_old_tag: ${{ env.image_tag }}
+          image_new_tag: latest
+          registry: ${{ env.image_name }}
+          registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          registry_password: ${{ secrets.DOCKERHUB_TOKEN }}

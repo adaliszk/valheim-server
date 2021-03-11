@@ -11,49 +11,35 @@ x-enabled-server: &enabled-server
     retries: 5
     start_period: 10s
   environment:
-    SERVER_PASSWORD: "1"
-  volumes:
-    - ./temp/valheim:/home/steam/.config/unity3d/IronGate/Valheim
-    - ./temp/server-configs:/home/steam/.config/unity3d/IronGate/Valheim/configs:ro
-    - ./temp/mod-configs:/home/steam/valheim-server/BepInEx/config-ro:ro
-    - mod-configs:/home/steam/valheim-server/BepInEx/config
-    - ./temp/logs:/tmp/valheim
+    SERVER_PASSWORD: "12345"
+#  volumes:
+#    - ./temp/data:/data
+#    - ./temp/backups:/backups
+#    - ./temp/logs:/logs
   ports:
     - 2456:2456/udp
     - 2457:2457/udp
-    - 2458:2458/udp
 
 x-disabled-server: &disabled-server
   command: noop
-  volumes:
-    - valheim-data:/home/steam/.config/unity3d/IronGate/Valheim
-    - valheim-logs:/tmp/valheim
-
-# ==============================================================================
-volumes:
-  valheim-data: {}
-  valheim-logs: {}
-  mod-configs: {}
 
 # ==============================================================================
 services:
 
   dos2unix:
-    image: adaliszk/valheim-server:${ENV_TAG:-dos2unix}"
-    build: docker/dos2unix
-
-  env:
-    image: "adaliszk/valheim-server:${ENV_TAG:-env}"
-    build: docker/env
-    depends_on:
-      - dos2unix
+    container_name: "dos2unix_helper"
+    image: "adaliszk/valheim-server:${ENV_TAG:-dos2unix}"
+    build: images/dos2unix
 
   vanilla:
+    container_name: "valheim_vanilla"
     image: "adaliszk/valheim-server:${VANILLA_TAG:-latest}"
-    build: server/vanilla
+    build: images/vanilla
     <<: *enabled-server
+    command:
+      - -name="Name with spaces - and - dashes"
     depends_on:
-      - env
+      - dos2unix
 
 #  valheim-plus:
 #    image: "adaliszk/valheim-server:${PLUS_TAG:-plus0.9}"

@@ -27,7 +27,7 @@ resources: {}
   #   memory: 128Mi
   # requests:
   #   cpu: 100m
-  #   memory: 128Mi
+#   memory: 128Mi
 
 image:
   name: adaliszk/valheim-server
@@ -64,7 +64,7 @@ service:
   spec: {}
     # externalTrafficPolicy: Cluster
     # loadBalancerIP: "1.2.3.4"
-    # clusterIP: "2.3.4.5"
+  # clusterIP: "2.3.4.5"
 
 # Valheim Plus configuration (if you use the :plus* tags)
 # for further information please refer to: https://github.com/valheimPlus/ValheimPlus#features

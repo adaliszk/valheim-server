@@ -28,6 +28,9 @@ def log_error(error: str):
 
 
 def ucfirst(text: str):
+    if re.match(r'^src/', line):
+        return text
+
     return text[0].upper() + text[1:]
 
 
@@ -44,17 +47,17 @@ for line in fileinput.input():
 
     # remove DATETIME prefix as this is added outside of the STDOUT
     datePrefix = re.compile(r'^\d+/\d+/\d+ \d+:\d+:\d+:', re.IGNORECASE)
-    if re.match(datePrefix, line):
+    if re.search(datePrefix, line):
         line = re.sub(datePrefix, r'', line)
 
     # remove Noisy prefixes
-    noisyPrefix = re.compile(r'^\[Subsystems]|-', re.IGNORECASE)
-    if re.match(noisyPrefix, line):
+    noisyPrefix = re.compile(r'^\[Subsystems]|^-', re.IGNORECASE)
+    if re.search(noisyPrefix, line):
         line = re.sub(noisyPrefix, r'', line)
 
     # trim needless space within the line
     needlessSpace = re.compile(r'\s{2,}', re.IGNORECASE)
-    if re.match(needlessSpace, line):
+    if re.search(needlessSpace, line):
         line = re.sub(needlessSpace, r' ', line)
 
     # remove WHITESPACE and format the line to look nice
@@ -64,7 +67,7 @@ for line in fileinput.input():
     if re.match(r'^Game server connected$', line):
         set_server_connected(True)
 
-    prefix = "I"
+    prefix = "i"
 
     bepInExRegex = re.compile(r'^\[(\w+)\s*:\s*(\w+)] (.*)', re.IGNORECASE)
     if re.match(bepInExRegex, line):
@@ -73,22 +76,22 @@ for line in fileinput.input():
         prefix = levels.get(match.group(1), "I")
         line = re.sub(bepInExRegex, r'\2> \3', line)
 
-    debugRegex = re.compile(r'^(Section not|Loading config|Loading key|Load DLL:|Base:|Redirecting to)', re.IGNORECASE)
-    if re.match(debugRegex, line):
-        prefix = "D"
+    debugRegex = re.compile(r'(Section not|Loading config|Loading key|Load DLL:|Base:|Redirecting to)', re.IGNORECASE)
+    if re.search(debugRegex, line):
+        prefix = "d"
 
-    warningRegex = re.compile(r'^(Warning|Failed|Missing|Fallback)', re.IGNORECASE)
-    if re.match(warningRegex, line):
-        prefix = "W"
+    warningRegex = re.compile(r'(Warning|Failed|Missing|Fallback)', re.IGNORECASE)
+    if re.search(warningRegex, line):
+        prefix = "w"
 
-    errorRegex = re.compile(r'^Error', re.IGNORECASE)
-    if re.match(errorRegex, line):
-        prefix = "E"
+    errorRegex = re.compile(r'Error', re.IGNORECASE)
+    if re.search(errorRegex, line):
+        prefix = "e"
 
     severityRegex = re.compile(r'(Error|Warning|Failed|Missing|Fallback|)', re.IGNORECASE)
-    if re.match(severityRegex, line) or prefix in ["W", "E"]:
+    if re.search(severityRegex, line) or prefix in ["w", "e"]:
         log_error(line)
 
-    if prefix not in ["D"]:
+    if prefix not in ["d"]:
         print(prefix + "> " + line)
         sys.stdout.flush()
