@@ -32,6 +32,7 @@ jobs:
 
       - name: "Lint"
         uses: WyriHaximus/github-action-helm3@v2
+        continue-on-error: true
         with:
           exec: helm lint ./chart
 
@@ -48,11 +49,15 @@ jobs:
         with:
           exec: helm package ./chart
 
-      - run: "ls -la ."
+      - name: "Upload Artifacts"
+        uses: actions/upload-artifact@v2
+        with:
+          name: helm-package
+          path: valheim-server-*.tgz
 
-  upload:
+  push:
     needs: [ bundle ]
     runs-on: ubuntu-latest
-    name: "Upload"
+    name: "Push"
     steps:
       - run: "exit 0"
