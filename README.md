@@ -1,84 +1,128 @@
+[![Docker Pulls](https://img.shields.io/docker/pulls/adaliszk/valheim-server?label=pulls&style=for-the-badge)](https://hub.docker.com/r/adaliszk/valheim-server)
 [![:latest image size](https://img.shields.io/docker/image-size/adaliszk/valheim-server/latest?style=for-the-badge)](https://hub.docker.com/r/adaliszk/valheim-server)
-![build status](https://img.shields.io/github/workflow/status/adaliszk/valheim-server/docker-build?style=for-the-badge)
+[![build status](https://img.shields.io/github/workflow/status/adaliszk/valheim-server/docker-build/develop?style=for-the-badge)](https://github.com/adaliszk/valheim-server/actions/workflows/docker-build.yml)
 
-# Valheim Server - Docker & Helm
+# Valheim Docker Server & Helm Chart
 for a clean, fast, standalone docker or kubernetes helm deployments. 
 
 While there are many other images out there, many does fall into the bad habit of using anti-patterns
-like Supervisor and Cron in a single image. The image included here tries to not fall into using bad
-habits while still offers a full feature-set for managing and monitoring your Valheim Server.
+like Supervisor and Cron in a single image. The images included here tries to not fall into using bad
+habits while still offer a full feature-set for managing and monitoring your Valheim Server.
+
+### TL;DR:
+```bash
+docker run -d --publish adaliszk/valheim-server -name "My Server" -password="super!secret"
+```
+or
+```yaml
+version: "3.6"
+services:
+  server:
+    image: adaliszk/valheim-server
+    environment:
+      SERVER_NAME: "My custom message in the server list"
+      SERVER_PASSWORD: "super!secret"
+    ports:
+      - 2456:2456/udp
+      - 2457:2457/udp
+```
+or
+```bash
+helm repo add adaliszk https://charts.adaliszk.dev
+helm repo update
+helm upgrade --install --create-namespace --wait my-valheim-server adaliszk/valheim-server
+```
+
 
 ## What is included?
+- A fully working Valheim Server WITHOUT the need of downloading anything from the internet
+- Using a non-root user for secure Container
+- Graceful Stop and automatic Backup of the world files
+- Sanitized server output, you finally can say goodbye to the debug noise that is not important
+- Health-checks to monitor the image's liveliness
+<!--
+- Metrics from the logs for Monitoring, Alerting and Error reporting
+- Examples how to deploy in Docker and Kubernetes environments with minimal effort
+- Automation templates for deployment and backups
+-->
 
-###### A fully working Valheim Server WITHOUT the need of downloading anything from the internet
-Having no dependency on installation is not only a nice thing to do for the Steam Download servers,
-but it is also beneficial for you since the image can be ready in seconds after your server or 
-cluster pulled it into its cache. Furthermore, you won't have to do maintenance chores like
-updating your server, so you'll get a fully working setup out of the box.
+## How does the image work?
+The image has a very slim wrapper script - the docker entrypoint - that will allow you to execute any 
+sort of custom scripts under `/scripts`. The following are available out of the box:
+- `noop` - does nothing, it's used for development
+- `backup [name]` - take a named backup, using `auto` as default
+- `restore [name]` - restore the latest backup with the name, using `auto` as default
+- `health` - will return the status of the server, it's used for Health-checks
+- `start` - boots up the server, this is pretty much the same as the official start script
 
-###### Using a non-root user for the Container
-Running containers as a non-root user is a major security benefit that should not need an explanation.
-However, the main reason is that you can be assured that a non-root user will prevent malicious code 
-from gaining permission in the container, furthermore, some Kubernetes distributions, such as Openshift, 
-don't allow you to run containers as root by default.
+By default, the `start` script will be executed, that actually accepts the same arguments as the 
+official server executable: `-name`, `-world`, `-password`, `-public`. It will prevent you to overwrite 
+the `-port` however, and will add a couple new arguments, `-admins`, `-permitted`, `-banned` that are 
+comma separated list of SteamID64's for configuring the server.
 
-###### Gracefully stop and automatic Backup of the world files
-Since the world is not synchronized all the time, this will make sure that your progress remains safe, 
-and even in-case of a shutdown corruption you'll have a state to roll back to.
+The server's data is located under `/data`, this is the place where your live configs, and the world 
+can be found. The backups from this location are made into `/backups`. In kubernetes, the ConfigMaps
+are mounted into `/configs` as read-only and copied into the `/data` when running any of the commands.
 
-###### Examples how to deploy in Docker and Kubernetes environments with minimal effort
-When you are tired of the problematic Game-Server providers who just re-skin a Pterodactyl panel and 
-ask for a full-price of a dedicated VPS-es, or you just tired their endless laggs and desync issues
-you'll find simple, few-step tutorials to guide you through setting up your server.
+## Prerequisites
+At a bare minimum, to use this image - or any other - you will need to set up `Docker`. This can be 
+done fairly simply on linux:
+```bash
+curl -fsSL https://get.docker.com | sudo bash
+sudo usermod -aG docker $USER
+```
+[What does this all mean?](docs/Quick-Docker-Install-Explanation.md)
 
-###### Sanitized server output, you finally can say goodbye to the debug noise that is not important
-If you ever seen a server output, you'll know that it splits out a lot of debug information that makes
-it hard to see what's going on. This image includes a very simple, tested, prettyfier that will help
-you to see what's going on the server's output.
+For other environments, please refer to Docker's documentation:  
+https://docs.docker.com/get-docker
 
-###### Health-checks to monitor the image's liveliness
-Testing that the image is healthy is a baseline practice, you'll get some simple and fast checks and
-even some advanced ones to track down that your deployment is working properly!
+## Examples 
 
-###### Metrics from the logs, Monitoring, Alerting and Error reporting
-White-box metrics is a golden mine for information, you can use this to set up alerts or just be able
-to tell how is your player-base doing, do they encounter issues, etc. You are also welcomed to Opt-In
-to report issues that may help to track down some very specific conditions.
-
-###### Automation templates
-Weather you want to customize your server behaviour or just have a daily restart you will be able to
-set it up via the templates and guides included in this repo!
+- [Docker managed volume setup (recommended)](docs/examples/Docker-managed-Volumes.md)
+- [Host folders as persisted data](docs/examples/Host-folder-Volumes.md)
 
 
-## Work in Progress!
 
-While this code works on most cases, I still in progress of adding:
+###Super simple setup by relying on Docker to keep the data persisted:
+```bash
+docker run -d --publish adaliszk/valheim-server
+```
+this is great for testing the server deployment out, and in many cases it will work just fine. The data
+is persisted using volumes, just keep in mind that those might be removed via `docker volume prune` if 
+your container happened to be down at the time.
 
-- [x] Add CI/CD pipeline for GitHub
-- [ ] Publish the Chart that you could use it without cloning the repo
-- [ ] Collect metrics using MTail
-- [ ] Monitor health of the connections and hardware
-- [ ] Report errors via Sentry
-- [ ] Add ModLoader tags so you can install mods for your server
+### Using a local folder for persisted data:
+```bash
+docker run -d --publish -v ./path/to/data:/data -v ./path/to/backups:/backups adaliszk/valheim-server
+```
+this will ensure that the files are not deleted, and generally good practice for VPS-es that run Docker,
+you would need about 300-500M of space for the data while the backups may take several times of that.
 
-Currently, the Chart is deployed to GKE, but want to add support for other setups.
-Pull Request are welcomed!
+### Configuring the variables in `my-config.env`:
 
-### What has been done?
+```dotenv
+SERVER_MOTD="My custom message in the server list"
+SERVER_PASSWORD="super!secret"
+```
 
-- The `/home/steam/.config/unity3d/IronGate/Valheim` stores your server configs, worlds and backups
-- The `/tmp/valheim` stores log files like the raw server output and various processed logs
-- Whenever the server is killed, it will do a backup before the process is killed into `/home/steam/.config/unity3d/IronGate/Valheim/backups`
-- Healthcheck looks for the `:2456` and `:2457` ports being open
-- The server will run scripts in `/home/steam/scripts` so you can replace them with whatever is your preference
+```bash
+docker run -d --publish --env-file my-config.env adaliszk/valheim-server
+```
 
-# How to configure the image?
+Using 
 
-You can configure the server with the following variables:
-
-| Variable                           | What it does                                   | Default Value                   |
-| --------------------------------- |---------------------------------------------- | ---------------------------------- |
-| `SERVER_NAME`            | Only used with Helm                    | `Valheim`                       |
-| `SERVER_MOTD`            | The full server message in the server window                    | `Valheim v{version}`                       |
-| `SERVER_WORLD`         | The Worldfile name                     | `Dedicated` |
-| `SERVER_PASSWORD` | The password that is at least 5 characters | `12345` | 
+```yaml
+version: "3.6"
+services:
+  valheim:
+    image: adaliszk/valheim-server
+    environment:
+      SERVER_MOTD: "My custom message in the server list"
+      SERVER_PASSWORD: "super!secret"
+    volumes:
+      - /path/to/data:/data
+      - /path/to/backups:/backups
+    ports:
+      - 2456:2456/udp
+      - 2457:2457/udp
+```

@@ -4,8 +4,16 @@ function add-timestamp {
   sed -u "s/^/$(date +%Y-%m-%dT%H:%M:%S%z)> /;t"
 }
 
-function valheim-console {
+function vhpretty {
   /srv/vhpretty.py
+}
+
+function tee-server {
+   tee "${LOG_PATH}/server.log"
+}
+
+function tee-server-raw {
+  tee "${LOG_PATH}/server-raw.log"
 }
 
 function tee-backup {
@@ -13,17 +21,21 @@ function tee-backup {
 }
 
 function tee-output {
-   tee "${LOG_PATH}/output.log" | add-timestamp > "${LOG_PATH}/server.log"
+   tee "${LOG_PATH}/output.log" | tee-server
 }
 
 function tee-exit {
-  tee "${LOG_PATH}/output.log" | add-timestamp > "${LOG_PATH}/exit.log"
+  tee "${LOG_PATH}/output.log"
 }
 
 function format-output {
-  valheim-console | tee-output
+  vhpretty | tee-output
 }
 
 function log {
   echo "S> ${*}" | tee-output
+}
+
+function debug-log {
+  echo "D> ${*}" | tee-output
 }

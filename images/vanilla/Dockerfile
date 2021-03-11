@@ -10,28 +10,26 @@ ENV APP_ID="896660" \
 RUN apt-get -y install --no-install-recommends bash
 RUN steamcmd +login anonymous +force_install_dir "${APP_PATH}" +app_update ${APP_ID} +quit
 RUN bash -c "rm -rf ${APP_PATH}/*.{sh,pdf}"
-RUN tar -czvf "${APP_PATH}/valheim_server_Data.tar.gz" -C "${APP_PATH}" "valheim_server_Data" \
+RUN tar -czf "${APP_PATH}/valheim_server_Data.tar.gz" -C "${APP_PATH}" "valheim_server_Data" \
  && rm -rf "${APP_PATH}/valheim_server_Data"
+
 
 # Fix file format and permissions for the Windows peeps out there
 # =================================================================================================
 FROM adaliszk/valheim-server:dos2unix as unix
 
-COPY server /server-scripts
-COPY srv /srv-scripts
+COPY srv /scripts
+RUN dos2unix /scripts/** && chmod +x /scripts/**
 
-RUN dos2unix /server-scripts/** && chmod +x /server-scripts/** \
- && dos2unix /srv-scripts/** && chmod +x /srv-scripts/**
 
 # Set up the Runtime Environment
 # =================================================================================================
 FROM debian:stable-slim as runtime
-ENV SERVER_NAME="Valheim" \
-    SERVER_MOTD="Valheim Vanilla Server" \
+ENV SERVER_NAME="Valheim v0.147.3" \
     SERVER_WORLD="Dedicated" \
     SERVER_PASSWORD="p4ssw0rd" \
     SERVER_PUBLIC="1" \
-    TZ="Europe/Berlin" \
+    TZ="Etc/UTC" \
     SERVER_PATH="/server" \
     CONFIG_PATH="/config" \
     SCRIPTS_PATH="/scripts" \
@@ -42,20 +40,19 @@ ENV SERVER_NAME="Valheim" \
 # hadolint ignore=DL3018,DL3008
 RUN addgroup --gid 1001 container && useradd -u 1001 --gid 1001 -ms /bin/bash container  \
  && apt-get update && apt-get -y install --no-install-recommends \
-    bash python3 sed tzdata coreutils net-tools dnsutils nmap \
- && bash -c "mkdir -p {${CONFIG_PATH},${SERVER_PATH},${BACKUP_PATH},${DATA_PATH},${LOG_PATH}}" \
- && chown 1001:1001 ${CONFIG_PATH} ${SERVER_PATH} ${BACKUP_PATH} ${DATA_PATH} ${LOG_PATH} \
+    bash python3 sed tzdata ca-certificates coreutils net-tools dnsutils nmap \
+ && bash -c "mkdir -p {${SCRIPTS_PATH},${CONFIG_PATH},${SERVER_PATH},${BACKUP_PATH},${DATA_PATH},${LOG_PATH}}" \
+ && chown 1001:1001 ${SCRIPTS_PATH} ${CONFIG_PATH} ${SERVER_PATH} ${BACKUP_PATH} ${DATA_PATH} ${LOG_PATH} \
  && rm -rf /var/lib/apt/lists/*
 
 COPY --from=steam --chown=1001 /server /server
-COPY --from=unix --chown=1001 /server-scripts /scripts
-COPY --from=unix /srv-scripts /srv
+COPY --from=unix /scripts /srv
 
-VOLUME ["/config", "/data", "/backups", "/logs"]
-ENTRYPOINT ["/srv/docker-entrypoint.sh"]
-
-USER 1001
-HEALTHCHECK CMD ["health"]
+ENTRYPOINT ["/srv/valheim.sh"]
+VOLUME ["/scripts", "/data", "/backups", "/logs"]
 STOPSIGNAL SIGINT
-EXPOSE 2456-2457/udp
 CMD ["start"]
+USER 1001
+
+HEALTHCHECK CMD ["health"]
+EXPOSE 2456-2457/udp

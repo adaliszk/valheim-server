@@ -12,26 +12,16 @@ x-enabled-server: &enabled-server
     start_period: 10s
   environment:
     SERVER_PASSWORD: "12345"
-  volumes:
-    - ./temp/data:/data
-    - ./temp/backups:/backups
-    - ./temp/logs:/logs
+#  volumes:
+#    - ./temp/data:/data
+#    - ./temp/backups:/backups
+#    - ./temp/logs:/logs
   ports:
     - 2456:2456/udp
     - 2457:2457/udp
 
 x-disabled-server: &disabled-server
   command: noop
-  volumes:
-    - valheim-data:/data
-    - valheim-backup:/backups
-    - valheim-logs:/logs
-
-# ==============================================================================
-volumes:
-  valheim-data: {}
-  valheim-backup: {}
-  valheim-logs: {}
 
 # ==============================================================================
 services:
@@ -39,12 +29,12 @@ services:
   dos2unix:
     container_name: "dos2unix_helper"
     image: "adaliszk/valheim-server:${ENV_TAG:-dos2unix}"
-    build: docker/dos2unix
+    build: images/dos2unix
 
   vanilla:
     container_name: "valheim_vanilla"
     image: "adaliszk/valheim-server:${VANILLA_TAG:-latest}"
-    build: server/vanilla
+    build: images/vanilla
     <<: *enabled-server
     depends_on:
       - dos2unix

@@ -28,6 +28,9 @@ def log_error(error: str):
 
 
 def ucfirst(text: str):
+    if re.match(r'^src/', line):
+        return text
+
     return text[0].upper() + text[1:]
 
 

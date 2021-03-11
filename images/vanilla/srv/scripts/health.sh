@@ -33,6 +33,10 @@ function check-port {
 
 check-server-connected
 check-port 2456
-check-port 2457
+
+if [ "${SERVER_PUBLIC:-1}" == "1" ];
+  then
+    check-port 2457
+  fi
 
 exit $STATUS

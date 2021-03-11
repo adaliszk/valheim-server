@@ -28,9 +28,9 @@ jobs:
         tag: [ "dos2unix", "vanilla" ]
         include:
           - tag: "dos2unix"
-            path: "docker/dos2unix"
+            path: "images/dos2unix"
           - tag: "vanilla"
-            path: "server/vanilla"
+            path: "images/vanilla"
 
     runs-on: ubuntu-latest
     name: "Lint"
@@ -110,7 +110,7 @@ jobs:
         tag: [ "vanilla" ]
         include:
           - tag: "vanilla"
-            path: "server/vanilla"
+            path: "images/vanilla"
 
     runs-on: ubuntu-latest
     name: "Push :Latest"

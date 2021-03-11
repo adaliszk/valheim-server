@@ -42,9 +42,6 @@ trap term SIGINT SIGQUIT SIGTERM
 
 
 log "Creating output log files..."
-for LOG_FILE in {server-raw,server,output,error,backup,health,exit}
-do
-  touch "${LOG_PATH}/${LOG_FILE}.log"
-done
+touch "${LOG_PATH}"/{server-raw,server,output,error,backup,restore,health,exit}.log
 
 run "${CMD}" "${*:2}"
