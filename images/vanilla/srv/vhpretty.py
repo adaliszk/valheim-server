@@ -51,7 +51,7 @@ for line in fileinput.input():
         line = re.sub(datePrefix, r'', line)
 
     # remove Noisy prefixes
-    noisyPrefix = re.compile(r'^\[Subsystems]|-', re.IGNORECASE)
+    noisyPrefix = re.compile(r'^\[Subsystems]|^-', re.IGNORECASE)
     if re.search(noisyPrefix, line):
         line = re.sub(noisyPrefix, r'', line)
 
@@ -67,7 +67,7 @@ for line in fileinput.input():
     if re.match(r'^Game server connected$', line):
         set_server_connected(True)
 
-    prefix = "I"
+    prefix = "i"
 
     bepInExRegex = re.compile(r'^\[(\w+)\s*:\s*(\w+)] (.*)', re.IGNORECASE)
     if re.match(bepInExRegex, line):
@@ -78,20 +78,20 @@ for line in fileinput.input():
 
     debugRegex = re.compile(r'(Section not|Loading config|Loading key|Load DLL:|Base:|Redirecting to)', re.IGNORECASE)
     if re.search(debugRegex, line):
-        prefix = "D"
+        prefix = "d"
 
     warningRegex = re.compile(r'(Warning|Failed|Missing|Fallback)', re.IGNORECASE)
     if re.search(warningRegex, line):
-        prefix = "W"
+        prefix = "w"
 
     errorRegex = re.compile(r'Error', re.IGNORECASE)
     if re.search(errorRegex, line):
-        prefix = "E"
+        prefix = "e"
 
     severityRegex = re.compile(r'(Error|Warning|Failed|Missing|Fallback|)', re.IGNORECASE)
-    if re.search(severityRegex, line) or prefix in ["W", "E"]:
+    if re.search(severityRegex, line) or prefix in ["w", "e"]:
         log_error(line)
 
-    if prefix not in ["D"]:
+    if prefix not in ["d"]:
         print(prefix + "> " + line)
         sys.stdout.flush()

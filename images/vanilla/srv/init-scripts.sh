@@ -1,5 +1,4 @@
 #!/bin/bash
-source /srv/console.sh
 
 function copy-files {
   SOURCE_PATH="${1}"
@@ -8,9 +7,9 @@ function copy-files {
   for FILE in "${SOURCE_PATH}"/*;
     do
       FILENAME="$(basename "$FILE")"
-      CMD="cp -f ${FILE} ${TARGET_PATH}/${FILENAME}"
-      debug-log "$CMD"
-      $CMD
+      COPY="cp -f ${FILE} ${TARGET_PATH}/${FILENAME}"
+      debug-log "$COPY"
+      $COPY
     done
 }
 

@@ -36,6 +36,8 @@ services:
     image: "adaliszk/valheim-server:${VANILLA_TAG:-latest}"
     build: images/vanilla
     <<: *enabled-server
+    command:
+      - -name="Name with spaces - and - dashes"
     depends_on:
       - dos2unix
 
