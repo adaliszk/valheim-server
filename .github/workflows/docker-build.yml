@@ -4,10 +4,16 @@ name: "Docker Build"
 # =================================================================================================
 on:
   pull_request:
+    paths:
+      - images/**/*
+      - images/*
     types:
       - synchronize
       - opened
   push:
+    paths:
+      - images/**/*
+      - images/*
     branches:
       - develop
       - stable

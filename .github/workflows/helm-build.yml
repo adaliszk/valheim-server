@@ -1,0 +1,45 @@
+# =================================================================================================
+name: "Helm Build"
+
+# =================================================================================================
+on:
+  pull_request:
+    paths:
+      - chart/**/*
+      - chart/*
+    types:
+      - synchronize
+      - opened
+  push:
+    paths:
+      - chart/**/*
+      - chart/*
+    branches:
+      - develop
+      - stable
+
+# =================================================================================================
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    name: "Lint"
+    steps:
+      - run: "exit 0"
+
+  bundle:
+    needs: [ lint ]
+    runs-on: ubuntu-latest
+    name: "Bundle"
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+      - run: "cd chart && helm package ."
+      - run: "ls -la chart"
+
+  upload:
+    needs: [ bundle ]
+    runs-on: ubuntu-latest
+    name: "Upload"
+    steps:
+      - run: "exit 0"

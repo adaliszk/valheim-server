@@ -41,6 +41,7 @@ helm upgrade --install --create-namespace --wait my-valheim-server adaliszk/valh
 - Sanitized server output, you finally can say goodbye to the debug noise that is not important
 - Health-checks to monitor the image's liveliness
 <!--
+@TODO:
 - Metrics from the logs for Monitoring, Alerting and Error reporting
 - Examples how to deploy in Docker and Kubernetes environments with minimal effort
 - Automation templates for deployment and backups
@@ -51,9 +52,12 @@ The image has a very slim wrapper script - the docker entrypoint - that will all
 sort of custom scripts under `/scripts`. The following are available out of the box:
 - `noop` - does nothing, it's used for development
 - `backup [name]` - take a named backup, using `auto` as default
-- `restore [name]` - restore the latest backup with the name, using `auto` as default
 - `health` - will return the status of the server, it's used for Health-checks
 - `start` - boots up the server, this is pretty much the same as the official start script
+<!--  
+@TODO:
+- `restore [name]` - restore the latest backup with the name, using `auto` as default
+-->
 
 By default, the `start` script will be executed, that actually accepts the same arguments as the 
 official server executable: `-name`, `-world`, `-password`, `-public`. It will prevent you to overwrite 
@@ -79,50 +83,16 @@ https://docs.docker.com/get-docker
 ## Examples 
 
 - [Docker managed volume setup (recommended)](docs/examples/Docker-managed-Volumes.md)
+<!--  
+@TODO:
 - [Host folders as persisted data](docs/examples/Host-folder-Volumes.md)
+- [Using a Domain with a Landing Page](docs/examples/Domain-name-with-Landing-page.md)
+- [Debug Deployment with a helper image](docs/Debug-Deployment.md)  
+- [Deploy into Kubernetes](docs/examples/Kubernetes.md)
+- [Metric data](docs/examples/Show-Metrics-data.md)  
+-->
 
 
-
-###Super simple setup by relying on Docker to keep the data persisted:
-```bash
-docker run -d --publish adaliszk/valheim-server
-```
-this is great for testing the server deployment out, and in many cases it will work just fine. The data
-is persisted using volumes, just keep in mind that those might be removed via `docker volume prune` if 
-your container happened to be down at the time.
-
-### Using a local folder for persisted data:
-```bash
-docker run -d --publish -v ./path/to/data:/data -v ./path/to/backups:/backups adaliszk/valheim-server
-```
-this will ensure that the files are not deleted, and generally good practice for VPS-es that run Docker,
-you would need about 300-500M of space for the data while the backups may take several times of that.
-
-### Configuring the variables in `my-config.env`:
-
-```dotenv
-SERVER_MOTD="My custom message in the server list"
-SERVER_PASSWORD="super!secret"
-```
-
-```bash
-docker run -d --publish --env-file my-config.env adaliszk/valheim-server
-```
-
-Using 
-
-```yaml
-version: "3.6"
-services:
-  valheim:
-    image: adaliszk/valheim-server
-    environment:
-      SERVER_MOTD: "My custom message in the server list"
-      SERVER_PASSWORD: "super!secret"
-    volumes:
-      - /path/to/data:/data
-      - /path/to/backups:/backups
-    ports:
-      - 2456:2456/udp
-      - 2457:2457/udp
-```
+## Contributions
+Feel free to open Tickets or Pull-Requests, however, keep in mind that the idea is to keep it simple,
+and separate the concerns into multiple small images!
