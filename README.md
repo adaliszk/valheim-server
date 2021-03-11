@@ -30,11 +30,13 @@ services:
       - 2456:2456/udp
       - 2457:2457/udp
 ```
+<!--
 or
 ```bash
 helm repo add adaliszk https://charts.adaliszk.io
 helm upgrade --install --create-namespace --wait my-valheim-server adaliszk/valheim-server
 ```
+-->
 
 ## Are you new to Docker or Kubernetes?
 - [What is Docker?](https://opensource.com/resources/what-docker)
