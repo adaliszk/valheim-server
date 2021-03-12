@@ -1,5 +1,7 @@
 # Download image contents from the registry for efficient steam cache
 # =================================================================================================
+# we intentonally using latest here so
+# hadolint ignore=DL3007
 FROM adaliszk/valheim-server:latest as steam-cache
 
 # Install Vanilla Server
