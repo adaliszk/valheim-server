@@ -1,8 +1,8 @@
-[![Docker Pulls](https://img.shields.io/docker/pulls/adaliszk/valheim-server?label=pulls)](https://hub.docker.com/r/adaliszk/valheim-server)
-[![:latest image size](https://img.shields.io/docker/image-size/adaliszk/valheim-server/latest)](https://hub.docker.com/r/adaliszk/valheim-server)
+[![Docker Pulls](https://img.shields.io/docker/pulls/adaliszk/valheim-server?label=Docker%20Pulls)](https://hub.docker.com/r/adaliszk/valheim-server)
+[![:latest image size](https://img.shields.io/docker/image-size/adaliszk/valheim-server/latest?label=Image%20Size)](https://hub.docker.com/r/adaliszk/valheim-server)
 [![docker status](https://github.com/adaliszk/valheim-server/actions/workflows/docker-build.yml/badge.svg)](https://github.com/adaliszk/valheim-server/actions/workflows/docker-build.yml)
 [![helm status](https://github.com/adaliszk/valheim-server/actions/workflows/helm-build.yml/badge.svg)](https://github.com/adaliszk/valheim-server/actions/workflows/helm-build.yml)
-[![license](https://img.shields.io/github/license/adaliszk/valheim-server)](https://github.com/adaliszk/valheim-server/LICENSE.md)
+[![license](https://img.shields.io/github/license/adaliszk/valheim-server?label=License)](https://github.com/adaliszk/valheim-server/LICENSE.md)
 
 # Valheim Docker Server & Helm Chart
 Clean, fast and standalone Docker & Kubernetes helm deployments.
