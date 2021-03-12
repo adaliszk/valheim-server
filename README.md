@@ -29,13 +29,6 @@ services:
       - 2456:2456/udp
       - 2457:2457/udp
 ```
-<!--
-or
-```bash
-helm repo add adaliszk https://charts.adaliszk.io
-helm upgrade --install --create-namespace --wait my-valheim-server adaliszk/valheim-server
-```
--->
 
 ## Are you new to Docker or Kubernetes?
 - [What is Docker?](https://opensource.com/resources/what-docker)
@@ -65,12 +58,6 @@ would need to install an App that does all the details behind the scenes and giv
 - Automatic Backup of the world files on save, and easy guide to set up regular backups.
 - Sanitized server output; say goodbye to the debug noise that is not important!
 - Health-checks to monitor the image's liveliness
-<!--
-@TODO:
-- Metrics from the logs for Monitoring, Alerting and Error reporting
-- Examples how to deploy in Docker and Kubernetes environments with minimal effort
-- Automation templates for deployment and backups
--->
 
 
 ## How does the server image work?
@@ -86,10 +73,6 @@ Out of the box, the available commands are:
 - `backup [name]` - take a named backup, using `auto` as default
 - `health` - will return the status of the server, it's used for Health-checks
 - `start` - boots up the server, this is pretty much the same as the official start script
-<!--  
-@TODO:
-- `restore [name]` - restore the latest backup with the name, using `auto` as default
--->
 
 By default, the `start` script will be executed, which accepts the same arguments as the official server executable: 
 `-name`, `-world`, `-password`, `-public`. However, it will prevent you from overwriting the `-port` while adding a few 
@@ -106,15 +89,6 @@ The backups from this location are made into `/backups` so make sure that locati
 ## Examples 
 - [Basic Docker setup using Docker managed volumes](docs/basic-Docker-setup.md)
 - [Basic Docker-Compose setup](docs/basic-Docker-Compose-setup.md)
-<!--  
-@TODO:
-- [Host folders as persisted data](docs/Host-folder-Volumes.md)
-- [Using a Domain with a Landing Page](docs/Domain-name-with-Landing-page.md)
-- [Debug Deployment with a helper image](docs/Debug-Deployment.md)  
-- [Deploy into Kubernetes](docs/Kubernetes.md)
-- [Metric data](docs/Show-Metrics-data.md)  
--->
-
 
 ## Contributions
 Feel free to open Tickets or Pull-Requests, however, keep in mind that the idea is to keep it simple, and separate the
