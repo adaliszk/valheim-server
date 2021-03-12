@@ -1,0 +1,17 @@
+global:
+  # Default is every 1 minute.
+  scrape_interval: 5s
+  # The default is every 1 minute.
+  evaluation_interval: 5s
+  # The default is 10s.
+  scrape_timeout: 3s
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any time-series scraped from this config.
+  - job_name: 'valheim-server-metrics'
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+    static_configs:
+      - targets: ['metrics-exporter:3903']

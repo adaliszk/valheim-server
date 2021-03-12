@@ -41,9 +41,22 @@ services:
     depends_on:
       - dos2unix
 
-#  valheim-plus:
-#    image: "adaliszk/valheim-server:${PLUS_TAG:-plus0.9}"
-#    build: server/valheim-plus
-#    <<: *active-server
-#    depends_on:
-#      - vanilla
+  metrics-exporter:
+    container_name: "metrics_exporter"
+    image: "adaliszk/valheim-server:${EXPORTER_TAG:-metrics}"
+    build: images/metrics-exporter
+    volumes:
+      - ./temp/logs:/logs:ro
+    ports:
+      - 3903:3903
+
+  prometheus:
+    container_name: "prometheus"
+    image: "adaliszk/valheim-server:${PROMETHEUS_TAG:-prometheus}"
+    build: images/prometheus
+    depends_on:
+      - metrics-exporter
+    links:
+      - metrics-exporter:metrics-exporter
+    ports:
+      - 9090:9090
