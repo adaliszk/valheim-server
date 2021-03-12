@@ -1,9 +1,3 @@
-# Download image contents from the registry for efficient steam cache
-# =================================================================================================
-# we intentonally using latest here so
-# hadolint ignore=DL3007
-FROM adaliszk/valheim-server:latest as steam-cache
-
 # Install Vanilla Server
 # =================================================================================================
 FROM steamcmd/steamcmd:ubuntu as steam
@@ -14,17 +8,7 @@ ENV APP_ID="896660" \
 
 # hadolint ignore=DL3018,DL3008
 RUN apt-get -y install --no-install-recommends bash tar
-
-# Restore files from the previous Build
-COPY --chown=root --from=steam-cache /server /server
-WORKDIR /server
-
-# Extract previous game files
-RUN ls -la ${APP_PATH} && tar -xzf "${APP_PATH}/valheim_server_Data.tar.gz"
-
-# Update via validation
-RUN steamcmd +login anonymous +force_install_dir "${APP_PATH}" +app_update ${APP_ID} validate +quit
-
+RUN steamcmd +login anonymous +force_install_dir "${APP_PATH}" +app_update ${APP_ID} +quit
 # Compress files so the image can be small for the price of ~5s decompression on runtime
 RUN tar -czf "${APP_PATH}/valheim_server_Data.tar.gz" -C "${APP_PATH}" "valheim_server_Data" \
  && rm -rf "${APP_PATH}/valheim_server_Data"

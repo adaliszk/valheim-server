@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1091
 source /srv/console.sh
 
 cd "${SERVER_PATH}" || exit
