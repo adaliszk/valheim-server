@@ -103,7 +103,7 @@ jobs:
       matrix:
         registry: [ "docker", "quay" ]
         tag: [ "dos2unix", "vanilla" ]
-        includes:
+        include:
           - tag: "dos2unix"
             tag_latest: false
 

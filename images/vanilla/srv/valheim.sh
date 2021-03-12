@@ -26,7 +26,7 @@ function run {
   if [ -f "${SCRIPT}" ];
     then
       log "Executing \"${1}\" script..."
-      bash -c "${SCRIPT}" ${ARGS} 2>&1 | tee-server-raw | vhpretty | server-log &
+      bash -c "${SCRIPT}" "${ARGS[@]}" 2>&1 | tee-server-raw | vhpretty | server-log &
       SERVER=$!
       tail --pid $SERVER -n +1 -f "${LOG_PATH}/output.log" 2> /dev/null
     else
