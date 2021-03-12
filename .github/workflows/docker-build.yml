@@ -70,17 +70,11 @@ jobs:
       - name: "Set up Docker Buildx"
         uses: docker/setup-buildx-action@v1
 
-      - if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
-        name: "Login to DockerHub"
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: "Get the tag from Dockertag"
         run: |
           IMAGE_TAG=$(cat ./images/${{ matrix.tag }}/Dockertag)
-          echo "image_tag=$IMAGE_TAG" >> $GITHUB_ENV
+          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_ENV
+          echo "${IMAGE_TAG}" > ${{ env.tag }}.tag
 
       - name: "Build :${{ matrix.tag }}"
         uses: docker/build-push-action@v2
@@ -89,40 +83,81 @@ jobs:
           tags: ${{ env.image_name }}:${{ env.image_tag }}
           push: false
 
-      - if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
-        name: "Push :${{ matrix.tag }}"
-        uses: docker/build-push-action@v2
+      - name: "Save :${{ matrix.tag }}"
+        run: |
+          docker buildx save ${{ env.image_name }}:${{ env.image_tag }} | gzip > ${{ env.tag }}.tar.gz
+
+      - name: "Upload Image artifact"
+        uses: actions/upload-artifact@v2
         with:
-          context: ./images/${{ matrix.tag }}
-          tags: ${{ env.image_name }}:${{ env.image_tag }}
-          push: true
+          name: image-${{ env.tag }}
+          path: ${{ env.tag }}.*
 
   #
-  # STAGE: PUSH
+  # PUSH STAGE
   #
-  push-latest:
+  push:
     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
     needs: [ "build" ]
     strategy:
       matrix:
-        tag: [ "vanilla" ]
+        registry: [ "docker", "quay" ]
+        tag: [ "dos2unix", "vanilla" ]
+        includes:
+          - tag: "dos2unix"
+            tag_latest: false
+
+          - tag: "vanilla"
+            tag_latest: true
+
+          - registry: "docker"
+            registry_name: "DockerHub"
+            registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
+            registry_password: ${{ secrets.DOCKERHUB_TOKEN }}
+            registry_url: ""
+            image_prefix: ""
+
+          - registry: "quay"
+            registry_name: "QUAY.io"
+            registry_username: ${{ secrets.QUAY_USERNAME }}
+            registry_password:  ${{ secrets.QUAY_TOKEN }}
+            registry_url: "quay.io"
+            image_prefix: "quay.io/"
 
     runs-on: ubuntu-latest
-    name: "Push :Latest"
+    name: "Push"
     steps:
-      - name: "Checkout"
-        uses: actions/checkout@v2
+
+      - name: "Download Image artifact"
+        uses: actions/download-artifact@v2
+        with:
+          name: image-${{ env.tag }}
 
       - name: "Get the tag from Dockertag"
         run: |
-          IMAGE_TAG=$(cat ./images/${{ matrix.tag }}/Dockertag)
-          echo "image_tag=$IMAGE_TAG" >> $GITHUB_ENV
+          IMAGE_TAG=$(cat ${{ matrix.tag }}.tag)
+          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_ENV
 
-      - name: "Tag & Push :Latest"
-        uses: tinact/docker.image-retag@master
+      - name: "Set up Docker Buildx"
+        uses: docker/setup-buildx-action@v1
+
+      - name: "Load image into the Docker Cache"
+        run: |
+          docker buildx load < ${{ matrix.tag }}.tar.gz
+
+      - name: "Login to ${{ matrix.registry_name }}"
+        uses: docker/login-action@v1
         with:
-          image_name: ${{ env.image_name }}
-          image_old_tag: ${{ env.image_tag }}
-          image_new_tag: latest
-          registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
-          registry_password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ${{ matrix.registry_url }}
+          username: ${{ matrix.registry_username }}
+          password: ${{ matrix.registry_username }}
+
+      - name: "Push ${{ matrix.registry_name }} :${{ matrix.tag }}"
+        run: |
+          docker buildx push ${{ matrix.image_prefix }}${{ env.image_name }}:${{ env.image_tag }}
+
+      - if: matrix.tag_latest == 'true' # && github.ref == 'refs/heads/stable'
+        name: "Push ${{ matrix.registry_name }} :Latest"
+        run: |
+          echo "retag and push"
+
