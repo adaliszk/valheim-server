@@ -33,7 +33,7 @@ jobs:
   lint:
     strategy:
       matrix:
-        tag: [ "dos2unix", "metrics-exporter", "prometheus", "vanilla" ]
+        tag: [ "dos2unix", "metrics-exporter", "vanilla" ]
 
     runs-on: ubuntu-latest
     name: "Lint"
@@ -61,7 +61,7 @@ jobs:
     needs: [ "lint" ]
     strategy:
       matrix:
-        tag: [ "dos2unix", "metrics-exporter", "prometheus", "vanilla" ]
+        tag: [ "dos2unix", "metrics-exporter", "vanilla" ]
     steps:
       -
         name: "Checkout"

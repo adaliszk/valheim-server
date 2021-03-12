@@ -9,9 +9,15 @@ global:
 # A scrape configuration containing exactly one endpoint to scrape:
 # Here it's Prometheus itself.
 scrape_configs:
-  # The job name is added as a label `job=<job_name>` to any time-series scraped from this config.
+
   - job_name: 'valheim-server-metrics'
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.
     static_configs:
       - targets: ['metrics-exporter:3903']
+
+  - job_name: 'container-metrics'
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+    static_configs:
+      - targets: ['container-exporter:9104']

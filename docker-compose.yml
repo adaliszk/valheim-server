@@ -45,18 +45,39 @@ services:
     container_name: "metrics_exporter"
     image: "adaliszk/valheim-server:${EXPORTER_TAG:-metrics}"
     build: images/metrics-exporter
+    depends_on:
+      - vanilla
     volumes:
       - ./temp/logs:/logs:ro
     ports:
       - 3903:3903
 
+  container-exporter:
+    container_name: "container_exporter"
+    image: "prom/container-exporter:latest"
+    volumes:
+      - //var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 3104:9104
+
   prometheus:
     container_name: "prometheus"
-    image: "adaliszk/valheim-server:${PROMETHEUS_TAG:-prometheus}"
-    build: images/prometheus
+    image: "prom/prometheus:latest"
     depends_on:
+      - container-exporter
       - metrics-exporter
-    links:
-      - metrics-exporter:metrics-exporter
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./temp/prometheus:/prometheus
     ports:
-      - 9090:9090
+      - 3090:9090
+
+  grafana:
+    container_name: "grafana"
+    image: "grafana/grafana:latest"
+    depends_on:
+      - prometheus
+    volumes:
+      - ./temp/grafana:/var/lib/grafana
+    ports:
+      - 3000:3000

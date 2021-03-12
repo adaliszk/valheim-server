@@ -12,10 +12,6 @@ stdin = sys.stdin.reconfigure(encoding='utf-8', errors='ignore')
 
 for line in fileinput.input():
 
-    # ignore empty lines
-    if re.match(r'^\s+$', line):
-        continue
-
     new_connection = re.compile(r'Got connection SteamID (?P<steam_id>\d{17})', re.IGNORECASE)
     match = re.search(new_connection, line)
     if match:
