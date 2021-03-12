@@ -85,7 +85,7 @@ jobs:
 
       - name: "Save :${{ matrix.tag }}"
         run: |
-          docker buildx save ${{ env.image_name }}:${{ env.image_tag }} | gzip > ${{ matrix.tag }}.tar.gz
+          docker buildx save ${{ env.image_name }}:${{ env.image_tag }} > ${{ matrix.tag }}.tar.gz
 
       - name: "Upload Image artifact"
         uses: actions/upload-artifact@v2
