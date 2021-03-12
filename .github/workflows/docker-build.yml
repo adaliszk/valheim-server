@@ -74,7 +74,7 @@ jobs:
         run: |
           IMAGE_TAG=$(cat ./images/${{ matrix.tag }}/Dockertag)
           echo "image_tag=${IMAGE_TAG}" >> $GITHUB_ENV
-          echo "${IMAGE_TAG}" > ${{ env.tag }}.tag
+          echo "${IMAGE_TAG}" > ${{ matrix.tag }}.tag
 
       - name: "Build :${{ matrix.tag }}"
         uses: docker/build-push-action@v2
@@ -85,13 +85,13 @@ jobs:
 
       - name: "Save :${{ matrix.tag }}"
         run: |
-          docker buildx save ${{ env.image_name }}:${{ env.image_tag }} | gzip > ${{ env.tag }}.tar.gz
+          docker buildx save ${{ env.image_name }}:${{ env.image_tag }} | gzip > ${{ matrix.tag }}.tar.gz
 
       - name: "Upload Image artifact"
         uses: actions/upload-artifact@v2
         with:
-          name: image-${{ env.tag }}
-          path: ${{ env.tag }}.*
+          name: image-${{ matrix.tag }}
+          path: ${{ matrix.tag }}.*
 
   #
   # PUSH STAGE
@@ -131,7 +131,7 @@ jobs:
       - name: "Download Image artifact"
         uses: actions/download-artifact@v2
         with:
-          name: image-${{ env.tag }}
+          name: image-${{ matrix.tag }}
 
       - name: "Get the tag from Dockertag"
         run: |
