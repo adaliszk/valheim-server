@@ -45,8 +45,8 @@ services:
     container_name: "metrics_exporter"
     image: "adaliszk/valheim-server:${EXPORTER_TAG:-metrics}"
     build: images/metrics-exporter
-    depends_on:
-      - vanilla
+#    command:
+#      - --v 1
     volumes:
       - ./temp/logs:/logs:ro
     ports:
@@ -54,20 +54,20 @@ services:
 
   container-exporter:
     container_name: "container_exporter"
-    image: "prom/container-exporter:latest"
+    image: "prometheusnet/docker_exporter:latest"
     volumes:
       - //var/run/docker.sock:/var/run/docker.sock:ro
     ports:
-      - 3104:9104
+      - 3417:9417
 
   prometheus:
     container_name: "prometheus"
     image: "prom/prometheus:latest"
-    depends_on:
+    links:
       - container-exporter
       - metrics-exporter
     volumes:
-      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./docs/examples/docker-prometheus.yml:/etc/prometheus/docker-prometheus.yml
       - ./temp/prometheus:/prometheus
     ports:
       - 3090:9090

@@ -77,6 +77,13 @@ gauge garbage_collector_delete_objects_duration
     }
 }
 
+# Added by vhpretty/vhtrigger:
+# Game server initialized ( took {}s )
+# World is ready ( took {}s )
+# Steam initialized ( took {}s )
+# Game server ready ( took {}s )
+
+
 # GARBAGE COLLECTION
 # =================================================================================================
 # Unloading 0 Unused Serialized files (Serialized files now loaded: 0)

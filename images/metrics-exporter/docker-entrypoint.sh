@@ -3,7 +3,7 @@
 MTAIL_BIN="$(command -v mtail)"
 echo "S> MTAIL_BIN: ${MTAIL_BIN}"
 
-LOG_FILE="/logs/server.log"
+LOG_FILE="/logs/output.log"
 if [ ! -f "${LOG_FILE}" ];
   then
     touch "${LOG_FILE}"

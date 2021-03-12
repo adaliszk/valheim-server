@@ -31,7 +31,9 @@ gauge player_game_version by steam_id
 
 counter player_disconnected by steam_id
 
-counter players_found_location by location
+gauge event_random_possible
+counter event_found_location by location
+counter event_random by name
 
 
 # CONNECTIONS
@@ -42,6 +44,7 @@ counter players_found_location by location
 # Got connection SteamID 76561198108936133
 # Got handshake from client 76561198108936133
 # VERSION check their:0.147.3 mine:0.147.3
+# Peer 76561198108936133 has wrong password
 #
 
 /Got handshake from client / + STEAM_ID {
@@ -80,8 +83,18 @@ counter players_found_location by location
 #
 # Found location of type Eikthyrnir
 # Possible events:0
+# Possible events:1
+# Random event set:army_theelder
 #
 
 /Found location of type (?P<location>\w+)/ {
-    players_found_location[$location]++
+    event_found_location[$location]++
+}
+
+/Possible events:(?P<events>\d+)/ {
+    event_random_possible = $events
+}
+
+/Random event set:(?P<event>\w+)/ {
+    event_random[$event]++
 }
