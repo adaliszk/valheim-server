@@ -1,7 +1,9 @@
 # Download MTail Binary
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 FROM alpine:3.12 as binary
-RUN apk add --update wget ca-certificates bash && update-ca-certificates
+
+# hadolint ignore=DL3018
+RUN apk add --no-cache wget ca-certificates bash && update-ca-certificates
 
 ENV MTAIL_ARCHIVE="/tmp/mtail.tar.gz" \
     MTAIL_BIN="/go/bin/mtail" \
@@ -40,6 +42,7 @@ RUN dos2unix docker-entrypoint.sh && chmod +x /docker-entrypoint.sh \
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 FROM alpine:3.12 as runtime
 
+# hadolint ignore=DL3018
 RUN apk add --no-cache bash
 
 COPY --from=binary /go/bin/mtail /usr/bin/mtail
