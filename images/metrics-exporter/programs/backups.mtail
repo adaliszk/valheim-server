@@ -20,7 +20,7 @@ counter backup_duration_sum by name
 counter backup_count by name
 
 gauge backups_size_total_bytes
-counter backup_size_total_bytes by name
+counter backup_size_bytes_sum by name
 gauge backup_size_bytes by name
 
 # COMPRESSION SPEED
@@ -42,7 +42,7 @@ gauge backup_size_bytes by name
 # =================================================================================================
 
 /Made a backup for "/ + NAME + /" that / + BYTES + / bytes large/ {
-    backup_size_total_bytes[$name] += $bytes
+    backup_size_bytes_sum[$name] += $bytes
     backup_size_bytes[$name] = $bytes
 }
 

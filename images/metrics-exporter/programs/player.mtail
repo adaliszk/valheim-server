@@ -27,7 +27,7 @@ hidden gauge player_character_check by steam_id
 hidden gauge player_id
 
 gauge player_active_character by player_id, player_nick
-gauge player_game_version by steam_id
+gauge player_game_version by steam_id, version
 
 counter player_disconnected by steam_id
 
@@ -54,7 +54,7 @@ counter event_random by name
 
 /VERSION check their:/ + VERSION {
 
-    player_game_version[steam_id] = $version
+    player_game_version[steam_id][$version] = $version
 
     /mine:/ + VERSION {
         server_game_version[$version] = $version

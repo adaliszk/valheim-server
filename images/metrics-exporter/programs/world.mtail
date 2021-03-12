@@ -20,7 +20,6 @@ gauge world_day
 
 gauge world_dungeons_load_duration_avg
 gauge world_dungeons_load_duration
-
 counter world_dungeons_load_duration_sum
 counter world_dungeons_loaded
 

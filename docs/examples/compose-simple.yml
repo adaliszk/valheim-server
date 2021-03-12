@@ -1,0 +1,14 @@
+# ==============================================================================
+version: "3.6"
+
+# ==============================================================================
+services:
+
+  valheim:
+    image: "adaliszk/valheim-server:latest"
+    environment:
+      SERVER_NAME: "My Valheim Server"
+      SERVER_PASSWORD: "super!secret"
+    ports:
+      - 2456:2456/udp
+      - 2457:2457/udp

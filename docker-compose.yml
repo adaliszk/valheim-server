@@ -52,8 +52,8 @@ services:
     ports:
       - 3903:3903
 
-  container-exporter:
-    container_name: "container_exporter"
+  docker-exporter:
+    container_name: "docker_exporter"
     image: "prometheusnet/docker_exporter:latest"
     volumes:
       - //var/run/docker.sock:/var/run/docker.sock:ro
@@ -62,13 +62,15 @@ services:
 
   prometheus:
     container_name: "prometheus"
-    image: "prom/prometheus:latest"
+#    image: "prom/prometheus:latest"
+    image: "adaliszk/valheim-server:${PROMETHEUS_TAG:-prometheus]"
+    build: images/prometheus
     links:
-      - container-exporter
       - metrics-exporter
-    volumes:
-      - ./docs/examples/docker-prometheus.yml:/etc/prometheus/docker-prometheus.yml
-      - ./temp/prometheus:/prometheus
+      - docker-exporter
+#    volumes:
+#      - ./docs/examples/docker-prometheus.yml:/etc/prometheus/docker-prometheus.yml
+#      - ./temp/prometheus:/prometheus
     ports:
       - 3090:9090
 
