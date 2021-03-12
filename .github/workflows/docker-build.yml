@@ -91,7 +91,7 @@ jobs:
   # PUSH STAGE
   #
   push:
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
+    #if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
     needs: [ "build" ]
     strategy:
       matrix:
