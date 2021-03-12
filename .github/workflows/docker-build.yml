@@ -67,6 +67,10 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v2
 
+      - name: "Cache Docker Layers"
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+
       - name: "Get the tag from Dockertag"
         run: |
           IMAGE_TAG=$(cat ./images/${{ matrix.tag }}/Dockertag)
@@ -95,7 +99,7 @@ jobs:
     needs: [ "build" ]
     strategy:
       matrix:
-        registry: [ "docker", "quay" ]
+        registry: [ "docker.io", "quay.io" ]
         tag: [ "dos2unix", "vanilla" ]
         include:
           - tag: "dos2unix"
@@ -104,19 +108,23 @@ jobs:
           - tag: "vanilla"
             tag_latest: true
 
-          - registry: "docker"
-            registry_name: "DockerHub"
+          - registry: "docker.io"
             registry_username: "DOCKERHUB_USERNAME"
             registry_password: "DOCKERHUB_TOKEN"
-            registry_url: ""
+            registry_url: "registry.hub.docker.com"
             image_prefix: ""
 
-          - registry: "quay"
-            registry_name: "QUAY.io"
+          - registry: "quay.io"
             registry_username: "QUAY_USERNAME"
             registry_password: "QUAY_TOKEN"
             registry_url: "quay.io"
             image_prefix: "quay.io/"
+
+#          - registry: "GitHub"
+#            registry_username: "GITHUB_USERNAME"
+#            registry_password: "GITHUB_TOKEN"
+#            registry_url: "ghcr.io"
+#            image_prefix: "ghcr.io/"
 
     runs-on: ubuntu-latest
     name: "Push"
@@ -136,7 +144,7 @@ jobs:
         run: |
           docker load < ${{ matrix.tag }}.tar.gz
 
-      - name: "Login to ${{ matrix.registry_name }}"
+      - name: "Login to ${{ matrix.registry }}"
         uses: docker/login-action@v1
         with:
           registry: ${{ matrix.registry_url }}
