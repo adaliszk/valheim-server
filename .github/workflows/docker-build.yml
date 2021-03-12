@@ -112,15 +112,15 @@ jobs:
 
           - registry: "docker"
             registry_name: "DockerHub"
-            registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
-            registry_password: ${{ secrets.DOCKERHUB_TOKEN }}
+            registry_username: "${{ secrets.DOCKERHUB_USERNAME }}"
+            registry_password: "${{ secrets.DOCKERHUB_TOKEN }}"
             registry_url: ""
             image_prefix: ""
 
           - registry: "quay"
             registry_name: "QUAY.io"
-            registry_username: ${{ secrets.QUAY_USERNAME }}
-            registry_password:  ${{ secrets.QUAY_TOKEN }}
+            registry_username: "${{ secrets.QUAY_USERNAME }}"
+            registry_password: "${{ secrets.QUAY_TOKEN }}"
             registry_url: "quay.io"
             image_prefix: "quay.io/"
 
