@@ -34,7 +34,7 @@ services:
     container_name: "github_page"
     image: "starefossen/github-pages:latest"
     volumes:
-      - ./:/usr/src/app
+      - ./docs:/usr/src/app
     ports:
       - 4000:4000
 
