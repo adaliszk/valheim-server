@@ -44,7 +44,6 @@ jobs:
       -
         name: "Shellcheck"
         uses: ludeeus/action-shellcheck@master
-        continue-on-error: true
         with:
           scandir: "./images/${{ matrix.tag }}"
       -
@@ -151,8 +150,12 @@ jobs:
           password: ${{ secrets[matrix.registry_password] }}
       -
         name: "Push ${{ matrix.registry_name }} :${{ matrix.tag }}"
+        env:
+          source_image: "${{ env.image_name }}:${{ env.image_tag }}"
+          target_image: "${{ matrix.image_prefix }}${{ env.image_name }}:${{ env.image_tag }}"
         run: |
-          docker push ${{ matrix.image_prefix }}${{ env.image_name }}:${{ env.image_tag }}
+          docker tag ${{ env.source_image }} ${{ env.target_image }}
+          docker push ${{ env.target_image }}
       -
         if: matrix.tag_latest == 'true' # && github.ref == 'refs/heads/stable'
         name: "Push ${{ matrix.registry_name }} :Latest"
