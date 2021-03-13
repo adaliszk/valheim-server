@@ -78,7 +78,7 @@ jobs:
         name: "Use Docker Cache"
         uses: actions/cache@v2
         with:
-          key: ${{ runner.os }}-${{ hashFiles( ./images/${{ matrix.tag }} ) }}
+          key: ${{ runner.os }}-${{ hashFiles( "./images/${{ matrix.tag }}" ) }}
           path: |
             ${{ matrix.tag }}.*
       -
@@ -139,7 +139,7 @@ jobs:
         name: "Use Docker Cache"
         uses: actions/cache@v2
         with:
-          key: ${{ runner.os }}-${{ hashFiles( ./images/${{ matrix.tag }} ) }}
+          key: ${{ runner.os }}-${{ hashFiles( "./images/${{ matrix.tag }}" ) }}
           path: |
             ${{ matrix.tag }}.*
       -
