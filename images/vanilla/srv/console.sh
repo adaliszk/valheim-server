@@ -1,6 +1,9 @@
 #!/bin/bash
-export SERVER_PATH="/server" CONFIG_PATH="/config" SCRIPTS_PATH="/scripts"
-export BACKUP_PATH="/backups" DATA_PATH="/data" LOG_PATH="/logs"
+source /srv/init-env.sh
+source /srv/utils.sh
+
+echo "c> Creating Log files..."
+touch "${LOG_PATH}"/{server-raw,server,output,error,backup,restore,health,exit}.log
 
 function vhpretty {
   /srv/vhpretty.py
@@ -35,7 +38,7 @@ function tee-exit {
 }
 
 function log {
-  echo "c> ${*}" | tee-output
+  log-stdout "${*}" | tee-output
 }
 
 function log-env {
@@ -49,15 +52,3 @@ function debug-log {
   echo "d> ${*}" | tee-output
 }
 
-function copy-files {
-  SOURCE_PATH="${1}"
-  TARGET_PATH="${2}"
-
-  for FILE in "${SOURCE_PATH}"/*;
-    do
-      FILENAME="$(basename "$FILE")"
-      COPY="cp -f ${FILE} ${TARGET_PATH}/${FILENAME}"
-      debug-log "$COPY"
-      $COPY
-    done
-}

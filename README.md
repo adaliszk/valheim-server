@@ -5,7 +5,7 @@
 [![license](https://img.shields.io/github/license/adaliszk/valheim-server?label=License)](https://github.com/adaliszk/valheim-server/LICENSE.md)
 
 # Valheim Docker Server & Helm Chart
-Clean, fast and standalone Docker & Kubernetes helm deployments.
+An image for clean, fast and secure Docker & Kubernetes Helm deployments.
 
 While there are many other images out there, they tend to fall into the bad habit of using anti-patterns, like using 
 Supervisor and Cron in a single image. The images included here aim to avoid these bad habits, while still offering a 
@@ -14,10 +14,12 @@ full feature-set for managing and monitoring your Valheim Server.
 
 ### TL;DR:
 ```bash
-docker run -d --publish-all adaliszk/valheim-server -name "My Server" -password="super!secret"
+# Command Line / Terminal:
+docker run adaliszk/valheim-server -name "My Server" -password "super!secret"
 ```
 or
 ```yaml
+# Docker-Compose:
 version: "3.6"
 services:
   server:
@@ -30,37 +32,31 @@ services:
       - 2457:2457/udp
 ```
 
-## Images:
+## Image Repositories
+This image is available in multiple repositories, so you can choose the one you prefer, or perhaps your provider has good
+connection with.
 
 - [adaliszk/valheim-server](https://hub.docker.com/r/adaliszk/valheim-server)
 - [ghcr.io/adaliszk/valheim-server](https://ghcr.io/adaliszk/valheim-server)
 - [quay.io/adaliszk/valheim-server](https://quay.io/adaliszk/valheim-server)
 
-## Tags:
+## Supported Architectures
+At the moment, the image only supports `linux/amd64`, however, in the future we may support others and then use docker's 
+manifest for multi-platform awareness. More information is available from docker [here](https://github.com/docker/distribution/blob/master/docs/spec/manifest-v2-2.md#manifest-list).
 
-- `0.147.3` `latest` - always the latest build of the server
-- `dos2unix` - little helper, subject for *deprecation*
-- `develop` - automatic build from develop branch
+Simply pulling `adaliszk/valheim-server` should retrieve the correct image for your arch.
 
-## Are you new to Docker or Kubernetes?
-- [What is Docker?](https://opensource.com/resources/what-docker)
-- [What is Docker-Compose?](https://hackernoon.com/practical-introduction-to-docker-compose-d34e79c4c2b6)  
-- [What is Kubernetes?](https://opensource.com/resources/what-is-kubernetes)
-- [How to install and use Docker on Ubuntu 20.04?](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04)
-- [How to create a Kubernetes Cluster using Kubeadm on Ubuntu 18.04?](https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-cluster-using-kubeadm-on-ubuntu-18-04)
-- [What is Rancher?](https://rancher.com/why-rancher)
 
-## Prerequisites
-At a bare minimum, to use this image - or any other - you will need to set up `Docker`. This can be done fairly simply 
-on linux:
-```bash
-curl -fsSL https://get.docker.com | sudo bash
-sudo usermod -aG docker $USER
-```
-[What does this all mean?](docs/quick-Docker-install-explanation.md)
+## Version Tags
+This image provides various versions that are available via tags. `latest` tag usually provides the latest stable version. 
+Others are considered under development and caution must be exercised when using them.
 
-For other environments, please refer to [Docker's documentation](https://docs.docker.com/get-docker), in general you 
-would need to install an App that does all the details behind the scenes and gives you a GUI to overview containers.
+| Tag | Description |
+| :----: | --- |
+| `latest` | Always the latest build of the server |
+| `0.147.3` | The server version v0.147.3 released on 2021-03-02 |
+| `dos2unix` | Little helper for windows development, subject for *deprecation* |
+| `develop` | Automatic build from develop branch, mainly for synchronizing the README |
 
 
 ## What features does the images have?
@@ -72,13 +68,22 @@ would need to install an App that does all the details behind the scenes and giv
 - Health-checks to monitor the image's liveliness
 
 
+## Usage Examples
+- [Basic Docker setup using Docker managed volumes](docs/basic-Docker-setup.md)
+- [Basic Docker-Compose setup](docs/basic-Docker-Compose-setup.md)
+
+
 ## How does the server image work?
 The server upon starting runs a very slim wrapper script, the *[entry-point](https://docs.docker.com/engine/reference/builder/#entrypoint)*, 
-that will allow you to execute custom scripts under `/scripts`. 
+that will allow you to execute custom scripts under `/scripts` via a non-root user.
 
 The entry-point will run a script from the container's *[input](https://docs.docker.com/engine/reference/builder/#cmd)*, 
 without directly executing it. This way, the entry-point will monitor the script; so in-case of a failure or improper 
 shutdown of the server, it can automatically make or restore a backup.
+
+The user who executes the scripts is called `container` with a primary group on the same name and the id of `1001:1001`. 
+When you mount folders you need to use the same IDs to avoid permission problems! Alternatively, you can specify a `PUID` 
+and `PGID` environment variable to overwrite the IDs to your system!
 
 Out of the box, the available commands are:
 - `noop` - no operation, it's used for development or to force update configurations
@@ -96,11 +101,6 @@ the server.
 
 The server's data is located under `/data`, this is the place where your active configs live, and the world can be found. 
 The backups from this location are made into `/backups` so make sure that location has enough space allocated to it.
-
-
-## Examples 
-- [Basic Docker setup using Docker managed volumes](docs/basic-Docker-setup.md)
-- [Basic Docker-Compose setup](docs/basic-Docker-Compose-setup.md)
 
 
 ## Contributions

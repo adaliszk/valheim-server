@@ -37,21 +37,20 @@ ENV SERVER_NAME="Valheim v0.147.3" \
 # hadolint ignore=DL3018,DL3008
 RUN addgroup --gid 1001 container && adduser --uid 1001 --shell /bin/bash -G container -S container \
  # @TODO: remove Python3 dependency via building the VhPretty as a binary
- && apk add --no-cache coreutils bash multitail tzdata python3 net-tools sdl2 ca-certificates \
- && bash -c "mkdir -p /{scripts,configs,server,backups,data,logs}" \
- && chown 1001:1001 /scripts /configs /server /backups /data /logs
+ && apk add --no-cache bash coreutils findutils multitail tzdata python3 net-tools sdl2 ca-certificates \
+ && bash -c "mkdir -p /{scripts,config,server,backups,data,logs}" \
+ && chown 1001:1001 /scripts /config /server /backups /data /logs
 
 COPY --from=steam --chown=1001 /server /server
-COPY --from=unix /scripts /scripts
-COPY --from=unix /srv /srv
+COPY --from=unix --chown=1001 /scripts /scripts
+COPY --from=unix --chown=1001 /srv /srv
 
-COPY --from=unix /srv/valheim.sh /valheim
+COPY --from=unix --chown=1001 /srv/valheim.sh /valheim
 ENTRYPOINT ["/valheim"]
 
 VOLUME ["/data", "/backups", "/logs"]
 STOPSIGNAL SIGINT
 CMD ["start"]
-USER 1001
 
 HEALTHCHECK CMD ["health"]
 EXPOSE 2456-2457/udp

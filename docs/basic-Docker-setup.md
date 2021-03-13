@@ -30,7 +30,6 @@ docker run --name valheim -p 2456-2457:2456-2457/udp adaliszk/valheim-server
 
 This will create volumes for:
 - `/data` - the server's data (world files, configs)
-- `/scripts` - the server functions like how to start the server, what exactly to do on a backup, etc.
 - `/backups` - backups from the world files
 - `/logs` - log files for debugging and metrics
 
