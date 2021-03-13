@@ -128,7 +128,7 @@ jobs:
             image_prefix: "quay.io/"
           -
             registry: "ghcr.io"
-            registry_username: "GITHUB_USERNAME"
+            registry_username: "GITHUB_ACTOR"
             registry_password: "GITHUB_TOKEN"
             registry_url: "ghcr.io"
             image_prefix: "ghcr.io/"
