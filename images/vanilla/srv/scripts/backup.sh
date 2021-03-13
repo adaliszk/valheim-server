@@ -11,6 +11,8 @@ function log {
 cd "${BACKUP_PATH}" || exit
 
 log "Removing old files for ${NAME}..."
+# @TODO: try alternative solutions instead of ignoring SC2010
+# shellcheck disable=SC2010
 ls -tp | grep "^${NAME}" | grep -v '/$' | tail -n "+${BACKUP_RETENTION}" | xargs -I {} rm -- {}
 
 SERVER_WORLD_SIZE=$(stat --printf="%s" "${DATA_PATH}/worlds/${SERVER_WORLD}.db")
