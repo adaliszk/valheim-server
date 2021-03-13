@@ -42,7 +42,6 @@ jobs:
       -
         name: "Helm Lint"
         uses: WyriHaximus/github-action-helm3@v2
-        continue-on-error: true
         with:
           exec: helm lint ./chart
 
