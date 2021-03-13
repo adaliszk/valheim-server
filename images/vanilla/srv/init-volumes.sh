@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1091
 source /srv/utils.sh
 
 chown-path "${LOG_PATH}"
