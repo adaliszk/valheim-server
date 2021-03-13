@@ -1,3 +1,7 @@
+---
+nav_exclude: true
+---
+
 # What does the following do?
 
 ```bash

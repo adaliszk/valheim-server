@@ -1,6 +1,9 @@
+---
+title:
+parent: Guides
+---
+
 # Basic Docker Compose setup
-
-
 For a more organized setup, docker provides an easy-to-use Orchestration tool called [Docker-Compose](https://docs.docker.com/compose).
 You can install it by following the [official guide](https://docs.docker.com/compose/install), or just use this quick TL;DR:
 ```bash
