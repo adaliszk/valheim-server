@@ -30,12 +30,17 @@ services:
       - 2457:2457/udp
 ```
 
-## Available Images:
+## Images:
 
-- `adaliszk/valheim-server`
-- `ghcr.io/adaliszk/valheim-server`
-- `quay.io/adaliszk/valheim-server`
-- `docker.pkg.github.com/adaliszk/valheim-server/valheim-server`
+- [adaliszk/valheim-server](https://hub.docker.com/r/adaliszk/valheim-server)
+- [ghcr.io/adaliszk/valheim-server](https://ghcr.io/adaliszk/valheim-server)
+- [quay.io/adaliszk/valheim-server](https://quay.io/adaliszk/valheim-server)
+
+## Tags:
+
+- `0.147.3` `latest` - always the latest build of the server
+- `dos2unix` - little helper, subject for *deprecation*
+- `develop` - automatic build from develop branch
 
 ## Are you new to Docker or Kubernetes?
 - [What is Docker?](https://opensource.com/resources/what-docker)
