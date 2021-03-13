@@ -96,14 +96,14 @@ jobs:
   #
   # TEST STAGE
   #
-  test-vulnerability:
+  test-docker-vulnerability:
     needs: [ "build" ]
     strategy:
       matrix:
         tag: [ "dos2unix", "vanilla" ]
 
     runs-on: ubuntu-latest
-    name: "Build"
+    name: "Trivy"
     steps:
       -
         name: "Use Docker Cache"
