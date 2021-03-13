@@ -31,10 +31,11 @@ x-disabled-server: &disabled-server
 services:
 
   docs:
-    container_name: "github_page"
-    image: "starefossen/github-pages:latest"
+    image: "adaliszk/valheim-server:${ENV_TAG:-docs}"
+    build: docs
+    command: --watch --force_polling
     volumes:
-      - ./docs:/usr/src/app
+      - ./docs:/srv/jekyll
     ports:
       - 4000:4000
 
