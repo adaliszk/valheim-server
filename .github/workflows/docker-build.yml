@@ -126,12 +126,12 @@ jobs:
             registry_password: "QUAY_TOKEN"
             registry_url: "quay.io"
             image_prefix: "quay.io/"
-#          -
-#            registry: "GitHub"
-#            registry_username: "GITHUB_USERNAME"
-#            registry_password: "GITHUB_TOKEN"
-#            registry_url: "ghcr.io"
-#            image_prefix: "ghcr.io/"
+          -
+            registry: "GitHub"
+            registry_username: "GITHUB_USERNAME"
+            registry_password: "GITHUB_TOKEN"
+            registry_url: "ghcr.io"
+            image_prefix: "ghcr.io/"
 
     runs-on: ubuntu-latest
     name: "Push"
