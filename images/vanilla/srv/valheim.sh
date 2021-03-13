@@ -15,10 +15,13 @@ if [[ $CMD =~ ^-[a-z]+ ]];
   fi
 
 log "WORKDIR: $(pwd)"
+log "USER ID: $(id -u)"
+log "GROUP ID: $(id -g)"
+
 log "CMD: ${CMD}"
 log "ARGS: ${ARGS}"
 
-source /srv/init-scripts.sh
+source /srv/init-config.sh
 source /srv/init-env.sh
 
 function run {

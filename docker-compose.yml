@@ -12,10 +12,10 @@ x-enabled-server: &enabled-server
     start_period: 10s
   environment:
     SERVER_PASSWORD: "12345"
-  volumes:
-    - ./temp/data:/data
-    - ./temp/backups:/backups
-    - ./temp/logs:/logs
+#  volumes:
+#    - ./temp/data:/data
+#    - ./temp/backups:/backups
+#    - ./temp/logs:/logs
   ports:
     - 2456:2456/udp
     - 2457:2457/udp
@@ -33,7 +33,7 @@ services:
 
   vanilla:
     container_name: "valheim_vanilla"
-    image: "adaliszk/valheim-server:${VANILLA_TAG:-latest}"
+    image: "adaliszk/valheim-server:${VANILLA_TAG:-develop}"
     build: images/vanilla
     <<: *enabled-server
     command:

@@ -19,8 +19,10 @@ RUN tar -czf "${APP_PATH}/valheim_server_Data.tar.gz" -C "${APP_PATH}" "valheim_
 # =================================================================================================
 FROM adaliszk/valheim-server:dos2unix as unix
 
-COPY srv /scripts
-RUN dos2unix /scripts/** && chmod +x /scripts/**
+COPY scripts /scripts
+COPY srv /srv
+RUN dos2unix /scripts/** && chmod +x /scripts/** \
+ && dos2unix /srv/** && chmod +x /srv/**
 
 
 # Set up the Runtime Environment
@@ -30,25 +32,20 @@ ENV SERVER_NAME="Valheim v0.147.3" \
     SERVER_WORLD="Dedicated" \
     SERVER_PASSWORD="p4ssw0rd" \
     SERVER_PUBLIC="1" \
-    TZ="Etc/UTC" \
-    SERVER_PATH="/server" \
-    CONFIG_PATH="/config" \
-    SCRIPTS_PATH="/scripts" \
-    BACKUP_PATH="/backups" \
-    DATA_PATH="/data" \
-    LOG_PATH="/logs"
+    TZ="Etc/UTC"
 
 # hadolint ignore=DL3018,DL3008
 RUN addgroup --gid 1001 container && adduser --uid 1001 --shell /bin/bash -G container -S container \
  # @TODO: remove Python3 dependency via building the VhPretty as a binary
  && apk add --no-cache coreutils bash multitail tzdata python3 net-tools sdl2 ca-certificates \
- && bash -c "mkdir -p {${SCRIPTS_PATH},${CONFIG_PATH},${SERVER_PATH},${BACKUP_PATH},${DATA_PATH},${LOG_PATH}}" \
- && chown 1001:1001 ${SCRIPTS_PATH} ${CONFIG_PATH} ${SERVER_PATH} ${BACKUP_PATH} ${DATA_PATH} ${LOG_PATH}
+ && bash -c "mkdir -p /{scripts,configs,server,backups,data,logs}" \
+ && chown 1001:1001 /scripts /configs /server /backups /data /logs
 
 COPY --from=steam --chown=1001 /server /server
-COPY --from=unix /scripts /srv
+COPY --from=unix /scripts /scripts
+COPY --from=unix /srv /srv
 
-COPY --from=unix /scripts/valheim.sh /valheim
+COPY --from=unix /srv/valheim.sh /valheim
 ENTRYPOINT ["/valheim"]
 
 VOLUME ["/data", "/backups", "/logs"]
