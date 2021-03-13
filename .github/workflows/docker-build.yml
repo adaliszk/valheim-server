@@ -132,8 +132,8 @@ jobs:
             registry: "ghcr.io"
             registry_username: "GHCR_USERNAME"
             registry_password: "GITHUB_TOKEN"
-            registry_url: "ghcr.io"
-            image_prefix: "ghcr.io/"
+            registry_url: "docker.pkg.github.com"
+            image_prefix: "docker.pkg.github.com/"
             image_suffix: "/valheim-server"
 
     runs-on: ubuntu-latest
