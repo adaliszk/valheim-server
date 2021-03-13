@@ -100,7 +100,7 @@ jobs:
     needs: [ "build" ]
     strategy:
       matrix:
-        registry: [ "docker.io", "quay.io", "ghcr.io", "docker.pkg.github.com" ]
+        registry: [ "docker.io", "quay.io", "ghcr.io" ]
         tag: [ "dos2unix", "vanilla" ]
         include:
           -
@@ -123,13 +123,6 @@ jobs:
             registry_url: "quay.io"
             image_prefix: "quay.io/"
             image_suffix: ""
-          -
-            registry: "docker.pkg.github.com"
-            registry_username: "GHCR_USERNAME"
-            registry_password: "GITHUB_TOKEN"
-            registry_url: "docker.pkg.github.com"
-            image_prefix: "docker.pkg.github.com/"
-            image_suffix: "/valheim-server"
           -
             registry: "ghcr.io"
             registry_username: "GHCR_USERNAME"
