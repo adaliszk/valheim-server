@@ -60,13 +60,6 @@ jobs:
     strategy:
       matrix:
         tag: [ "dos2unix", "vanilla" ]
-        include:
-          -
-            tag: "dos2unix"
-            image_deps: "alpine:3.12"
-          -
-            tag: "vanilla"
-            image_deps: "steamcmd/steamcmd:ubuntu adaliszk/valheim-server:dos2unix frolvlad/alpine-glibc:alpine-3.13"
 
     runs-on: ubuntu-latest
     name: "Build"
@@ -80,27 +73,6 @@ jobs:
           IMAGE_TAG=$(cat ./images/${{ matrix.tag }}/Dockertag)
           echo "image_tag=${IMAGE_TAG}" >> $GITHUB_ENV
           echo "${IMAGE_TAG}" > ${{ matrix.tag }}.tag
-      -
-        id: docker-deps-cache
-        name: "Use Dependency Cache"
-        uses: actions/cache@v2
-        env:
-          hash_path: "./images/${{ matrix.tag }}"
-        with:
-          key: ${{ runner.os }}-deps-${{ hashFiles( env.hash_path ) }}
-          path: |
-            ./temp
-      -
-        if: steps.docker-deps-cache.outputs.cache-hit == 'true'
-        name: "Load Dependency Images from Cache"
-        run: |
-          cd ./temp
-          ls -1 -- *.tar.gz | tr ' ' '\n' | docker load
-      -
-        name: "Load Dependency Images"
-        run: |
-          cd ./temp
-          echo "${{ matrix.image_deps }}" | tr ' ' '\n'  | xargs -n1 docker pull
       -
         id: docker-cache
         name: "Use Docker Cache"
