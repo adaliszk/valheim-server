@@ -145,7 +145,7 @@ jobs:
   #
   push:
     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
-    needs: [ "build", "test-vulnerability" ]
+    needs: [ "build", "test-docker-vulnerability" ]
     strategy:
       matrix:
         registry: [ "docker.io", "quay.io", "ghcr.io" ]
