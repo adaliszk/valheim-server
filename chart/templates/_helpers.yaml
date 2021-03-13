@@ -24,10 +24,14 @@ valheim-{{ .Values.server.name | lower }}-server
 {{ .Values.server.name | lower | default "valheim" }}-server-configs
 {{- end }}
 
-{{- define "pvc_map_name" -}}
-{{ .Values.server.name | lower | default "valheim" }}-{{ .Values.map.name | lower | default "default" }}-{{ .Values.map.storageClass | default "standard" }}
+{{- define "pvc_data_name" -}}
+{{ .Values.server.name | lower | default "valheim" }}-{{ .Values.server.world | lower | default "default" }}-{{ .Values.data.storageClass | default "standard" }}
+{{- end }}
+
+{{- define "pvc_backups_name" -}}
+{{ .Values.server.name | lower | default "valheim" }}-backups-{{ .Values.logs.storageClass | default "standard" }}
 {{- end }}
 
 {{- define "pvc_logs_name" -}}
-{{ .Values.server.name | lower | default "valheim" }}-logs-{{ .Values.map.storageClass | default "standard" }}
+{{ .Values.server.name | lower | default "valheim" }}-logs-{{ .Values.logs.storageClass | default "standard" }}
 {{- end }}

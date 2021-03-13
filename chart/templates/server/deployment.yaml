@@ -25,44 +25,34 @@ spec:
       {{- end }}
 
       initContainers:
-        - name: list-server-data
+        -
+          name: "show-data"
           image: k8s.gcr.io/busybox
-          command: [ "/bin/sh", "-c", "ls -la /data/server"]
+          command: [ "/bin/sh", "-c", "ls -la /data"]
           volumeMounts:
             - name: server-data
               mountPath: /data
-        - name: list-backup-data
+        -
+          name: "show-backups"
           image: k8s.gcr.io/busybox
-          command: [ "/bin/sh", "-c", "ls -la /data/backup" ]
+          command: [ "/bin/sh", "-c", "ls -la /backups" ]
           volumeMounts:
             - name: server-data
               mountPath: /data
-        - name: list-server-configs
-          image: k8s.gcr.io/busybox
-          command: [ "/bin/sh", "-c", "ls -la /home/steam/.config/unity3d/IronGate/Valheim" ]
-          volumeMounts:
-            - name: server-configs
-              mountPath: /home/steam/.config/unity3d/IronGate/Valheim
-        - name: list-mods-configs
-          image: k8s.gcr.io/busybox
-          command: [ "/bin/sh", "-c", "ls -la /home/steam/valheim-server/BepInEx/config" ]
-          volumeMounts:
-            - name: mods-configs
-              mountPath: "/home/steam/valheim-server/BepInEx/config"
-
       containers:
-        - name: {{ include "server_name" . }}
+        -
+          name: {{ include "server_name" . }}
           image: "{{ .Values.image.name }}:{{ .Values.image.tag | default "latest" }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: SERVER_NAME
               value: "{{ .Values.server.name }}"
-            - name: SERVER_MOTD
-              value: "{{ .Values.server.motd }}"
             - name: SERVER_PASSWORD
               value: "{{ .Values.server.password }}"
             - name: SERVER_WORLD
-              value: "{{ .Values.map.name }}"
+              value: "{{ .Values.server.world }}"
+            - name: SERVER_PUBLIC
+              value: "{{ .Values.server.public }}"
           ports:
             - name: valheim
               containerPort: 2456
@@ -70,68 +60,47 @@ spec:
             - name: msqp
               containerPort: 2457
               protocol: UDP
-            - name: steam
-              containerPort: 2458
-              protocol: UDP
           volumeMounts:
-            # Logs
-            - name: server-logs
-              mountPath: /tmp/valheim
-
-            # Configs
-            - name: server-configs
-              mountPath: "/home/steam/.config/unity3d/IronGate/Valheim/configs"
+            -
+              name: server-configs
+              mountPath: /configs
               readOnly: true
+            -
+              name: server-scripts
+              mountPath: /scripts
+            -
+              name: server-backups
+              mountPath: /backups
+            -
+              name: server-data
+              mountPath: /data
+            -
+              name: server-logs
+              mountPath: /logs
 
-            - name: server-configs-live
-              mountPath: /home/steam/.config/unity3d/IronGate/Valheim
-
-            # Data
-            - name: server-data
-              mountPath: /home/steam/.config/unity3d/IronGate/Valheim/worlds
-              subPath: worlds
-
-            - name: server-data
-              mountPath: /home/steam/.config/unity3d/IronGate/Valheim/backups
-              subPath: backups
-
-            # Mods
-            - name: mods-configs
-              mountPath: "/home/steam/valheim-server/BepInEx/config-ro"
-              readOnly: true
-
-            - name: mods-configs-live
-              mountPath: "/home/steam/valheim-server/BepInEx/config"
-
-          terminationMessagePath: /tmp/valheim/exit.log
+          terminationMessagePath: /logs/exit.log
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           securityContext:
             allowPrivilegeEscalation: true
       terminationGracePeriodSeconds: 60
       volumes:
-        # Mods
-        - name: mods-configs
-          configMap:
-            name: {{ include "mods_config_name" . }}
-
-        - name: mods-configs-live
-          emptyDir: {}
-
-        # Server
-        - name: server-configs
+        -
+          name: server-configs
           configMap:
             name: {{ include "server_config_name" . }}
-
-        - name: server-configs-live
+        -
+          name: server-scripts
           emptyDir: {}
-
-        # Data
-        - name: server-data
+        -
+          name: server-backups
           persistentVolumeClaim:
-            claimName: {{ include "pvc_map_name" . }}
-
-        # Logs
-        - name: server-logs
+            claimName: {{ include "pvc_backups_name" . }}
+        -
+          name: server-data
+          persistentVolumeClaim:
+            claimName: {{ include "pvc_data_name" . }}
+        -
+          name: server-logs
           persistentVolumeClaim:
             claimName: {{ include "pvc_logs_name" . }}

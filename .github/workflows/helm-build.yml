@@ -1,0 +1,74 @@
+# =================================================================================================
+name: "Helm Build"
+
+# =================================================================================================
+on:
+  pull_request:
+    paths:
+      - .github/workflows/helm-build.yml
+      - chart/**/*
+      - chart/*
+    types:
+      - synchronize
+      - opened
+  push:
+    paths:
+      - .github/workflows/helm-build.yml
+      - chart/**/*
+      - chart/*
+    branches:
+      - develop
+      - stable
+
+# =================================================================================================
+env:
+  chart_repository: "charts.adaliszk.io"
+  chart_package: "valheim-server"
+  chart_name: "adaliszk/valheim-server"
+
+# =================================================================================================
+jobs:
+
+  #
+  # STAGE: LINT
+  #
+  lint:
+    runs-on: ubuntu-latest
+    name: "Lint"
+    steps:
+      -
+        name: "Checkout"
+        uses: actions/checkout@v2
+      -
+        name: "Helm Lint"
+        uses: WyriHaximus/github-action-helm3@v2
+        continue-on-error: true
+        with:
+          exec: helm lint ./chart
+
+  #
+  # STAGE: BUILD
+  #
+  bundle:
+    needs: [ "lint" ]
+    runs-on: ubuntu-latest
+    name: "Bundle"
+    steps:
+      -
+        name: "Checkout"
+        uses: actions/checkout@v2
+      -
+        name: "Helm Package"
+        uses: WyriHaximus/github-action-helm3@v2
+        with:
+          exec: helm package ./chart
+      -
+        name: "Upload Artifacts"
+        uses: actions/upload-artifact@v2
+        with:
+          path: "${{ env.chart_package }}.*"
+          name: "${{ env.chart_package }}"
+  #
+  # STAGE: PUSH
+  #
+  #push:

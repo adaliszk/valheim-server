@@ -1,9 +1,10 @@
 apiVersion: v2
-appVersion: "1.16.0"
 
-name: Valheim Server
 type: application
-version: "0.8.2"
+name: valheim-server
+version: "0.9.0"
+
+appVersion: "0.147.3"
 
 description: >
   Valheim Server on Kubernetes

@@ -10,4 +10,4 @@ spec:
     - ReadOnlyMany
   resources:
     requests:
-      storage: {{ .Values.map.storageSize | default "100M" }}
+      storage: {{ .Values.logs.storageSize | default "100M" }}
