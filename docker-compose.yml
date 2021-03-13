@@ -30,9 +30,17 @@ x-disabled-server: &disabled-server
 # ==============================================================================
 services:
 
+  docs:
+    container_name: "github_page"
+    image: "starefossen/github-pages:latest"
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - 4000:4000
+
   vanilla:
     container_name: "valheim_vanilla"
-    image: "adaliszk/valheim-server:${VANILLA_TAG:-0.148.6}"
+    image: "adaliszk/valheim-server:${VANILLA_TAG:-0.148.7}"
     build: images/vanilla
     <<: *enabled-server
 
