@@ -56,13 +56,12 @@ jobs:
   # STAGE: BUILD
   #
   build:
+    name: "Build"
+    runs-on: ubuntu-latest
     needs: [ "lint" ]
     strategy:
       matrix:
         tag: [ "dos2unix", "vanilla" ]
-
-    runs-on: ubuntu-latest
-    name: "Test Vulnerability"
     steps:
       -
         name: "Checkout"
@@ -94,11 +93,59 @@ jobs:
           docker save ${{ env.image_name }}:${{ env.image_tag }} > ${{ matrix.tag }}.tar.gz
 
   #
+  # TEST STAGE
+  #
+  test-docker-vulnerability:
+    name: "Trivy"
+    runs-on: ubuntu-latest
+    needs: [ "build" ]
+    strategy:
+      matrix:
+        tag: [ "dos2unix", "vanilla" ]
+    steps:
+      -
+        name: "Use Docker Cache"
+        uses: actions/cache@v2
+        env:
+          hash_path: "./images/${{ matrix.tag }}"
+        with:
+          key: ${{ runner.os }}-${{ hashFiles( env.hash_path ) }}
+          path: |
+            ${{ matrix.tag }}.*
+      -
+        name: "Get the tag from Dockertag"
+        run: |
+          IMAGE_TAG=$(cat ${{ matrix.tag }}.tag)
+          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_ENV
+      -
+        name: "Load the saved Image"
+        run: |
+          docker load < ${{ matrix.tag }}.tar.gz
+      -
+        name: "Run Trivy vulnerability scanner"
+        uses: aquasecurity/trivy-action@master
+        env:
+          source_image: "${{ env.image_name }}:${{ env.image_tag }}"
+        with:
+          image-ref: '${{ env.source_image }}'
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+      -
+        name: "Upload Trivy scan results to GitHub Security tab"
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  #
   # PUSH STAGE
   #
   push:
+    name: "Push"
+    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
-    needs: [ "build" ]
+    needs: [ "build", "test-docker-vulnerability" ]
     strategy:
       matrix:
         registry: [ "docker.io", "quay.io", "ghcr.io" ]
@@ -131,9 +178,6 @@ jobs:
             registry_url: "ghcr.io"
             image_prefix: "ghcr.io/"
             image_suffix: ""
-
-    runs-on: ubuntu-latest
-    name: "Push"
     steps:
       -
         id: docker-cache
