@@ -30,6 +30,13 @@ services:
       - 2457:2457/udp
 ```
 
+## Available Images:
+
+- `adaliszk/valheim-server`
+- `ghcr.io/adaliszk/valheim-server`
+- `quay.io/adaliszk/valheim-server`
+- `docker.pkg.github.com/adaliszk/valheim-server/valheim-server`
+
 ## Are you new to Docker or Kubernetes?
 - [What is Docker?](https://opensource.com/resources/what-docker)
 - [What is Docker-Compose?](https://hackernoon.com/practical-introduction-to-docker-compose-d34e79c4c2b6)  
@@ -90,6 +97,10 @@ The backups from this location are made into `/backups` so make sure that locati
 - [Basic Docker setup using Docker managed volumes](docs/basic-Docker-setup.md)
 - [Basic Docker-Compose setup](docs/basic-Docker-Compose-setup.md)
 
+
 ## Contributions
 Feel free to open Tickets or Pull-Requests, however, keep in mind that the idea is to keep it simple, and separate the
 concerns into multiple small images that are ready without needing to download anything from the internet.
+
+If you have questions, please use the [Discussions](https://github.com/adaliszk/valheim-server/discussions) tab or ping 
+me on the [Valheim Discord server](https://discord.gg/valheim): `Kicsivazz#2537`
