@@ -105,7 +105,7 @@ jobs:
     needs: [ "build" ]
     strategy:
       matrix:
-        registry: [ "docker.io", "quay.io" ]
+        registry: [ "docker.io", "quay.io", "ghcr.io" ]
         tag: [ "dos2unix", "vanilla" ]
         include:
           -
@@ -127,7 +127,7 @@ jobs:
             registry_url: "quay.io"
             image_prefix: "quay.io/"
           -
-            registry: "GitHub"
+            registry: "ghcr.io"
             registry_username: "GITHUB_USERNAME"
             registry_password: "GITHUB_TOKEN"
             registry_url: "ghcr.io"
