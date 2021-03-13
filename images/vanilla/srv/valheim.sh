@@ -26,20 +26,29 @@ function run {
   if [ -f "${SCRIPT}" ];
     then
       log "Executing \"${1}\" script..."
-      bash -c "${SCRIPT}" "${ARGS[@]}" 2>&1 | tee-server-raw | vhpretty | server-log &
+      bash -c "${SCRIPT}" "${ARGS[@]}" 2>&1 | tee-server-raw | vhpretty | tee-server &
       SERVER=$!
-      tail --pid $SERVER -n +1 -f "${LOG_PATH}/output.log" 2> /dev/null
+
+      echo "Script started on PID: ${SERVER}" | tee-server >> "$(output-log)"
+      tail --pid ${SERVER} -n +1 -f "${LOG_PATH}/output.log"
+      log "Script on ${SERVER} has exited!" | tee-exit
     else
       log "Script not found: ${1}"
       log "exiting..."
     fi
 }
 
+function term-sigquit { term "SIGQUIT"; }
+function term-sigterm { term "SIGTERM"; }
+function term-sigint { term "SIGINT"; }
+
 function term {
-  kill -TERM "$SERVER" 2>/dev/null
+  log "Received ${1} signal..." | tee-exit
+  kill -TERM "$SERVER" 2> /dev/null
 }
 
-trap term SIGINT SIGQUIT SIGTERM
-
+trap term-sigquit SIGQUIT
+trap term-sigterm SIGTERM
+trap term-sigint SIGINT
 
 run "${CMD}"

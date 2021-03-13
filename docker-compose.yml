@@ -12,10 +12,10 @@ x-enabled-server: &enabled-server
     start_period: 10s
   environment:
     SERVER_PASSWORD: "12345"
-#  volumes:
-#    - ./temp/data:/data
-#    - ./temp/backups:/backups
-#    - ./temp/logs:/logs
+  volumes:
+    - ./temp/data:/data
+    - ./temp/backups:/backups
+    - ./temp/logs:/logs
   ports:
     - 2456:2456/udp
     - 2457:2457/udp
@@ -37,7 +37,7 @@ services:
     build: images/vanilla
     <<: *enabled-server
     command:
-      - -name="Name with spaces - and - dashes"
+      - -name "Name with spaces - and - dashes"
     depends_on:
       - dos2unix
 
