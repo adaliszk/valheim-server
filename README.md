@@ -30,6 +30,13 @@ services:
       - 2457:2457/udp
 ```
 
+## Available Images:
+
+- `adaliszk/valheim-server`
+- `ghcr.io/adaliszk/valheim-server`
+- `quay.io/adaliszk/valheim-server`
+- `docker.pkg.github.com/adaliszk/valheim-server/valheim-server`
+
 ## Are you new to Docker or Kubernetes?
 - [What is Docker?](https://opensource.com/resources/what-docker)
 - [What is Docker-Compose?](https://hackernoon.com/practical-introduction-to-docker-compose-d34e79c4c2b6)  
