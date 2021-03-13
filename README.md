@@ -94,3 +94,6 @@ The backups from this location are made into `/backups` so make sure that locati
 ## Contributions
 Feel free to open Tickets or Pull-Requests, however, keep in mind that the idea is to keep it simple, and separate the
 concerns into multiple small images that are ready without needing to download anything from the internet.
+
+If you have questions, please use the [Discussions](https://github.com/adaliszk/valheim-server/discussions) tab or ping 
+me on the [Valheim Discord server](https://discord.gg/valheim): `Kicsivazz#2537`

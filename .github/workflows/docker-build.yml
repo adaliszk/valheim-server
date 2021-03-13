@@ -148,7 +148,7 @@ jobs:
         with:
           registry: ${{ matrix.registry_url }}
           username: ${{ secrets[matrix.registry_username] }}
-          password: ${{ secrets[matrix.registry_username] }}
+          password: ${{ secrets[matrix.registry_password] }}
       -
         name: "Push ${{ matrix.registry_name }} :${{ matrix.tag }}"
         run: |

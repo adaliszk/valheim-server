@@ -41,7 +41,7 @@ ENV SERVER_NAME="Valheim v0.147.3" \
 # hadolint ignore=DL3018,DL3008
 RUN addgroup --gid 1001 container && adduser --uid 1001 --shell /bin/bash -G container -S container \
  # @TODO: remove Python3 dependency via building the VhPretty as a binary
- && apk add --no-cache coreutils bash multitail tzdata python3 net-tools \
+ && apk add --no-cache coreutils bash multitail tzdata python3 net-tools sdl2 ca-certificates \
  && bash -c "mkdir -p {${SCRIPTS_PATH},${CONFIG_PATH},${SERVER_PATH},${BACKUP_PATH},${DATA_PATH},${LOG_PATH}}" \
  && chown 1001:1001 ${SCRIPTS_PATH} ${CONFIG_PATH} ${SERVER_PATH} ${BACKUP_PATH} ${DATA_PATH} ${LOG_PATH}
 
