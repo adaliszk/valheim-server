@@ -77,8 +77,10 @@ jobs:
         id: docker-cache
         name: "Use Docker Cache"
         uses: actions/cache@v2
+        env:
+          hash_path: "./images/${{ matrix.tag }}"
         with:
-          key: ${{ runner.os }}-${{ hashFiles( "./images/${{ matrix.tag }}" ) }}
+          key: ${{ runner.os }}-${{ hashFiles( env.hash_path ) }}
           path: |
             ${{ matrix.tag }}.*
       -
@@ -138,8 +140,10 @@ jobs:
         id: docker-cache
         name: "Use Docker Cache"
         uses: actions/cache@v2
+        env:
+          hash_path: "./images/${{ matrix.tag }}"
         with:
-          key: ${{ runner.os }}-${{ hashFiles( "./images/${{ matrix.tag }}" ) }}
+          key: ${{ runner.os }}-${{ hashFiles( env.hash_path ) }}
           path: |
             ${{ matrix.tag }}.*
       -
