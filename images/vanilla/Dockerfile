@@ -51,7 +51,7 @@ COPY --from=unix /scripts /srv
 COPY --from=unix /scripts/valheim.sh /valheim
 ENTRYPOINT ["/valheim"]
 
-VOLUME ["/scripts", "/data", "/backups", "/logs"]
+VOLUME ["/data", "/backups", "/logs"]
 STOPSIGNAL SIGINT
 CMD ["start"]
 USER 1001
