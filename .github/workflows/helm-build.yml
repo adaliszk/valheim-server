@@ -66,7 +66,7 @@ jobs:
         name: "Upload Artifacts"
         uses: actions/upload-artifact@v2
         with:
-          path: "${{ env.chart_package }}.*"
+          path: "${{ env.chart_package }}-*"
           name: "${{ env.chart_package }}"
   #
   # STAGE: PUSH
