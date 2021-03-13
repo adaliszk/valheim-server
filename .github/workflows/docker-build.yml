@@ -62,7 +62,7 @@ jobs:
         tag: [ "dos2unix", "vanilla" ]
 
     runs-on: ubuntu-latest
-    name: "Build"
+    name: "Test Vulnerability"
     steps:
       -
         name: "Checkout"
@@ -86,6 +86,7 @@ jobs:
       -
         name: "Build :${{ matrix.tag }}"
         run: |
+          docker pull ${{ env.image_name }}:${{ env.image_tag }} || true
           docker build -t ${{ env.image_name }}:${{ env.image_tag }} ./images/${{ matrix.tag }}
       -
         name: "Save :${{ matrix.tag }}"
@@ -105,10 +106,10 @@ jobs:
         include:
           -
             tag: "dos2unix"
-            tag_latest: false
+            tag_latest: "false"
           -
             tag: "vanilla"
-            tag_latest: true
+            tag_latest: "true"
           -
             registry: "docker.io"
             registry_username: "DOCKERHUB_USERNAME"
