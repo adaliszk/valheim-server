@@ -1,4 +1,5 @@
 #!/bin/bash
+source /srv/init-env.sh
 
 while [[ $# -gt 0 ]]
 do
@@ -14,14 +15,19 @@ done
 
 export SteamAppId=892970
 
-log-env SERVER_NAME SERVER_PASSWORD SERVER_WORLD SERVER_PUBLIC
-log-env SERVER_ADMINS SERVER_PERMITTED SERVER_BANNED
-
 function list-to-file {
-  debug-log "Saving \"${1}\" into ${2}"
+  log-stdout "Saving \"${1}\" into ${2}"
   echo "${1}" | tr ',' '\n' > "${DATA_PATH}/${2}"
 }
 
 list-to-file "${SERVER_ADMINS}" "adminlist.txt"
 list-to-file "${SERVER_PERMITTED}" "permittedlist.txt"
 list-to-file "${SERVER_BANNED}" "bannedlist.txt"
+
+
+echo "Extracting Server files in $(pwd)"
+# Could use `time` but for some reason `-f` wasn't working
+EXTRACT_BEGIN=$(date +%s)
+tar -xzf "${SERVER_PATH}/valheim_server_Data.tar.gz"
+EXTRACT_END=$(date +%s)
+echo "Extracting Server files took $((EXTRACT_END-EXTRACT_BEGIN))s"

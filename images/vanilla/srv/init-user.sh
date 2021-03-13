@@ -1,26 +1,24 @@
 #!/bin/bash
 
-log-stdout "Initialize user:group..."
-
+log-stdout "init-user> Initialize user:group..."
 export USER="container"
 
-id -g pgroup &>/dev/null
-GROUP_EXIST=$?
-
-if [[ -n "${PGID}" ]] && [[ "${GROUP_EXIST}" == "1" ]];
+if [[ -n "${PGID}" ]] && ! grep -q "pgroup:" /etc/group;
   then
-    log-stdout "PGID specified, creating group..."
+    log-stdout "init-user> PGID specified, creating group..."
     addgroup --gid "${PGID}" pgroup
     addgroup container pgroup
   fi
 
-id -u puser &>/dev/null
-USER_EXIST=$?
-
-if [[ -n "${PUID}" ]] && [[ "${USER_EXIST}" == "1" ]];
+if [[ -n "${PUID}" ]];
   then
-    log-stdout "PUID specified, creating user..."
-    adduser --uid "${PUID}" --shell /bin/bash -G pgroup -S puser
+    log-stdout "init-user> PUID specified..."
     export USER="puser"
+
+    if ! grep -q "puser:" /etc/passwd;
+      then
+        log-stdout "init-user> Creating PUID user..."
+        adduser --uid "${PUID}" --shell /bin/bash --home /data -G pgroup -S puser
+      fi
   fi
 

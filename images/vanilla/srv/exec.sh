@@ -1,6 +1,8 @@
 #!/bin/bash
 # shellcheck disable=SC1091
 
+source /env
+
 CMD="${1}"
 ARGS=${*:2}
 
@@ -22,8 +24,6 @@ log-stdout "exec> GROUP: $(id -g)"
 log-stdout "exec> CMD: ${CMD}"
 log-stdout "exec> ARGS: ${ARGS}"
 
-
-
 function run {
   SCRIPT="${SCRIPTS_PATH}/${1}.sh"
   if [ -f "${SCRIPT}" ];
@@ -33,7 +33,7 @@ function run {
       SERVER=$!
 
       echo "exec> Script started on PID: ${SERVER}" | tee-server >> "$(output-log)"
-      tail --pid ${SERVER} -n +1 -f "${LOG_PATH}/output.log" 2> /dev/null
+      tail --pid ${SERVER} -f "${LOG_PATH}/output.log" 2> /dev/null
       log "exec> Script on ${SERVER} has exited!" | tee-exit
     else
       log "exec> Script not found: ${1}"

@@ -1,16 +1,12 @@
 #!/bin/bash
-
-echo "Extracting Server files in $(pwd)"
-
-# Could use `time` but for some reason `-f` wasn't working
-EXTRACT_BEGIN=$(date +%s)
-tar -xzf "${SERVER_PATH}/valheim_server_Data.tar.gz"
-EXTRACT_END=$(date +%s)
-echo "Extracting Server files took $((EXTRACT_END-EXTRACT_BEGIN))s"
-
+source /srv/init-server.sh
 
 TEMP_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="${SERVER_PATH}/linux64:$LD_LIBRARY_PATH"
+
+log-env SERVER_PATH DATA_PATH
+log-env SERVER_NAME SERVER_PASSWORD SERVER_WORLD SERVER_PUBLIC
+log-env SERVER_ADMINS SERVER_PERMITTED SERVER_BANNED
 
 SERVER_ARGS=(
   "-name ${SERVER_NAME}"

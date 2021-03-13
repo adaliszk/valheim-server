@@ -34,14 +34,15 @@ ENV SERVER_NAME="Valheim v0.147.3" \
     SERVER_PUBLIC="1" \
     TZ="Etc/UTC"
 
+COPY --from=steam --chown=1001 /server /server
+
+# @TODO: remove Python3 dependency via building the VhPretty as a binary
 # hadolint ignore=DL3018,DL3008
-RUN addgroup --gid 1001 container && adduser --uid 1001 --shell /bin/bash -G container -S container \
- # @TODO: remove Python3 dependency via building the VhPretty as a binary
- && apk add --no-cache bash coreutils findutils multitail tzdata python3 net-tools sdl2 ca-certificates \
+RUN apk add --no-cache bash coreutils findutils multitail tzdata python3 net-tools sdl2 ca-certificates \
  && bash -c "mkdir -p /{scripts,config,server,backups,data,logs}" \
+ && addgroup --gid 1001 container && adduser --uid 1001 --shell /bin/bash --home /data -G container -S container \
  && chown 1001:1001 /scripts /config /server /backups /data /logs
 
-COPY --from=steam --chown=1001 /server /server
 COPY --from=unix --chown=1001 /scripts /scripts
 COPY --from=unix --chown=1001 /srv /srv
 

@@ -5,6 +5,7 @@ source /srv/utils.sh
 
 echo "c> Creating Log files..."
 touch "${LOG_PATH}"/{server-raw,server,output,error,backup,restore,health,exit}.log
+chmod 664 "${LOG_PATH}/"*
 
 function vhpretty {
   /srv/vhpretty.py

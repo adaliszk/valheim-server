@@ -15,12 +15,14 @@ function copy-files {
 }
 
 function chown-path {
-  log-stdout "Change ownership for ${1}"
-  log-stdout "stat ${1}> $(stat -c '%U(%u):%G(%g)' "${1}")"
+  log-stdout "chown ${1}>Change ownership for ${1}"
+  log-stdout "chown ${1}> $(stat -c '%U(%u):%G(%g)' "${1}")"
 
-  log-stdout "Updating permissions..."
-  find "${1}" -not -user "${USER}" -execdir chown "${PUID:-1001}:${PGID:-1001}" {} + | sed -e 's/^/s> /' || throw-permission-error "${1}"
-  log-stdout "stat ${1}> $(stat -c '%U(%u):%G(%g)' "${1}")"
+  log-stdout "chown ${1}>Updating permissions..."
+  find "${1}" -not -user "${USER}" -execdir chown "${PUID:-1001}:${PGID:-1001}" {} +
+  chmod -R 774 "${1}"
+
+  log-stdout "chown ${1}> $(stat -c '%U(%u):%G(%g)' "${1}")"
 }
 
 function throw-permission-error {

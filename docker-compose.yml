@@ -38,6 +38,5 @@ services:
     image: "adaliszk/valheim-server:${VANILLA_TAG:-develop}"
     build: images/vanilla
     <<: *enabled-server
-    command: backup
     depends_on:
       - dos2unix
