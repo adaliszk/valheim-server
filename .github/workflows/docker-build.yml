@@ -69,10 +69,6 @@ jobs:
         name: "Checkout"
         uses: actions/checkout@v2
       -
-        name: "Cache Docker Layers"
-        uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
-      -
         name: "Get the tag from Dockertag"
         run: |
           IMAGE_TAG=$(cat ./images/${{ matrix.tag }}/Dockertag)
