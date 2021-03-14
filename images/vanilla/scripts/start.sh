@@ -9,18 +9,18 @@ log-env SERVER_NAME SERVER_PASSWORD SERVER_WORLD SERVER_PUBLIC
 log-env SERVER_ADMINS SERVER_PERMITTED SERVER_BANNED
 
 SERVER_ARGS=(
-  "-name ${SERVER_NAME}"
-  "-password ${SERVER_PASSWORD}"
-  "-world ${SERVER_WORLD}"
-  "-savedir ${DATA_PATH}"
-  "-public ${SERVER_PUBLIC}"
+  "-name" "${SERVER_NAME}"
+  "-password" "${SERVER_PASSWORD}"
+  "-world" "${SERVER_WORLD}"
+  "-savedir" "${DATA_PATH}"
+  "-public" "${SERVER_PUBLIC}"
 )
 
 SERVER_ARGS_STR=$( IFS=$' '; echo "${SERVER_ARGS[*]}" )
 
-SERVER_CMD="${SERVER_PATH}/valheim_server.x86_64 -nographics -batchmode -port 2456 ${SERVER_ARGS_STR}"
+SERVER_CMD="${SERVER_PATH}/valheim_server.x86_64 -nographics -batchmode -logfile -port 2456"
 
-echo "Execute: ${SERVER_CMD}"
-${SERVER_CMD}
+echo "Execute: ${SERVER_CMD} ${SERVER_ARGS_STR}"
+${SERVER_CMD} "${SERVER_ARGS[@]}"
 
 export LD_LIBRARY_PATH="$TEMP_LD_LIBRARY_PATH"

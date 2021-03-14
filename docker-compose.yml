@@ -37,6 +37,7 @@ services:
     container_name: "valheim_vanilla"
     image: "adaliszk/valheim-server:${VANILLA_TAG:-develop}"
     build: images/vanilla
+    command: -world "Melrakkadalr"
     <<: *enabled-server
     depends_on:
       - dos2unix

@@ -47,6 +47,12 @@ function term-sigint { term "SIGINT"; }
 
 function term {
   log "exec> Received ${1} signal..." | tee-exit
+
+  if [[ "${CMD}" == "start" ]];
+    then
+      run "backup"
+    fi
+
   kill -TERM "$SERVER" 2> /dev/null
 }
 
