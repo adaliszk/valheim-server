@@ -1,3 +1,8 @@
+---
+title: 
+parent: Guides
+---
+
 # Basic Docker setup using Docker managed volumes
 By default, docker will take care of many things. One of that is persistent data of your containers. Volumes are the 
 preferred mechanism because you don't need to worry about them for most of the time, and you can let Docker manage it 

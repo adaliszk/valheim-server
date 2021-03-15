@@ -31,12 +31,12 @@ x-disabled-server: &disabled-server
 services:
 
   docs:
-    image: "adaliszk/valheim-server:${ENV_TAG:-docs}"
-    build: docs
-    command: --watch --force_polling
+    image: "jekyll/jekyll:latest"
+    command: jekyll serve --force_polling --livereload --incremental
     volumes:
-      - ./docs:/srv/jekyll
+      - ./:/srv/jekyll
     ports:
+      - 35729:35729
       - 4000:4000
 
   vanilla:
