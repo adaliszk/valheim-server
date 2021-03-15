@@ -1,0 +1,100 @@
+
+#
+# Typical Lifecycle of a Player:
+#
+# 1. Connect: `Got handshake from client 76561198108936133`
+# 2. Version Check: `VERSION check their:0.146.11 mine:0.146.11`
+# 3. Spawn: `Got character ZDOID from Testvazz : 954855457:113`
+# 4. Died: `Got character ZDOID from Testvazz : 0:0`
+# 5. Disconnect: `Closing socket 76561198108936133`
+#
+
+const VERSION /(?P<version>\d+\.\d+\.\d+)/
+
+const STEAM_ID /(?P<steam_id>\d{17})/
+const PLAYER_ID /(?P<player_id>\d{9})/
+const PLAYER_NICK /(?P<player_nick>.*)/
+
+gauge server_game_version by version
+
+counter player_connected by steam_id
+hidden gauge steam_id
+
+gauge player_character by steam_id
+gauge character_player by player_id
+
+hidden gauge player_character_check by steam_id
+hidden gauge player_id
+
+gauge player_active_character by player_id, player_nick
+gauge player_game_version by steam_id, version
+
+counter player_disconnected by steam_id
+
+gauge event_random_possible
+counter event_found_location by location
+counter event_random by name
+
+
+# CONNECTIONS
+# =================================================================================================
+
+# Got status changed msg k_ESteamNetworkingConnectionState_Connecting
+# Got status changed msg k_ESteamNetworkingConnectionState_Connected
+# Got connection SteamID 76561198108936133
+# Got handshake from client 76561198108936133
+# VERSION check their:0.147.3 mine:0.147.3
+# Peer 76561198108936133 has wrong password
+#
+
+/Got handshake from client / + STEAM_ID {
+    player_connected[$steam_id]++
+    steam_id = $steam_id
+}
+
+/VERSION check their:/ + VERSION {
+
+    player_game_version[steam_id][$version] = $version
+
+    /mine:/ + VERSION {
+        server_game_version[$version] = $version
+    }
+}
+
+/Got character ZDOID from / + PLAYER_NICK + / : / + PLAYER_ID + /:\d+/ {
+    player_character_check[steam_id] < 1 {
+        player_character_check[steam_id] = $player_id
+        player_character[steam_id] = $player_id
+        character_player[$player_id] = steam_id
+        player_active_character[$player_id, $player_nick] = steam_id
+        player_id = $player_id
+    }
+}
+
+/Closing socket / + STEAM_ID {
+    player_disconnected[$steam_id]++
+}
+
+# IN-GAME ACTIONS
+# =================================================================================================
+
+#
+# Actions that the players can do
+#
+# Found location of type Eikthyrnir
+# Possible events:0
+# Possible events:1
+# Random event set:army_theelder
+#
+
+/Found location of type (?P<location>\w+)/ {
+    event_found_location[$location]++
+}
+
+/Possible events:(?P<events>\d+)/ {
+    event_random_possible = $events
+}
+
+/Random event set:(?P<event>\w+)/ {
+    event_random[$event]++
+}

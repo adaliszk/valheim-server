@@ -1,0 +1,145 @@
+
+#
+# Typical Life-cycle of a Server
+#
+# 1. `Starting to load scene:start`
+# 2. `Server ID 90071992547409920`
+# 3. `Steam game server initialized`
+# 4. `Zonesystem Awake 306`
+# 5. `DungeonDB Awake 306`
+# 6. `Initializing world generator seed:Ceq02rvExf ( -2104324048 ) menu:False worldgen version:1`
+# 7. `Load world Dedicated`
+# 8. `Zonesystem Start 306`
+# 9. `DungeinDB Start 306`
+# 10. `Game server connected`
+#
+
+const STEAM_ID /(?P<steam_id>\d{17})/
+const ELAPSED_TIME /(?P<elapsed_time>\d+\.\d+)/
+const PLAYER_COUNT /(?P<player_count>\d+)/
+
+const UNLOADED_COUNT /(?P<unloaded_count>\d+)/
+const LOADED_COUNT /(?P<loaded_count>\d+)/
+
+gauge server_id
+gauge server_players_online
+
+gauge server_unload_duration_avg
+gauge server_unload_duration
+counter server_unload_duration_sum
+gauge server_unload_count
+
+gauge server_loaded_serialized_files
+gauge server_loaded_objects
+
+gauge garbage_collection_duration_avg
+gauge garbage_collection_duration
+counter garbage_collection_duration_sum
+counter garbage_collection_count
+
+gauge garbage_collector_unloaded_files
+gauge garbage_collector_unloaded_objects
+
+gauge garbage_collector_live_objects_duration_avg
+gauge garbage_collector_live_objects_duration
+
+gauge garbage_collector_object_mapping_duration_avg
+gauge garbage_collector_object_mapping_duration
+
+gauge garbage_collector_mark_objects_duration_avg
+gauge garbage_collector_mark_objects_duration
+
+gauge garbage_collector_delete_objects_duration_avg
+gauge garbage_collector_delete_objects_duration
+
+# SERVER LIFE-CYCLE
+# =================================================================================================
+
+/Server ID (?P<server_id>\d{14})/ {
+    server_id = $server_id
+}
+
+/Got handshake from client / + STEAM_ID {
+    server_players_online++
+}
+
+/Send queue size:/ + PLAYER_COUNT {
+    server_players_online = $player_count
+}
+
+/Connections / + PLAYER_COUNT + / ZDOS/ {
+    server_players_online = $player_count
+}
+
+/Closing socket / + STEAM_ID {
+    server_players_online--
+}
+
+/UnloadTime/ {
+    /.*/ {
+        server_unload_count++
+    }
+    /:/ + ELAPSED_TIME + /ms/ {
+        server_unload_duration_avg = 0.9 * ($elapsed_time/1000) + 0.1 * server_unload_duration_avg
+        server_unload_duration_sum += $elapsed_time/1000
+        server_unload_duration = $elapsed_time/1000
+    }
+}
+
+# Added by vhpretty/vhtrigger:
+# Game server initialized ( took {}s )
+# World is ready ( took {}s )
+# Steam initialized ( took {}s )
+# Game server ready ( took {}s )
+
+
+# GARBAGE COLLECTION
+# =================================================================================================
+# Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+# Unloading 0 unused Assets to reduce memory usage. Loaded Objects now: 1116798.
+# Total: 329.310200 ms (FindLiveObjects: 65.498400 ms CreateObjectMapping: 16.332400 ms MarkObjects: 246.757300 ms DeleteObjects: 0.720600 ms)
+
+/Unloading / + UNLOADED_COUNT + / Unused Serialized files/ {
+    /Serialized files now loaded: (?P<loaded_count>\d+)/ {
+        server_loaded_serialized_files = $loaded_count
+    }
+    otherwise {
+        garbage_collector_unloaded_files = $unloaded_count
+    }
+}
+
+/Unloading / + UNLOADED_COUNT + / unused Assets/ {
+    /Loaded Objects now: (?P<loaded_count>\d+)/ {
+        server_loaded_objects = $loaded_objects
+    }
+    otherwise {
+        garbage_collector_unloaded_files = $unloaded_count
+    }
+}
+
+/Total/ {
+    /.*/ {
+        garbage_collection_count++
+    }
+    /: / + ELAPSED_TIME + / ms/ {
+        garbage_collection_duration_avg = 0.9 * ($elapsed_time/1000) + 0.1 * garbage_collection_duration_avg
+        garbage_collection_duration_sum += $elapsed_time/1000
+        garbage_collection_duration = $elapsed_time/1000
+    }
+    /FindLiveObjects: / + ELAPSED_TIME + / ms/ {
+        garbage_collector_live_objects_duration_avg = 0.9 * ($elapsed_time/1000) + 0.1 * garbage_collector_live_objects_duration_avg
+        garbage_collector_live_objects_duration = $elapsed_time/1000
+    }
+    /CreateObjectMapping: / + ELAPSED_TIME + / ms/ {
+        garbage_collector_object_mapping_duration_avg = 0.9 * ($elapsed_time/1000) + 0.1 * garbage_collector_object_mapping_duration_avg
+        garbage_collector_object_mapping_duration = $elapsed_time/1000
+    }
+    /MarkObjects: / + ELAPSED_TIME + / ms/ {
+        garbage_collector_mark_objects_duration_avg = 0.9 * ($elapsed_time/1000) + 0.1 * garbage_collector_mark_objects_duration_avg
+        garbage_collector_mark_objects_duration = $elapsed_time/1000
+    }
+    /MarkObjects: / + ELAPSED_TIME + / ms/ {
+        garbage_collector_delete_objects_duration_avg = 0.9 * ($elapsed_time/1000) + 0.1 * garbage_collector_delete_objects_duration_avg
+        garbage_collector_delete_objects_duration = $elapsed_time/1000
+    }
+}

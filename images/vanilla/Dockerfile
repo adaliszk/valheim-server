@@ -35,6 +35,7 @@ ENV SERVER_NAME="Valheim v0.147.3" \
     CONFIG_PATH="/config" \
     SCRIPTS_PATH="/scripts" \
     BACKUP_PATH="/backups" \
+    BACKUP_RETENTION="6" \
     DATA_PATH="/data" \
     LOG_PATH="/logs"
 

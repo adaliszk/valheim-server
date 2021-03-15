@@ -1,0 +1,141 @@
+
+#
+# Typical Life-cycle of a World
+#
+# 1. `Load world Dedicated`
+# 2. `Zonesystem Start 306`
+# 3. `DungeinDB Start 306`
+# 4. `Dungeon loaded 0`
+# 5. `Dungeon load time 0.084 ms`
+# 6. `Placed 8 doors`
+# 7. `Placed 31 rooms`
+# 8. `Placed locations in zone 4,10 duration 0.17 ms`
+#
+
+const NAME /(?P<name>\w+|\d+)/
+const ELAPSED_TIME /(?P<elapsed_time>\d+\.\d+)/
+const BYTES /(?P<bytes>\d+)/
+
+gauge world_day
+
+gauge world_dungeons_load_duration_avg
+gauge world_dungeons_load_duration
+counter world_dungeons_load_duration_sum
+counter world_dungeons_loaded
+
+gauge world_locations_placed_duration_avg
+gauge world_location_placed_duration
+counter world_location_placed_duration_sum
+counter world_location_placed
+
+gauge world_save_duration_avg
+gauge world_save_duration
+counter world_save_duration_sum
+counter world_save_count
+
+gauge world_size_total_bytes
+gauge world_size_bytes by name
+
+gauge world_location_count
+gauge world_mountain_point_count
+gauge world_mountain_count
+gauge world_river_count
+gauge world_lake_count
+
+# DAY STATE
+# =================================================================================================
+# Time 3023.79997801036, day:1 nextm:3870.00001072884 skipspeed:70.5166693932066
+
+/Time \d+\.\d+, day:(?P<day>(\d+))/ {
+    world_day = $day
+}
+
+
+# WORLD SAVE
+# =================================================================================================
+# Clone 97
+# Saved 50275 zdos
+# World saved ( 295.183ms )
+
+/World saved/ {
+    /.*/ {
+        world_save_count++
+    }
+    / \( / + ELAPSED_TIME + /ms/ {
+        world_save_duration_avg = 0.9 * ($elapsed_time/1000) + 0.1 * world_save_duration_avg
+        world_save_duration_sum += $elapsed_time/1000
+        world_save_duration = $elapsed_time/1000
+    }
+}
+
+# Added by valheim.sh
+# World "{name}" is {bytes} bytes large
+# Worlds are {bytes} bytes large
+
+/World "/ + NAME + /" is / + BYTES + / bytes large/ {
+    world_size_bytes[$name] = $bytes
+}
+
+/Worlds are / + BYTES + / bytes large/ {
+    world_size_total_bytes = $bytes
+}
+
+
+# WORLD LOADING
+# =================================================================================================
+
+/Found (?P<count>\d+) mountain points/ {
+    world_mountain_point_count = $count
+}
+
+/Remaining (?P<count>\d+) mountains/ {
+    world_mountain_count = $count
+}
+
+/Remaining (?P<count>\d+) lakes/ {
+    world_lake_count = $count
+}
+
+/Rivers:(?P<count>\d+)/ {
+    world_river_count = $count
+}
+
+/Loaded (?P<count>\d+) locations/ {
+    world_location_count = $count
+}
+
+
+# WORLD GENERATION
+# =================================================================================================
+# Dungeon loaded 0
+# Dungeon load time 0.084 ms
+# Available rooms:18
+# To place:40
+# Connections 4
+# Placed 8 doors
+# Placed 31 rooms
+# Placed locations in zone 4,10 duration 0.17 ms
+# Placed locations in zone 5,10 duration 0.339 ms
+# Placed locations in zone 8,10 duration 3.908 ms
+
+/Dungeon load time/ {
+    /.*/ {
+        world_dungeons_loaded++
+    }
+    / / + ELAPSED_TIME + / ms/ {
+         world_dungeons_load_duration_avg = 0.9 * ($elapsed_time/1000) + 0.1 * world_dungeons_load_duration_avg
+         world_dungeons_load_duration_sum += $elapsed_time/1000
+         world_dungeons_load_duration = $elapsed_time/1000
+    }
+}
+
+/Placed locations in zone/ {
+    /.*/ {
+        world_location_placed++
+    }
+    /duration / + ELAPSED_TIME + / ms/ {
+        world_locations_placed_duration_avg = 0.9 * ($elapsed_time/1000) + 0.1 * world_locations_placed_duration_avg
+        world_location_placed_duration_sum += $elapsed_time/1000
+        world_location_placed_duration = $elapsed_time/1000
+    }
+}

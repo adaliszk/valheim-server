@@ -12,6 +12,7 @@ x-enabled-server: &enabled-server
     start_period: 10s
   environment:
     SERVER_PASSWORD: "12345"
+    SERVER_ADMINS: "76561198108936133"
   volumes:
     - ./temp/data:/data
     - ./temp/backups:/backups
@@ -19,9 +20,6 @@ x-enabled-server: &enabled-server
   ports:
     - 2456:2456/udp
     - 2457:2457/udp
-
-x-disabled-server: &disabled-server
-  command: noop
 
 # ==============================================================================
 services:
@@ -41,9 +39,44 @@ services:
     depends_on:
       - dos2unix
 
-#  valheim-plus:
-#    image: "adaliszk/valheim-server:${PLUS_TAG:-plus0.9}"
-#    build: server/valheim-plus
-#    <<: *active-server
-#    depends_on:
-#      - vanilla
+  metrics-exporter:
+    container_name: "metrics_exporter"
+    image: "adaliszk/valheim-server:${EXPORTER_TAG:-metrics}"
+    build: images/metrics-exporter
+#    command:
+#      - --v 1
+    volumes:
+      - ./temp/logs:/logs:ro
+    ports:
+      - 3903:3903
+
+  docker-exporter:
+    container_name: "docker_exporter"
+    image: "prometheusnet/docker_exporter:latest"
+    volumes:
+      - //var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 3417:9417
+
+  prometheus:
+    container_name: "prometheus"
+#    image: "prom/prometheus:latest"
+    image: "adaliszk/valheim-server:${PROMETHEUS_TAG:-prometheus}"
+    build: images/prometheus
+    links:
+      - metrics-exporter
+      - docker-exporter
+    volumes:
+      - ./temp/prometheus:/prometheus
+    ports:
+      - 3090:9090
+
+  grafana:
+    container_name: "grafana"
+    image: "grafana/grafana:latest"
+    depends_on:
+      - prometheus
+    volumes:
+      - ./temp/grafana:/var/lib/grafana
+    ports:
+      - 3000:3000

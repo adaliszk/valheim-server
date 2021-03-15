@@ -1,0 +1,51 @@
+
+#
+# Typical Life-cycle of a Backup
+#
+# World saved ( 395.818ms )
+# backup> Removing old files for {name}...
+# backup> Saving a new "{name}" backup...
+# backup> Made an "{name}" backup that {bytes} bytes large
+# backup> Compressing files for "{name}" backup took {elapsed_time}s
+# backup> Backups are {bytes} bytes large
+#
+
+const NAME /(?P<name>\w+|\d+)/
+const ELAPSED_TIME /(?P<elapsed_time>\d+\.\d+)/
+const BYTES /(?P<bytes>\d+)/
+
+gauge backup_duration_avg by name
+gauge backup_duration by name
+counter backup_duration_sum by name
+counter backup_count by name
+
+gauge backups_size_total_bytes
+counter backup_size_bytes_sum by name
+gauge backup_size_bytes by name
+
+# COMPRESSION SPEED
+# =================================================================================================
+
+/Compressing files .*/ {
+    /for "/ + NAME + /" backup/ {
+        backup_count[$name]++
+    }
+    /for "/ + NAME + /" backup took / + ELAPSED_TIME + /ms/ {
+        backup_duration_avg[$name] = 0.9 * ($elapsed_time/1000) + 0.1 * backup_duration_avg[$name]
+        backup_duration_sum[$name] += $elapsed_time/1000
+        backup_duration[$name] = $elapsed_time/1000
+    }
+}
+
+
+# COMPRESSION SIZES
+# =================================================================================================
+
+/Made a backup for "/ + NAME + /" that / + BYTES + / bytes large/ {
+    backup_size_bytes_sum[$name] += $bytes
+    backup_size_bytes[$name] = $bytes
+}
+
+/Backups are / + BYTES + / bytes large/ {
+    backups_size_total_bytes = $bytes
+}
