@@ -2,7 +2,7 @@
 # =====================================================================================================================
 
 url: ""
-baseurl: ""
+baseurl: "/valheim-server/"
 source: "./docs"
 
 remote_theme: svrooij/just-the-docs@relative-everything
