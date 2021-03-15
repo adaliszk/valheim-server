@@ -50,6 +50,15 @@ services:
       - 3903:3903
 ```
 
+### Not using `adaliszk/valheim-server` for valheim?
+
+The exported programs are made in a way that you could use it with any Valheim server provided that you have a log file 
+hook it up with mtail. So for example, with a LGSM, you could run it like:
+```bash
+docker run -d -p 3903:3903 -v /home/vhserver/logs/console/vhserver-console.log:/logs/output.log:ro adaliszk/valheim-server:metrics-exporter 
+```
+Some metrics however, like backup and world filesize information will be not available.
+
 ## Prometheus
 For now, this project uses Prometheus as the main metrics collector. To set up MTail with prometheus, you just need to
 define the scraping config to call the service on the *internal* network:
@@ -133,32 +142,40 @@ Garbage Collector:
 
 - `world_day`: the last day that was reported when players skipped a night
 
-World statistics (constant value per world):
+#### World statistics (constant value per world):
 - `world_location_count`
 - `world_mountain_point_count`
 - `world_mountain_count`
 - `world_river_count`
 - `world_lake_count`
 
-Dungeons (Chunks) load times:
+#### Dungeons (Chunks) load times:
 - `world_dungeons_load_duration_avg`
 - `world_dungeons_load_duration`
 - `world_dungeons_load_duration_sum`
 - `world_dungeons_loaded`
 
-Locations (sub-Chunk) load times:
+#### Locations (sub-Chunk) load times:
 - `world_locations_placed_duration_avg`
 - `world_location_placed_duration`
 - `world_location_placed_duration_sum`
 - `world_location_placed`
 
-Saves to the disk:
+#### Saves to the disk:
 - `world_save_duration_avg`
 - `world_save_duration`
 - `world_save_duration_sum`
 - `world_save_count`
 
-Disk usage:
+#### Disk usage:
+
+> Note: These endpoints will be not available if you are not using `adaliszk/valheim-server` for your server, but you could
+> implement it on your own by writing the following lines into the server log:
+> ```
+> World "{world_name}" is {bytes} bytes large
+> Worlds are {bytes} bytes large
+> ```
+
 - `world_size_total_bytes`
 - `world_size_bytes` by `name`
 
@@ -179,13 +196,19 @@ Disk usage:
 
 
 ### Backups
+
+> Note: These endpoints will be not available if you are not using `adaliszk/valheim-server` for your server, but you could
+> implement it on your own by writing the following lines into the server log:
+> ```
+> Compressing files for "{backup_name}" backup took {elapsed_ms}ms
+> Made a backup for "{backup_name}" tat {bytes} bytes large
+> Backups are {bytes} large
+> ```
+
 - `backup_duration_avg` by `name`
 - `backup_duration` by `name`
 - `backup_duration_sum` by `name`
 - `backup_count` by `name`
-
 - `backups_size_total_bytes`
 - `backup_size_bytes_sum` by `name`
 - `backup_size_bytes` by `name`
-
-
