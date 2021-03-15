@@ -1,14 +1,14 @@
 # BASICS
 # =====================================================================================================================
 
-url: "https://adaliszk.github.io"
-baseurl: "/valheim-server/"
-source: "./docs"
+url: ""
+baseurl: ""
 
 remote_theme: svrooij/just-the-docs@relative-everything
 repository: adaliszk/valheim-server
 
 breadcrumbs: true
+permalink: pretty
 
 # METADATA
 # =====================================================================================================================
