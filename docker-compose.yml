@@ -12,6 +12,7 @@ x-enabled-server: &enabled-server
     start_period: 10s
   environment:
     SERVER_PASSWORD: "12345"
+    SERVER_ADMINS: "76561198108936133"
   volumes:
     - ./temp/data:/data
     - ./temp/backups:/backups
@@ -60,14 +61,13 @@ services:
   prometheus:
     container_name: "prometheus"
 #    image: "prom/prometheus:latest"
-    image: "adaliszk/valheim-server:${PROMETHEUS_TAG:-prometheus]"
+    image: "adaliszk/valheim-server:${PROMETHEUS_TAG:-prometheus}"
     build: images/prometheus
     links:
       - metrics-exporter
       - docker-exporter
-#    volumes:
-#      - ./docs/examples/docker-prometheus.yml:/etc/prometheus/docker-prometheus.yml
-#      - ./temp/prometheus:/prometheus
+    volumes:
+      - ./temp/prometheus:/prometheus
     ports:
       - 3090:9090
 
