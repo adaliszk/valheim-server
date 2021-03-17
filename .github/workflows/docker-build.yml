@@ -33,7 +33,7 @@ jobs:
   lint:
     strategy:
       matrix:
-        tag: [ "dos2unix", "metrics-exporter", "prometheus", "vanilla" ]
+        tag: [ "metrics-exporter", "prometheus", "vanilla", "bepinex", "plus" ]
 
     runs-on: ubuntu-latest
     name: "Lint"
@@ -61,7 +61,7 @@ jobs:
     needs: [ "lint" ]
     strategy:
       matrix:
-        tag: [ "dos2unix", "metrics-exporter", "prometheus", "vanilla" ]
+        tag: [ "metrics-exporter", "prometheus", "vanilla", "bepinex", "plus" ]
     steps:
       -
         name: "Checkout"
@@ -69,9 +69,7 @@ jobs:
       -
         name: "Get the tag from Dockertag"
         run: |
-          IMAGE_TAG=$(cat ./images/${{ matrix.tag }}/Dockertag)
-          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_ENV
-          echo "${IMAGE_TAG}" > ${{ matrix.tag }}.tag
+          cat ./images/${{ matrix.tag }}/Dockertag > ${{ matrix.tag }}.tags
       -
         id: docker-cache
         name: "Use Docker Cache"
@@ -85,12 +83,11 @@ jobs:
       -
         name: "Build :${{ matrix.tag }}"
         run: |
-          docker pull ${{ env.image_name }}:${{ env.image_tag }} || true
-          docker build -t ${{ env.image_name }}:${{ env.image_tag }} ./images/${{ matrix.tag }}
+          docker build -t ${{ env.image_name }}:${{ github.sha }} ./images/${{ matrix.tag }}
       -
         name: "Save :${{ matrix.tag }}"
         run: |
-          docker save ${{ env.image_name }}:${{ env.image_tag }} > ${{ matrix.tag }}.tar.gz
+          docker save ${{ env.image_name }}:${{ github.sha }} > ${{ matrix.tag }}.tar.gz
 
   #
   # TEST STAGE
@@ -101,7 +98,7 @@ jobs:
     needs: [ "build" ]
     strategy:
       matrix:
-        tag: [ "dos2unix", "vanilla" ]
+        tag: [ "metrics-exporter", "prometheus", "vanilla", "bepinex", "plus" ]
     steps:
       -
         name: "Use Docker Cache"
@@ -113,11 +110,6 @@ jobs:
           path: |
             ${{ matrix.tag }}.*
       -
-        name: "Get the tag from Dockertag"
-        run: |
-          IMAGE_TAG=$(cat ${{ matrix.tag }}.tag)
-          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_ENV
-      -
         name: "Load the saved Image"
         run: |
           docker load < ${{ matrix.tag }}.tar.gz
@@ -125,7 +117,7 @@ jobs:
         name: "Run Trivy vulnerability scanner"
         uses: aquasecurity/trivy-action@master
         env:
-          source_image: "${{ env.image_name }}:${{ env.image_tag }}"
+          source_image: "${{ env.image_name }}:${{ github.sha }}"
         with:
           image-ref: '${{ env.source_image }}'
           format: 'template'
@@ -144,16 +136,13 @@ jobs:
   push:
     name: "Push"
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
+    #if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
     needs: [ "build", "test-docker-vulnerability" ]
     strategy:
       matrix:
         registry: [ "docker.io", "quay.io", "ghcr.io" ]
         tag: [ "dos2unix", "vanilla" ]
         include:
-          -
-            tag: "dos2unix"
-            tag_latest: "false"
           -
             tag: "vanilla"
             tag_latest: "true"
@@ -190,11 +179,6 @@ jobs:
           path: |
             ${{ matrix.tag }}.*
       -
-        name: "Get the tag from Dockertag"
-        run: |
-          IMAGE_TAG=$(cat ${{ matrix.tag }}.tag)
-          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_ENV
-      -
         name: "Load the saved Image"
         run: |
           docker load < ${{ matrix.tag }}.tar.gz
@@ -208,16 +192,18 @@ jobs:
       -
         name: "Push ${{ matrix.registry_name }} :${{ matrix.tag }}"
         env:
-          source_image: "${{ env.image_name }}:${{ env.image_tag }}"
-          target_image: "${{ matrix.image_prefix }}${{ env.image_name }}${{ matrix.image_suffix }}:${{ env.image_tag }}"
+          source_image: "${{ env.image_name }}:${{ github.sha }}"
+          target_image: "${{ matrix.image_prefix }}${{ env.image_name }}${{ matrix.image_suffix }}"
         run: |
-          docker tag ${{ env.source_image }} ${{ env.target_image }}
-          docker push ${{ env.target_image }}
+          while read TAG; do
+            docker tag ${{ env.source_image }} ${{ env.target_image }}:${TAG}
+            docker push ${{ env.target_image }}:${TAG}
+          done < ${{ matrix.tag }}.tags
       -
-        if: matrix.tag_latest == 'true' # && github.ref == 'refs/heads/stable'
+        if: matrix.tag_latest == 'true' && github.ref == 'refs/heads/stable'
         name: "Push ${{ matrix.registry_name }} :Latest"
         env:
-          source_image: "${{ env.image_name }}:${{ env.image_tag }}"
+          source_image: "${{ env.image_name }}:${{ github.sha }}"
           target_image: "${{ matrix.image_prefix }}${{ env.image_name }}${{ matrix.image_suffix }}:latest"
         run: |
           docker tag ${{ env.source_image }} ${{ env.target_image }}

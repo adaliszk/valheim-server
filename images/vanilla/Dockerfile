@@ -17,10 +17,12 @@ RUN tar -czf "${APP_PATH}/valheim_server_Data.tar.gz" -C "${APP_PATH}" "valheim_
 
 # Fix file format and permissions for the Windows peeps out there
 # =================================================================================================
-FROM adaliszk/valheim-server:dos2unix as unix
+FROM adaliszk/dos2unix:latest as unix
 
-COPY srv /scripts
-RUN dos2unix /scripts/** && chmod +x /scripts/**
+COPY srv /srv-scripts
+COPY scripts /scripts
+RUN dos2unix /srv-scripts/** && chmod +x /srv-scripts/** \
+ && dos2unix /scripts/** && chmod +x /scripts/**
 
 
 # Set up the Runtime Environment
@@ -39,6 +41,8 @@ ENV SERVER_NAME="Valheim v0.147.3" \
     DATA_PATH="/data" \
     LOG_PATH="/logs"
 
+COPY --from=steam --chown=1001 /server /server
+
 # hadolint ignore=DL3018,DL3008
 RUN addgroup --gid 1001 container && adduser --uid 1001 --shell /bin/bash -G container -S container \
  # @TODO: remove Python3 dependency via building the VhPretty as a binary
@@ -46,10 +50,10 @@ RUN addgroup --gid 1001 container && adduser --uid 1001 --shell /bin/bash -G con
  && bash -c "mkdir -p {${SCRIPTS_PATH},${CONFIG_PATH},${SERVER_PATH},${BACKUP_PATH},${DATA_PATH},${LOG_PATH}}" \
  && chown 1001:1001 ${SCRIPTS_PATH} ${CONFIG_PATH} ${SERVER_PATH} ${BACKUP_PATH} ${DATA_PATH} ${LOG_PATH}
 
-COPY --from=steam --chown=1001 /server /server
-COPY --from=unix /scripts /srv
+COPY --from=unix  /srv-scripts /srv
+COPY --from=unix /scripts /scripts
 
-COPY --from=unix /scripts/valheim.sh /valheim
+COPY --from=unix /srv-scripts/valheim.sh /valheim
 ENTRYPOINT ["/valheim"]
 
 VOLUME ["/data", "/backups", "/logs"]

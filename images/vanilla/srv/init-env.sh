@@ -21,8 +21,11 @@ log-env SERVER_NAME SERVER_PASSWORD SERVER_WORLD SERVER_PUBLIC
 log-env SERVER_ADMINS SERVER_PERMITTED SERVER_BANNED
 
 function list-to-file {
-  debug-log "Saving \"${1}\" into ${2}"
-  echo "${1}" | tr ',' '\n' > "${DATA_PATH}/${2}"
+  if [[ -z "${1}" ]];
+    then
+      debug-log "Saving \"${1}\" into ${2}"
+      echo "${1}" | tr ',' '\n' > "${DATA_PATH}/${2}"
+    fi
 }
 
 list-to-file "${SERVER_ADMINS}" "adminlist.txt"
