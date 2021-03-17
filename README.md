@@ -1,7 +1,8 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/adaliszk/valheim-server?label=Docker%20Pulls)](https://hub.docker.com/r/adaliszk/valheim-server)
 [![:latest image size](https://img.shields.io/docker/image-size/adaliszk/valheim-server/latest?label=Image%20Size)](https://hub.docker.com/r/adaliszk/valheim-server)
-[![docker status](https://github.com/adaliszk/valheim-server/actions/workflows/docker-build.yml/badge.svg)](https://github.com/adaliszk/valheim-server/actions/workflows/docker-build.yml)
-[![helm status](https://github.com/adaliszk/valheim-server/actions/workflows/helm-build.yml/badge.svg)](https://github.com/adaliszk/valheim-server/actions/workflows/helm-build.yml)
+[![server build](https://github.com/adaliszk/valheim-server/actions/workflows/cd-server.yml/badge.svg?label=Server)](https://github.com/adaliszk/valheim-server/actions/workflows/cd-server.yml)
+[![monitoring build](https://github.com/adaliszk/valheim-server/actions/workflows/cd-monitoring.yml/badge.svg?label=Monitoring)](https://github.com/adaliszk/valheim-server/actions/workflows/cd-monitoring.yml)
+[![helm build](https://github.com/adaliszk/valheim-server/actions/workflows/helm-build.yml/badge.svg)](https://github.com/adaliszk/valheim-server/actions/workflows/helm-build.yml)
 [![license](https://img.shields.io/github/license/adaliszk/valheim-server?label=License)](https://github.com/adaliszk/valheim-server/LICENSE.md)
 
 # Valheim Docker Server & Helm Chart
@@ -14,7 +15,7 @@ full feature-set for managing and monitoring your Valheim Server.
 
 ### TL;DR:
 ```bash
-docker run -d --publish-all adaliszk/valheim-server -name "My Server" -password="super!secret"
+docker run -p 2456-2457:2456-2457/udp adaliszk/valheim-server -name "My Server" -password="super!secret"
 ```
 or
 ```yaml
@@ -32,15 +33,28 @@ services:
 
 ## Images:
 
+Server:
 - [adaliszk/valheim-server](https://hub.docker.com/r/adaliszk/valheim-server)
 - [ghcr.io/adaliszk/valheim-server](https://ghcr.io/adaliszk/valheim-server)
 - [quay.io/adaliszk/valheim-server](https://quay.io/adaliszk/valheim-server)
 
+Monitoring:
+- [adaliszk/valheim-server-monitoring](https://hub.docker.com/r/adaliszk/valheim-server-monitoring)
+- [ghcr.io/adaliszk/valheim-server-monitoring](https://ghcr.io/adaliszk/valheim-server-monitoring)
+- [quay.io/adaliszk/valheim-server-monitoring](https://quay.io/adaliszk/valheim-server-monitoring)
+
 ## Tags:
 
-- `0.147.3` `latest` - always the latest build of the server
-- `dos2unix` - little helper, subject for *deprecation*
-- `develop` - automatic build from develop branch
+Server:
+- `0.147.3` `0.147` `latest` - always the latest build of the server
+- `bepinex5.4.800` `bepinex5.4.8` `bepinex5.4` `bepinex5` `bepinex` - server using BepInEx mod loader
+- `plus0.9.5-hotfix1` `plus0.9.5` `plus0.9` `plus` - server using Valheim+ mod
+- `vanilla` `develop` - build from develop branch
+
+Monitoring:
+- `metrics0.147.3` `metrics0.147` `metrics` - latest server's metrics exporter
+- `prometheus` - a pre-configured prometheus for docker environments
+
 
 ## Are you new to Docker or Kubernetes?
 - [What is Docker?](https://opensource.com/resources/what-docker)
