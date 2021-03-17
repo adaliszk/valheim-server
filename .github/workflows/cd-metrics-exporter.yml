@@ -11,6 +11,9 @@ on:
       - images/prometheus/**/*
       - images/prometheus/*
   push:
+    branches:
+      - develop
+      - stable
     paths:
       - .github/workflows/cd-metrics-exporter.yml
       - images/metrics-exporter/**/*

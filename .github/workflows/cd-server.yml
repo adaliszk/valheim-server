@@ -9,6 +9,9 @@ on:
       - images/vanilla/**/*
       - images/vanilla/*
   push:
+    branches:
+      - develop
+      - stable
     paths:
       - .github/workflows/cd-server.yml
       - images/vanilla/**/*
@@ -105,7 +108,7 @@ jobs:
   push:
     name: "Push"
     runs-on: ubuntu-latest
-    #if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
     needs: [  "build" ]
     strategy:
       matrix:
