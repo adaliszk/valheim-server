@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1091
 source /srv/init-server.sh
 
 TEMP_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
