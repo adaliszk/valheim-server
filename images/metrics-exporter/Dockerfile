@@ -31,7 +31,8 @@ RUN export DL_NAME="mtail_${GIT_RELEASE}_${GIT_ARCH}.tar.gz" && mkdir -p /go/bin
 
 # Fix Unix permissions for the Windows peeps out there
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-FROM adaliszk/valheim-server:dos2unix as unix
+# hadolint ignore=DL3007
+FROM adaliszk/dos2unix:latest as unix
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 COPY programs /mtail-programs
