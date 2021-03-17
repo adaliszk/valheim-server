@@ -61,13 +61,21 @@ jobs:
         run: |
           cat ./images/vanilla/Dockertag > vanilla.tags
       -
+        name: "Resolve Cache Hash"
+        env:
+          hash_path: "./images/vanilla"
+        run: |
+          IMAGE_TAG=${{ hashFiles( env.hash_path ) }}
+          echo "${IMAGE_TAG}" > vanilla.hash
+          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_ENV
+      -
         id: docker-cache
         name: "Use Docker Cache"
         uses: actions/cache@v2
         env:
           hash_path: "./images/vanilla"
         with:
-          key: docker-vanilla-${{ hashFiles( env.hash_path ) }}
+          key: cd-server-${{ matrix.tag }}-${{ env.image_tag }}
           path: |
             vanilla.*
       -
@@ -79,12 +87,12 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         name: "Build :vanilla"
         run: |
-          docker build -t ${{ env.image_name }}:${{ github.sha }} ./images/vanilla
-          docker save ${{ env.image_name }}:${{ github.sha }} > vanilla.tar.gz
+          docker build -t ${{ env.image_name }}:${{ env.image_tag }} ./images/vanilla
+          docker save ${{ env.image_name }}:${{ env.image_tag }} > vanilla.tar.gz
       -
         name: "Tag for the Security Scan"
         run: |
-          docker tag ${{ env.image_name }}:${{ github.sha }} ${{ env.image_name }}:vanilla
+          docker tag ${{ env.image_name }}:${{ env.image_tag }} ${{ env.image_name }}:vanilla
       -
         name: "Run Trivy vulnerability scanner"
         uses: aquasecurity/trivy-action@master
@@ -137,13 +145,24 @@ jobs:
             image_suffix: ""
     steps:
       -
+        name: "Checkout"
+        uses: actions/checkout@v2
+      -
+        name: "Resolve Cache Hash"
+        env:
+          hash_path: "./images/vanilla"
+        run: |
+          IMAGE_TAG=${{ hashFiles( env.hash_path ) }}
+          echo "${IMAGE_TAG}" > vanilla.hash
+          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_ENV
+      -
         id: docker-cache
         name: "Use Docker Cache"
         uses: actions/cache@v2
         env:
           hash_path: "./images/vanilla"
         with:
-          key: docker-vanilla-${{ hashFiles( env.hash_path ) }}
+          key: cd-server-${{ matrix.tag }}-${{ env.image_tag }}
           path: |
             vanilla.*
       -
@@ -158,20 +177,18 @@ jobs:
           username: ${{ secrets[matrix.registry_username] }}
           password: ${{ secrets[matrix.registry_password] }}
       -
-        name: "Push ${{ matrix.registry_name }} :${{ matrix.tag }}"
+        name: "Push ${{ matrix.registry_name }} :vanilla"
         env:
-          source_image: "${{ env.image_name }}:${{ github.sha }}"
+          source_image: "${{ env.image_name }}${{ env.image_tag }}"
           target_image: "${{ matrix.image_prefix }}${{ env.image_name }}${{ matrix.image_suffix }}"
         run: |
-          while read TAG; do
-            docker tag ${{ env.source_image }} ${{ env.target_image }}:${TAG}
-            docker push ${{ env.target_image }}:${TAG}
-          done < vanilla.tags
+          cat vanilla.tags | tr \\n \\0 | xargs -0 -I '###' -n1 docker tag ${{ env.source_image }} ${{ env.target_image }}:###
+          cat vanilla.tags | tr \\n \\0 | xargs -0 -I '###' -n1 docker push ${{ env.target_image }}:###
       -
         if: github.ref == 'refs/heads/stable'
-        name: "Push ${{ matrix.registry_name }} :Latest"
+        name: "Push ${{ matrix.registry_name }} :latest"
         env:
-          source_image: "${{ env.image_name }}:${{ github.sha }}"
+          source_image: "${{ env.image_name }}:${{ env.image_tag }}"
           target_image: "${{ matrix.image_prefix }}${{ env.image_name }}${{ matrix.image_suffix }}:latest"
         run: |
           docker tag ${{ env.source_image }} ${{ env.target_image }}
