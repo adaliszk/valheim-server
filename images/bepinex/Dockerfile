@@ -21,7 +21,7 @@ ENV SERVER_NAME="Valheim BepInEx v5.4.800" \
     MOD_PATH="/mod-bepinex" \
     MOD_VERSION="5.4.800"
 
-COPY --from=bepinex /modpack ${MOD_PATH}
+COPY --from=bepinex /modpack "${MOD_PATH}"
 RUN cp -rfa "${MOD_PATH}/." "${SERVER_PATH}/" && chown -R "1001:1001" ${SERVER_PATH}
 
 
