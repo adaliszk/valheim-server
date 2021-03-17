@@ -36,6 +36,8 @@ def ucfirst(text: str):
 
 set_server_connected(False)
 
+last_line = ""
+
 for line in fileinput.input():
     # ignore empty lines
     if re.search(r'^\s+$', line):
@@ -73,13 +75,13 @@ for line in fileinput.input():
     bepinex_match = re.search(bepinex_regex, line)
 
     if bepinex_match:
-        # No need to duplicate the Unity output
-        if bepinex_match.group(2) == "Unity Log":
-            continue
-
         levels = {"Info": "i", "Message": "m", "Debug": "d", "Warn": "w", "Error": "e"}
         prefix = levels.get(bepinex_match.group(1), "I")
         line = re.sub(bepinex_regex, r'\2> \3', line)
+
+        # No need to duplicate the Unity output
+        if bepinex_match.group(2) == "Unity Log":
+            line = ""
 
     debug_regex = re.compile(r'(Section not|Loading config|Loading key|Load DLL:|Base:|Redirecting to)', re.IGNORECASE)
     if re.search(debug_regex, line):
@@ -97,6 +99,7 @@ for line in fileinput.input():
     if re.search(severe_regex, line) or prefix in ["w", "e"]:
         log_error(line)
 
-    if prefix not in ["d"]:
+    if prefix not in ["d"] and len(line) > 0 and line != last_line:
         print(prefix + "> " + line)
         sys.stdout.flush()
+        last_line = line

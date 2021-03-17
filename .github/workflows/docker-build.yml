@@ -32,6 +32,7 @@ jobs:
   #
   lint:
     strategy:
+      fail-fast: false
       matrix:
         tag: [ "metrics-exporter", "prometheus", "vanilla", "bepinex", "plus" ]
 

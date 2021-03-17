@@ -17,6 +17,7 @@ RUN tar -czf "${APP_PATH}/valheim_server_Data.tar.gz" -C "${APP_PATH}" "valheim_
 
 # Fix file format and permissions for the Windows peeps out there
 # =================================================================================================
+# hadolint ignore=DL3007
 FROM adaliszk/dos2unix:latest as unix
 
 COPY srv /srv-scripts

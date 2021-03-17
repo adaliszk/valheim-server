@@ -45,6 +45,7 @@ services:
     container_name: "valheim_plus"
     image: "adaliszk/valheim-server:${VANILLA_TAG:-plus}"
     build: images/plus
+    <<: *enabled-server
     depends_on:
       - bepinex
 

@@ -2,7 +2,7 @@
 
 if [[ ! -d "${SERVER_PATH}/valheim_server_Data" ]];
   then
-    echo "Extracting Server files in $(pwd)"
+    echo "Extracting Server files in ${SERVER_PATH}"
 
     # @TODO: Should use `time` but `-f` wasn't working, so this is a quick and dirty solution
     EXTRACT_BEGIN=$(date +%s.%N)
