@@ -128,11 +128,8 @@ jobs:
     strategy:
       matrix:
         registry: [ "docker.io", "quay.io", "ghcr.io" ]
-        tag: [ "vanilla", "bepinex", "plus" ]
+        tag: [ "metrics-exporter", "prometheus" ]
         include:
-          -
-            tag: "vanilla"
-            tag_latest: "true"
           -
             registry: "docker.io"
             registry_username: "DOCKERHUB_USERNAME"
