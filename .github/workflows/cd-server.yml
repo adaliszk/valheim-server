@@ -70,7 +70,7 @@ jobs:
         env:
           hash_path: "./images/vanilla"
         with:
-          key: docker-${{ runner.os }}-vanilla-${{ hashFiles( env.hash_path ) }}
+          key: docker-vanilla-${{ hashFiles( env.hash_path ) }}
           path: |
             vanilla.*
       -
@@ -146,7 +146,7 @@ jobs:
         env:
           hash_path: "./images/vanilla"
         with:
-          key: docker-${{ runner.os }}-vanilla-${{ hashFiles( env.hash_path ) }}
+          key: docker-vanilla-${{ hashFiles( env.hash_path ) }}
           path: |
             vanilla.*
       -
