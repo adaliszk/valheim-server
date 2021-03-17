@@ -78,7 +78,7 @@ jobs:
         env:
           hash_path: "./images/${{ matrix.tag }}"
         with:
-          key: ${{ runner.os }}-${{ hashFiles( env.hash_path ) }}
+          key: ${{ runner.os }}-${{ matrix.tag }}-${{ hashFiles( env.hash_path ) }}
           path: |
             ${{ matrix.tag }}.*
       -
@@ -108,6 +108,7 @@ jobs:
 
 
   build-modded-images:
+    name: "Build Modded"
     runs-on: ubuntu-latest
     needs: [ "lint", "build-base-images" ]
     strategy:
@@ -131,6 +132,21 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles( env.hash_path ) }}
           path: |
             ${{ matrix.tag }}.*
+      -
+        id: docker-vanilla-cache
+        name: "Use :vanilla Cache"
+        uses: actions/cache@v2
+        env:
+          hash_path: "./images/vanilla"
+        with:
+          key: ${{ runner.os }}-vanilla-${{ hashFiles( env.hash_path ) }}
+          path: |
+            ${{ matrix.tag }}.*
+      -
+        name: "Load :vanilla"
+        run: |
+          docker load < vanilla.tar.gz
+          docker tag ${{ env.image_name }}:${{ github.sha }} ${{ env.image_name }}:vanilla
       -
         name: "Build :${{ matrix.tag }}"
         run: |
@@ -167,7 +183,7 @@ jobs:
     strategy:
       matrix:
         registry: [ "docker.io", "quay.io", "ghcr.io" ]
-        tag: [ "dos2unix", "vanilla" ]
+        tag: [ "vanilla", "bepinex", "plus" ]
         include:
           -
             tag: "vanilla"
@@ -201,7 +217,7 @@ jobs:
         env:
           hash_path: "./images/${{ matrix.tag }}"
         with:
-          key: ${{ runner.os }}-${{ hashFiles( env.hash_path ) }}
+          key: ${{ runner.os }}-${{ matrix.tag }}-${{ hashFiles( env.hash_path ) }}
           path: |
             ${{ matrix.tag }}.*
       -
