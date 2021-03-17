@@ -10,9 +10,6 @@ on:
       - images/metrics-exporter/*
       - images/prometheus/**/*
       - images/prometheus/*
-    types:
-      - synchronize
-      - opened
   push:
     paths:
       - .github/workflows/cd-metrics-exporter.yml
@@ -20,9 +17,6 @@ on:
       - images/metrics-exporter/*
       - images/prometheus/**/*
       - images/prometheus/*
-    branches:
-      - develop
-      - stable
 
 # =================================================================================================
 env:

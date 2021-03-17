@@ -8,17 +8,11 @@ on:
       - .github/workflows/cd-server.yml
       - images/vanilla/**/*
       - images/vanilla/*
-    types:
-      - synchronize
-      - opened
   push:
     paths:
       - .github/workflows/cd-server.yml
       - images/vanilla/**/*
       - images/vanilla/*
-    branches:
-      - develop
-      - stable
 
 # =================================================================================================
 env:
