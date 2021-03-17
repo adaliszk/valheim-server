@@ -68,24 +68,25 @@ jobs:
         name: "Use Docker Cache"
         uses: actions/cache@v2
         env:
-          hash_path: "./images/${{ matrix.tag }}"
+          hash_path: "./images/vanilla"
         with:
           key: docker-${{ runner.os }}-vanilla-${{ hashFiles( env.hash_path ) }}
           path: |
-            ${{ matrix.tag }}.*
+            vanilla.*
       -
-        name: "Build :${{ matrix.tag }}"
+        name: "Build :vanilla"
         run: |
           docker build -t ${{ env.image_name }}:${{ github.sha }} ./images/vanilla
-      -
-        name: "Save :${{ matrix.tag }}"
-        run: |
           docker save ${{ env.image_name }}:${{ github.sha }} > vanilla.tar.gz
+      -
+        name: "Tag for the Security Scan"
+        run: |
+          docker tag ${{ env.image_name }}:${{ github.sha }} ${{ env.image_name }}:vanilla
       -
         name: "Run Trivy vulnerability scanner"
         uses: aquasecurity/trivy-action@master
         env:
-          source_image: "${{ env.image_name }}:${{ github.sha }}"
+          source_image: "${{ env.image_name }}:vanilla"
         with:
           image-ref: '${{ env.source_image }}'
           format: 'template'
@@ -137,7 +138,7 @@ jobs:
         name: "Use Docker Cache"
         uses: actions/cache@v2
         env:
-          hash_path: "./images/${{ matrix.tag }}"
+          hash_path: "./images/vanilla"
         with:
           key: docker-${{ runner.os }}-vanilla-${{ hashFiles( env.hash_path ) }}
           path: |
