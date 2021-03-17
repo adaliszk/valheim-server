@@ -51,7 +51,7 @@ jobs:
   #
   # STAGE: BUILD
   #
-  build-images:
+  build:
     name: "Build"
     runs-on: ubuntu-latest
     needs: [ "lint" ]
@@ -105,7 +105,7 @@ jobs:
     name: "Push"
     runs-on: ubuntu-latest
     #if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
-    needs: [  "build-base-images", "build-modded-images" ]
+    needs: [  "build" ]
     strategy:
       matrix:
         registry: [ "docker.io", "quay.io", "ghcr.io" ]
