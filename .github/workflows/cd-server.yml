@@ -79,12 +79,12 @@ jobs:
           path: |
             vanilla.*
       -
-        if: steps.cache.outputs.cache-hit == 'true'
+        if: steps.docker-cache.outputs.cache-hit == 'true'
         name: "Load the saved Image"
         run: |
           docker load < vanilla.tar.gz
       -
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.docker-cache.outputs.cache-hit != 'true'
         name: "Build :vanilla"
         run: |
           docker build -t ${{ env.image_name }}:${{ env.image_tag }} ./images/vanilla

@@ -89,12 +89,12 @@ jobs:
           path: |
             ${{ matrix.tag }}.*
       -
-        if: steps.cache.outputs.cache-hit == 'true'
+        if: steps.docker-cache.outputs.cache-hit == 'true'
         name: "Load the saved Image"
         run: |
           docker load < ${{ matrix.tag }}.tar.gz
       -
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.docker-cache.outputs.cache-hit != 'true'
         name: "Build :${{ matrix.tag }}"
         run: |
           docker build -t ${{ env.image_name }}:${{ env.image_tag }} ./images/${{ matrix.tag }}
