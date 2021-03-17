@@ -56,13 +56,13 @@ jobs:
   #
   # STAGE: BUILD
   #
-  build:
+  build-base-images:
     name: "Build"
     runs-on: ubuntu-latest
     needs: [ "lint" ]
     strategy:
       matrix:
-        tag: [ "metrics-exporter", "prometheus", "vanilla", "bepinex", "plus" ]
+        tag: [ "metrics-exporter", "prometheus", "vanilla" ]
     steps:
       -
         name: "Checkout"
@@ -89,19 +89,40 @@ jobs:
         name: "Save :${{ matrix.tag }}"
         run: |
           docker save ${{ env.image_name }}:${{ github.sha }} > ${{ matrix.tag }}.tar.gz
+      -
+        name: "Run Trivy vulnerability scanner"
+        uses: aquasecurity/trivy-action@master
+        env:
+          source_image: "${{ env.image_name }}:${{ github.sha }}"
+        with:
+          image-ref: '${{ env.source_image }}'
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+      -
+        name: "Upload Trivy scan results to GitHub Security tab"
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: 'trivy-results.sarif'
 
-  #
-  # TEST STAGE
-  #
-  test-docker-vulnerability:
-    name: "Trivy"
+
+  build-modded-images:
     runs-on: ubuntu-latest
-    needs: [ "build" ]
+    needs: [ "lint", "build-base-images" ]
     strategy:
       matrix:
-        tag: [ "metrics-exporter", "prometheus", "vanilla", "bepinex", "plus" ]
+        tag: [ "bepinex", "plus" ]
     steps:
       -
+        name: "Checkout"
+        uses: actions/checkout@v2
+      -
+        name: "Get the tag from Dockertag"
+        run: |
+          cat ./images/${{ matrix.tag }}/Dockertag > ${{ matrix.tag }}.tags
+      -
+        id: docker-cache
         name: "Use Docker Cache"
         uses: actions/cache@v2
         env:
@@ -111,9 +132,13 @@ jobs:
           path: |
             ${{ matrix.tag }}.*
       -
-        name: "Load the saved Image"
+        name: "Build :${{ matrix.tag }}"
         run: |
-          docker load < ${{ matrix.tag }}.tar.gz
+          docker build -t ${{ env.image_name }}:${{ github.sha }} ./images/${{ matrix.tag }}
+      -
+        name: "Save :${{ matrix.tag }}"
+        run: |
+          docker save ${{ env.image_name }}:${{ github.sha }} > ${{ matrix.tag }}.tar.gz
       -
         name: "Run Trivy vulnerability scanner"
         uses: aquasecurity/trivy-action@master
@@ -138,7 +163,7 @@ jobs:
     name: "Push"
     runs-on: ubuntu-latest
     #if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
-    needs: [ "build", "test-docker-vulnerability" ]
+    needs: [  "build-base-images", "build-modded-images" ]
     strategy:
       matrix:
         registry: [ "docker.io", "quay.io", "ghcr.io" ]
