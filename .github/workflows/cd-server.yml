@@ -1,0 +1,175 @@
+# =================================================================================================
+name: "Server"
+
+# =================================================================================================
+on:
+  pull_request:
+    paths:
+      - .github/workflows/cd-server.yml
+      - images/vanilla/**/*
+      - images/vanilla/*
+    types:
+      - synchronize
+      - opened
+  push:
+    paths:
+      - .github/workflows/cd-server.yml
+      - images/vanilla/**/*
+      - images/vanilla/*
+    branches:
+      - develop
+      - stable
+
+# =================================================================================================
+env:
+  image_name: "adaliszk/valheim-server"
+
+# =================================================================================================
+jobs:
+
+  #
+  # STAGE: LINT
+  #
+  lint:
+    runs-on: ubuntu-latest
+    name: "Lint"
+    steps:
+      -
+        name: "Checkout"
+        uses: actions/checkout@v2
+      -
+        name: "Shellcheck"
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./images/${{ matrix.tag }}"
+      -
+        name: "Hadolint"
+        uses: brpaz/hadolint-action@v1.2.1
+        with:
+          dockerfile: "./images/${{ matrix.tag }}/Dockerfile"
+
+  #
+  # STAGE: BUILD
+  #
+  build-images:
+    name: "Build"
+    runs-on: ubuntu-latest
+    needs: [ "lint" ]
+    steps:
+      -
+        name: "Checkout"
+        uses: actions/checkout@v2
+      -
+        name: "Get the tag from Dockertag"
+        run: |
+          cat ./images/vanilla/Dockertag > ${{ matrix.tag }}.tags
+      -
+        id: docker-cache
+        name: "Use Docker Cache"
+        uses: actions/cache@v2
+        env:
+          hash_path: "./images/${{ matrix.tag }}"
+        with:
+          key: docker-${{ runner.os }}-vanilla-${{ hashFiles( env.hash_path ) }}
+          path: |
+            ${{ matrix.tag }}.*
+      -
+        name: "Build :${{ matrix.tag }}"
+        run: |
+          docker build -t ${{ env.image_name }}:${{ github.sha }} ./images/vanilla
+      -
+        name: "Save :${{ matrix.tag }}"
+        run: |
+          docker save ${{ env.image_name }}:${{ github.sha }} > vanilla.tar.gz
+      -
+        name: "Run Trivy vulnerability scanner"
+        uses: aquasecurity/trivy-action@master
+        env:
+          source_image: "${{ env.image_name }}:${{ github.sha }}"
+        with:
+          image-ref: '${{ env.source_image }}'
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+      -
+        name: "Upload Trivy scan results to GitHub Security tab"
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  #
+  # PUSH STAGE
+  #
+  push:
+    name: "Push"
+    runs-on: ubuntu-latest
+    #if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
+    needs: [  "build-base-images", "build-modded-images" ]
+    strategy:
+      matrix:
+        registry: [ "docker.io", "quay.io", "ghcr.io" ]
+        include:
+          -
+            registry: "docker.io"
+            registry_username: "DOCKERHUB_USERNAME"
+            registry_password: "DOCKERHUB_TOKEN"
+            registry_url: ""
+            image_prefix: ""
+            image_suffix: ""
+          -
+            registry: "quay.io"
+            registry_username: "QUAY_USERNAME"
+            registry_password: "QUAY_TOKEN"
+            registry_url: "quay.io"
+            image_prefix: "quay.io/"
+            image_suffix: ""
+          -
+            registry: "ghcr.io"
+            registry_username: "GHCR_USERNAME"
+            registry_password: "GHCR_PASSWORD"
+            registry_url: "ghcr.io"
+            image_prefix: "ghcr.io/"
+            image_suffix: ""
+    steps:
+      -
+        id: docker-cache
+        name: "Use Docker Cache"
+        uses: actions/cache@v2
+        env:
+          hash_path: "./images/${{ matrix.tag }}"
+        with:
+          key: docker-${{ runner.os }}-vanilla-${{ hashFiles( env.hash_path ) }}
+          path: |
+            vanilla.*
+      -
+        name: "Load the saved Image"
+        run: |
+          docker load < vanilla.tar.gz
+      -
+        name: "Login to ${{ matrix.registry }}"
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ matrix.registry_url }}
+          username: ${{ secrets[matrix.registry_username] }}
+          password: ${{ secrets[matrix.registry_password] }}
+      -
+        name: "Push ${{ matrix.registry_name }} :${{ matrix.tag }}"
+        env:
+          source_image: "${{ env.image_name }}:${{ github.sha }}"
+          target_image: "${{ matrix.image_prefix }}${{ env.image_name }}${{ matrix.image_suffix }}"
+        run: |
+          while read TAG; do
+            docker tag ${{ env.source_image }} ${{ env.target_image }}:${TAG}
+            docker push ${{ env.target_image }}:${TAG}
+          done < ${{ matrix.tag }}.tags
+      -
+        if: github.ref == 'refs/heads/stable'
+        name: "Push ${{ matrix.registry_name }} :Latest"
+        env:
+          source_image: "${{ env.image_name }}:${{ github.sha }}"
+          target_image: "${{ matrix.image_prefix }}${{ env.image_name }}${{ matrix.image_suffix }}:latest"
+        run: |
+          docker tag ${{ env.source_image }} ${{ env.target_image }}
+          docker push ${{ env.target_image }}
+
