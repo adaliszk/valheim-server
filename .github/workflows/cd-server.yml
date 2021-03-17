@@ -116,7 +116,7 @@ jobs:
   push:
     name: "Push"
     runs-on: ubuntu-latest
-    #if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
     needs: [  "build" ]
     strategy:
       matrix:

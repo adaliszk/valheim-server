@@ -1,11 +1,11 @@
 # =================================================================================================
-name: "Metrics-Exporter"
+name: "Monitoring"
 
 # =================================================================================================
 on:
   pull_request:
     paths:
-      - .github/workflows/cd-metrics-exporter.yml
+      - .github/workflows/cd-monitoring.yml
       - images/metrics-exporter/**/*
       - images/metrics-exporter/*
       - images/prometheus/**/*
@@ -15,7 +15,7 @@ on:
       - develop
       - stable
     paths:
-      - .github/workflows/cd-metrics-exporter.yml
+      - .github/workflows/cd-monitoring.yml
       - images/metrics-exporter/**/*
       - images/metrics-exporter/*
       - images/prometheus/**/*
@@ -126,7 +126,7 @@ jobs:
   push:
     name: "Push"
     runs-on: ubuntu-latest
-    #if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
     needs: [  "build" ]
     strategy:
       matrix:
