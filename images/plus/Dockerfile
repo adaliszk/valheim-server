@@ -42,7 +42,7 @@ RUN dos2unix /srv/** && chmod +x /srv/**
 FROM server-modded
 ENV PLUGINS_PATH="/plugins"
 
-COPY --from=unix /srv/init-bepinex.sh /srv/init-bepinex.sh
+COPY --from=unix /srv/init-valheim-plus.sh /srv/init-bepinex.sh
 COPY --from=unix /scripts/start.sh /scripts/start.sh
 
 VOLUME ["/plugins"]
