@@ -60,7 +60,7 @@ jobs:
     needs: [ "lint" ]
     strategy:
       matrix:
-        tag: [ "metrics-exporter", "prometheus" ]
+        tag: [  "bepinex", "plus" ]
     steps:
       -
         name: "Checkout"
@@ -82,7 +82,7 @@ jobs:
         name: "Use Docker Cache"
         uses: actions/cache@v2
         with:
-          key: cd-metrics-exporter-${{ matrix.tag }}-${{ env.image_tag }}
+          key: cd-modded-${{ matrix.tag }}-${{ env.image_tag }}
           path: |
             ${{ matrix.tag }}.*
       -
@@ -128,7 +128,7 @@ jobs:
     strategy:
       matrix:
         registry: [ "docker.io", "quay.io", "ghcr.io" ]
-        tag: [ "metrics-exporter", "prometheus" ]
+        tag: [  "bepinex", "plus" ]
         include:
           -
             registry: "docker.io"
@@ -169,7 +169,7 @@ jobs:
         env:
           hash_path: "./images/${{ matrix.tag }}"
         with:
-          key: cd-metrics-exporter-${{ matrix.tag }}-${{ env.image_tag }}
+          key: cd-modded-${{ matrix.tag }}-${{ env.image_tag }}
           path: |
             ${{ matrix.tag }}.*
       -
