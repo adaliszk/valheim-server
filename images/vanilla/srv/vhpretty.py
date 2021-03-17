@@ -36,62 +36,70 @@ def ucfirst(text: str):
 
 set_server_connected(False)
 
+last_line = ""
+
 for line in fileinput.input():
     # ignore empty lines
-    if re.match(r'^\s+$', line):
+    if re.search(r'^\s+$', line):
         continue
 
     # ignore Debug lines with (Filename: ...)
-    if re.match(r'^\(Filename:', line):
+    if re.search(r'^\(Filename:', line):
         continue
 
     # remove DATETIME prefix as this is added outside of the STDOUT
-    datePrefix = re.compile(r'^\d+/\d+/\d+ \d+:\d+:\d+:', re.IGNORECASE)
-    if re.search(datePrefix, line):
-        line = re.sub(datePrefix, r'', line)
+    date_regex = re.compile(r'^\d+/\d+/\d+ \d+:\d+:\d+:', re.IGNORECASE)
+    if re.search(date_regex, line):
+        line = re.sub(date_regex, r'', line)
 
     # remove Noisy prefixes
-    noisyPrefix = re.compile(r'^\[Subsystems]|^-', re.IGNORECASE)
-    if re.search(noisyPrefix, line):
-        line = re.sub(noisyPrefix, r'', line)
+    noisy_regex = re.compile(r'^\[Subsystems]|^-', re.IGNORECASE)
+    if re.search(noisy_regex, line):
+        line = re.sub(noisy_regex, r'', line)
 
     # trim needless space within the line
-    needlessSpace = re.compile(r'\s{2,}', re.IGNORECASE)
-    if re.search(needlessSpace, line):
-        line = re.sub(needlessSpace, r' ', line)
+    trim_regex = re.compile(r'\s{2,}', re.IGNORECASE)
+    if re.search(trim_regex, line):
+        line = re.sub(trim_regex, r' ', line)
 
     # remove WHITESPACE and format the line to look nice
     line = ucfirst(line.strip())
 
     # detect when the Server is reported to be Ready
-    if re.match(r'^Game server connected$', line):
+    if re.search(r'^Game server connected$', line):
         set_server_connected(True)
 
     prefix = "i"
 
-    bepInExRegex = re.compile(r'^\[(\w+)\s*:\s*(\w+)] (.*)', re.IGNORECASE)
-    if re.match(bepInExRegex, line):
-        match = re.search(bepInExRegex, line)
-        levels = {"Info": "I", "Message": "M", "Debug": "D", "Warn": "W", "Error": "E"}
-        prefix = levels.get(match.group(1), "I")
-        line = re.sub(bepInExRegex, r'\2> \3', line)
+    bepinex_regex = re.compile(r'\[(\w+)\s*:\s*([^]]+)] (.*)', re.IGNORECASE)
+    bepinex_match = re.search(bepinex_regex, line)
 
-    debugRegex = re.compile(r'(Section not|Loading config|Loading key|Load DLL:|Base:|Redirecting to)', re.IGNORECASE)
-    if re.search(debugRegex, line):
+    if bepinex_match:
+        levels = {"Info": "i", "Message": "m", "Debug": "d", "Warn": "w", "Error": "e"}
+        prefix = levels.get(bepinex_match.group(1), "I")
+        line = re.sub(bepinex_regex, r'\2> \3', line)
+
+        # No need to duplicate the Unity output
+        if bepinex_match.group(2) == "Unity Log":
+            line = ""
+
+    debug_regex = re.compile(r'(Section not|Loading config|Loading key|Load DLL:|Base:|Redirecting to)', re.IGNORECASE)
+    if re.search(debug_regex, line):
         prefix = "d"
 
-    warningRegex = re.compile(r'(Warning|Failed|Missing|Fallback)', re.IGNORECASE)
-    if re.search(warningRegex, line):
+    warning_regex = re.compile(r'(Warning|Failed|Missing|Fallback)', re.IGNORECASE)
+    if re.search(warning_regex, line):
         prefix = "w"
 
-    errorRegex = re.compile(r'Error', re.IGNORECASE)
-    if re.search(errorRegex, line):
+    error_regex = re.compile(r'Error', re.IGNORECASE)
+    if re.search(error_regex, line):
         prefix = "e"
 
-    severityRegex = re.compile(r'(Error|Warning|Failed|Missing|Fallback|)', re.IGNORECASE)
-    if re.search(severityRegex, line) or prefix in ["w", "e"]:
+    severe_regex = re.compile(r'(Error|Warning|Failed|Missing|Fallback|)', re.IGNORECASE)
+    if re.search(severe_regex, line) or prefix in ["w", "e"]:
         log_error(line)
 
-    if prefix not in ["d"]:
+    if prefix not in ["d"] and len(line) > 0 and line != last_line:
         print(prefix + "> " + line)
         sys.stdout.flush()
+        last_line = line

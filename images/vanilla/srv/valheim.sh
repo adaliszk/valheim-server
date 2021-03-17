@@ -1,5 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC1091
+source /srv/init-env.sh
 source /srv/console.sh
 
 cd "${SERVER_PATH}" || exit
@@ -19,14 +20,13 @@ log "CMD: ${CMD}"
 log "ARGS: ${ARGS}"
 
 source /srv/init-scripts.sh
-source /srv/init-env.sh
 
 function run {
   SCRIPT="${SCRIPTS_PATH}/${1}.sh"
   if [ -f "${SCRIPT}" ];
     then
       log "Executing \"${1}\" script..."
-      bash -c "${SCRIPT}" "${ARGS[@]}" 2>&1 | tee-server-raw | vhpretty | tee-server &
+      bash -c "${SCRIPT}" "${ARGS[@]}" 2>&1 | tee-server-raw | vhpretty | tee-server > "$(output-log)" &
       SERVER=$!
 
       echo "Script started on PID: ${SERVER}" | tee-server >> "$(output-log)"

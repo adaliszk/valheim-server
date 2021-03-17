@@ -20,7 +20,7 @@ Or set up a passive exporter (i.e. pull, or scrape based) by:
 The exporter in this repo is written in a way that you can use it with any official server's output, however, it is meant
 to be used together with the vhpretty library for extra data points to work with. The general idea is:
 ```bash
-docker run -d -p 3903:3903 -v /path/to/valheim/console-output.log:/logs/output.log:ro adaliszk/valheim-server:metrics-exporter 
+docker run -d -p 3903:3903 -v /path/to/valheim/console-output.log:/logs/output.log:ro adaliszk/valheim-server-monitoring:metrics 
 ```
 or
 ```yaml
@@ -43,7 +43,7 @@ services:
       - 2457:2457/udp
   
   metrics:
-    image: adaliszk/valheim-server:metrics
+    image: adaliszk/valheim-server-monitoring:metrics
     volumes:
       - shared-logs:/logs:ro
     ports:

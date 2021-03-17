@@ -1,11 +1,8 @@
-# ==============================================================================
-version: "3.6"
+version: "3.8"
 
-# ==============================================================================
 volumes:
   shared-logs: {}
 
-# ==============================================================================
 services:
 
   valheim:
@@ -21,7 +18,7 @@ services:
 
   metrics-exporter:
     container_name: "metrics_exporter"
-    image: "adaliszk/valheim-server:metrics"
+    image: "adaliszk/valheim-server-monitoring:metrics"
     volumes:
       - shared-logs:/logs:ro
     ports:

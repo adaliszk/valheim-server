@@ -15,29 +15,41 @@ x-enabled-server: &enabled-server
     SERVER_ADMINS: "76561198108936133"
   volumes:
     - ./temp/data:/data
+    - ./temp/config:/config
+    - ./temp/plugins:/plugins
     - ./temp/backups:/backups
     - ./temp/logs:/logs
   ports:
     - 2456:2456/udp
     - 2457:2457/udp
 
+x-disabled-server: &disabled-server
+  command: noop
+
 # ==============================================================================
 services:
 
-  dos2unix:
-    container_name: "dos2unix_helper"
-    image: "adaliszk/valheim-server:${ENV_TAG:-dos2unix}"
-    build: images/dos2unix
-
   vanilla:
     container_name: "valheim_vanilla"
-    image: "adaliszk/valheim-server:${VANILLA_TAG:-latest}"
+    image: "adaliszk/valheim-server:${VANILLA_TAG:-vanilla}"
     build: images/vanilla
-    <<: *enabled-server
-    command:
-      - -name "Name with spaces - and - dashes"
+    <<: *disabled-server
+
+  bepinex:
+    container_name: "valheim_bepinex"
+    image: "adaliszk/valheim-server:${VANILLA_TAG:-bepinex}"
+    build: images/bepinex
+    <<: *disabled-server
     depends_on:
-      - dos2unix
+      - vanilla
+
+  plus:
+    container_name: "valheim_plus"
+    image: "adaliszk/valheim-server:${VANILLA_TAG:-plus}"
+    build: images/plus
+    <<: *enabled-server
+    depends_on:
+      - vanilla
 
   metrics-exporter:
     container_name: "metrics_exporter"
