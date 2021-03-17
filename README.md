@@ -116,6 +116,7 @@ The backups from this location are made into `/backups` so make sure that locati
 - [Basic Docker setup using Docker managed volumes](docs/basic-Docker-setup.md)
 - [Basic Docker-Compose setup](docs/basic-Docker-Compose-setup.md)
 - [Basic Docker-Compose setup (docker-compose.yml)](docs/examples/compose-simple.yml)  
+- [Basic Compose with Modded server (docker-compose.yml)](docs/examples/compose-modded.yml)
 - [Export Metrics with MTail](docs/export-metrics-with-MTail.md)
 - [Export Metrics with MTail (docker-compose.yml)](docs/examples/compose-with-metrics.yml)
 

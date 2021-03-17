@@ -1,26 +1,7 @@
 #!/bin/bash
 # shellcheck disable=SC1091
 source /srv/init-server.sh
-
-
-# Valheim Plus specific settings
-# NOTE: Do not edit unless you know what you are doing!
-####
-export DOORSTOP_ENABLE=TRUE
-
-# What .NET assembly to execute. Valid value is a path to a .NET DLL that mono can execute.
-export DOORSTOP_INVOKE_DLL_PATH="${SERVER_PATH}/BepInEx/core/BepInEx.Preloader.dll"
-export DOORSTOP_CORLIB_OVERRIDE_PATH="${SERVER_PATH}/unstripped_corlib"
-
-DOORSTOP_LIB_PATH="${SERVER_PATH}/doorstop_libs"
-DOORSTOP_LIBRARY="libdoorstop_x64.so:$LD_PRELOAD"
-
-export LD_LIBRARY_PATH="${DOORSTOP_LIB_PATH}:$LD_LIBRARY_PATH"
-export LD_PRELOAD="${DOORSTOP_LIBRARY}"
-
-export DYLD_LIBRARY_PATH="${DDORSTOP_LIBS}"
-export DYLD_INSERT_LIBRARIES="${DOORSTOP_LIB_PATH}/${DOORSTOP_LIBRARY}"
-####
+source /srv/init-valheim-plus.sh
 
 
 TEMP_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"

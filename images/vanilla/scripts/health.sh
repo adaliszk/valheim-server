@@ -1,5 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC1091
+source /srv/init-env.sh
 source /srv/console.sh
 
 function log {

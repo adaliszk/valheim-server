@@ -1,5 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC1091
+source /srv/init-env.sh
 
 NAME="${1:-auto}"
 

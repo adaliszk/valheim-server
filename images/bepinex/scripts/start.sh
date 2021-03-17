@@ -1,18 +1,7 @@
 #!/bin/bash
 # shellcheck disable=SC1091
 source /srv/init-server.sh
-
-
-# BepInEx-specific settings
-# NOTE: Do not edit unless you know what you are doing!
-####
-export DOORSTOP_ENABLE=TRUE
-export DOORSTOP_INVOKE_DLL_PATH=${SERVER_PATH}/BepInEx/core/BepInEx.Preloader.dll
-export DOORSTOP_CORLIB_OVERRIDE_PATH=${SERVER_PATH}/unstripped_corlib
-
-export LD_LIBRARY_PATH="${SERVER_PATH}/doorstop_libs:$LD_LIBRARY_PATH"
-export LD_PRELOAD="libdoorstop_x64.so:$LD_PRELOAD"
-####
+source /srv/init-bepinex.sh
 
 
 TEMP_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
