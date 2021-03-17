@@ -163,7 +163,7 @@ jobs:
           while read TAG; do
             docker tag ${{ env.source_image }} ${{ env.target_image }}:${TAG}
             docker push ${{ env.target_image }}:${TAG}
-          done < ${{ matrix.tag }}.tags
+          done < vanilla.tags
       -
         if: github.ref == 'refs/heads/stable'
         name: "Push ${{ matrix.registry_name }} :Latest"
