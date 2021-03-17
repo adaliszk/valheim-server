@@ -62,7 +62,7 @@ jobs:
       -
         name: "Get the tag from Dockertag"
         run: |
-          cat ./images/vanilla/Dockertag > ${{ matrix.tag }}.tags
+          cat ./images/vanilla/Dockertag > vanilla.tags
       -
         id: docker-cache
         name: "Use Docker Cache"
@@ -74,6 +74,12 @@ jobs:
           path: |
             vanilla.*
       -
+        if: steps.cache.outputs.cache-hit == 'true'
+        name: "Load the saved Image"
+        run: |
+          docker load < vanilla.tar.gz
+      -
+        if: steps.cache.outputs.cache-hit != 'true'
         name: "Build :vanilla"
         run: |
           docker build -t ${{ env.image_name }}:${{ github.sha }} ./images/vanilla
