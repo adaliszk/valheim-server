@@ -22,4 +22,4 @@ ENV SERVER_NAME="Valheim Plus v0.9.5.5" \
 
 COPY --from=valheim-plus /modpack "${MOD_PATH}"
 
-RUN cp -rfa "${MOD_PATH}/." "${SERVER_PATH}/" && chown -R "1001:1001" ${SERVER_PATH}
+RUN cp -rfa "${MOD_PATH}/." "${SERVER_PATH}/" && chown -R "1001:1001" "${SERVER_PATH}"
