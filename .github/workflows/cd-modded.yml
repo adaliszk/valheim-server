@@ -1,0 +1,202 @@
+# =================================================================================================
+name: "Modded Server"
+
+# =================================================================================================
+on:
+  workflow_run:
+    workflows: [ "Server" ]
+    types:
+      - completed
+    branches:
+      - develop
+      - stable
+  pull_request:
+    paths:
+      - .github/workflows/cd-modded.yml
+      - images/bepinex/**/*
+      - images/bepinex/*
+      - images/plus/**/*
+      - images/plus/*
+
+# =================================================================================================
+env:
+  image_name: "adaliszk/valheim-server"
+
+# =================================================================================================
+jobs:
+
+  #
+  # STAGE: LINT
+  #
+  lint:
+    strategy:
+      fail-fast: false
+      matrix:
+        tag: [ "bepinex", "plus" ]
+
+    runs-on: ubuntu-latest
+    name: "Lint"
+    steps:
+      -
+        name: "Checkout"
+        uses: actions/checkout@v2
+      -
+        name: "Shellcheck"
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./images/${{ matrix.tag }}"
+      -
+        name: "Hadolint"
+        uses: brpaz/hadolint-action@v1.2.1
+        with:
+          dockerfile: "./images/${{ matrix.tag }}/Dockerfile"
+
+  #
+  # STAGE: BUILD
+  #
+  build:
+    name: "Build"
+    runs-on: ubuntu-latest
+    needs: [ "lint" ]
+    strategy:
+      matrix:
+        tag: [ "metrics-exporter", "prometheus" ]
+    steps:
+      -
+        name: "Checkout"
+        uses: actions/checkout@v2
+      -
+        name: "Get the tag from Dockertag"
+        run: |
+          cat ./images/${{ matrix.tag }}/Dockertag > ${{ matrix.tag }}.tags
+      -
+        name: "Resolve Cache Hash"
+        env:
+          hash_path: "./images/${{ matrix.tag }}"
+        run: |
+          IMAGE_TAG=${{ hashFiles( env.hash_path ) }}
+          echo "${IMAGE_TAG}" > ${{ matrix.tag }}.hash
+          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_ENV
+      -
+        id: docker-cache
+        name: "Use Docker Cache"
+        uses: actions/cache@v2
+        with:
+          key: cd-metrics-exporter-${{ matrix.tag }}-${{ env.image_tag }}
+          path: |
+            ${{ matrix.tag }}.*
+      -
+        if: steps.cache.outputs.cache-hit == 'true'
+        name: "Load the saved Image"
+        run: |
+          docker load < ${{ matrix.tag }}.tar.gz
+      -
+        if: steps.cache.outputs.cache-hit != 'true'
+        name: "Build :${{ matrix.tag }}"
+        run: |
+          docker build -t ${{ env.image_name }}:${{ env.image_tag }} ./images/${{ matrix.tag }}
+          docker save ${{ env.image_name }}:${{ env.image_tag }} > ${{ matrix.tag }}.tar.gz
+      -
+        name: "Tag for the Security Scan"
+        run: |
+          docker tag ${{ env.image_name }}:${{ env.image_tag }} ${{ env.image_name }}:${{ matrix.tag }}
+      -
+        name: "Run Trivy vulnerability scanner"
+        uses: aquasecurity/trivy-action@master
+        env:
+          source_image: "${{ env.image_name }}:${{ matrix.tag }}"
+        with:
+          image-ref: '${{ env.source_image }}'
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+      -
+        name: "Upload Trivy scan results to GitHub Security tab"
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  #
+  # PUSH STAGE
+  #
+  push:
+    name: "Push"
+    runs-on: ubuntu-latest
+    #if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
+    needs: [  "build" ]
+    strategy:
+      matrix:
+        registry: [ "docker.io", "quay.io", "ghcr.io" ]
+        tag: [ "metrics-exporter", "prometheus" ]
+        include:
+          -
+            registry: "docker.io"
+            registry_username: "DOCKERHUB_USERNAME"
+            registry_password: "DOCKERHUB_TOKEN"
+            registry_url: ""
+            image_prefix: ""
+            image_suffix: ""
+          -
+            registry: "quay.io"
+            registry_username: "QUAY_USERNAME"
+            registry_password: "QUAY_TOKEN"
+            registry_url: "quay.io"
+            image_prefix: "quay.io/"
+            image_suffix: ""
+          -
+            registry: "ghcr.io"
+            registry_username: "GHCR_USERNAME"
+            registry_password: "GHCR_PASSWORD"
+            registry_url: "ghcr.io"
+            image_prefix: "ghcr.io/"
+            image_suffix: ""
+    steps:
+      -
+        name: "Checkout"
+        uses: actions/checkout@v2
+      -
+        name: "Resolve Cache Hash"
+        env:
+          hash_path: "./images/${{ matrix.tag }}"
+        run: |
+          IMAGE_TAG=${{ hashFiles( env.hash_path ) }}
+          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_ENV
+      -
+        id: docker-cache
+        name: "Use Docker Cache"
+        uses: actions/cache@v2
+        env:
+          hash_path: "./images/${{ matrix.tag }}"
+        with:
+          key: cd-metrics-exporter-${{ matrix.tag }}-${{ env.image_tag }}
+          path: |
+            ${{ matrix.tag }}.*
+      -
+        name: "Load the saved Image"
+        run: |
+          docker load < ${{ matrix.tag }}.tar.gz
+      -
+        name: "Login to ${{ matrix.registry }}"
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ matrix.registry_url }}
+          username: ${{ secrets[matrix.registry_username] }}
+          password: ${{ secrets[matrix.registry_password] }}
+      -
+        name: "Push ${{ matrix.registry_name }} :${{ matrix.tag }}"
+        env:
+          source_image: "${{ env.image_name }}:${{ env.image_tag }}"
+          target_image: "${{ matrix.image_prefix }}${{ env.image_name }}${{ matrix.image_suffix }}"
+        run: |
+          cat ${{ matrix.tag }}.tags | tr \\n \\0 | xargs -0 -I '###' -n1 docker tag ${{ env.source_image }} ${{ env.target_image }}:###
+          cat ${{ matrix.tag }}.tags | tr \\n \\0 | xargs -0 -I '###' -n1 docker push ${{ env.target_image }}:###
+      -
+        if: github.ref == 'refs/heads/stable'
+        name: "Push ${{ matrix.registry_name }} :latest"
+        env:
+          source_image: "${{ env.image_name }}:${{ env.image_tag }}"
+          target_image: "${{ matrix.image_prefix }}${{ env.image_name }}${{ matrix.image_suffix }}:latest"
+        run: |
+          docker tag ${{ env.source_image }} ${{ env.target_image }}
+          docker push ${{ env.target_image }}
