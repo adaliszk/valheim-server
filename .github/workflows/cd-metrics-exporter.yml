@@ -74,8 +74,10 @@ jobs:
           cat ./images/${{ matrix.tag }}/Dockertag > ${{ matrix.tag }}.tags
       -
         name: "Resolve Cache Hash"
+        env:
+          hash_path: "./images/${{ matrix.tag }}"
         run: |
-          IMAGE_TAG=${{ hashFiles( ./images/${{ matrix.tag }} ) }}
+          IMAGE_TAG=${{ hashFiles( env.hash_path ) }}
           echo "${IMAGE_TAG}" > ${{ matrix.tag }}.hash
           echo "image_tag=${IMAGE_TAG}" >> $GITHUB_ENV
       -
@@ -158,8 +160,10 @@ jobs:
         uses: actions/checkout@v2
       -
         name: "Resolve Cache Hash"
+        env:
+          hash_path: "./images/${{ matrix.tag }}"
         run: |
-          IMAGE_TAG=${{ hashFiles( ./images/${{ matrix.tag }} ) }}
+          IMAGE_TAG=${{ hashFiles( env.hash_path ) }}
           echo "image_tag=${IMAGE_TAG}" >> $GITHUB_ENV
       -
         id: docker-cache
