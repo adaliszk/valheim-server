@@ -22,9 +22,9 @@ on:
 
 # =================================================================================================
 env:
-  chart_repository: "charts.adaliszk.io"
-  chart_package: "valheim-server"
+  chart_repository: "https://charts.adaliszk.io"
   chart_name: "adaliszk/valheim-server"
+  chart_package: "valheim-server"
 
 # =================================================================================================
 jobs:
@@ -62,12 +62,27 @@ jobs:
         with:
           exec: helm package ./chart
       -
-        name: "Upload Artifacts"
+        name: "Upload Artifact"
         uses: actions/upload-artifact@v2
         with:
           path: "${{ env.chart_package }}-*"
           name: "${{ env.chart_package }}"
+
   #
   # STAGE: PUSH
   #
-  #push:
+  push:
+    needs: [ "bundle" ]
+    runs-on: ubuntu-latest
+    name: "Push"
+    steps:
+      -
+        name: "Download Artifact"
+        uses: actions/download-artifact@v2
+        with:
+          name: "${{ env.chart_package }}"
+      -
+        name: "Upload to Chartmuseum"
+        run: |
+          PACKAGE=$(ls -1 "${{ env.chart_package }}-*")
+          curl --data-binary "@${PACKAGE}" ${{ env.chart_repository }}/api/charts
