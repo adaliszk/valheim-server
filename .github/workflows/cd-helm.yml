@@ -82,7 +82,26 @@ jobs:
         with:
           name: "${{ env.chart_package }}"
       -
+        id: deployment_info
+        name: "Deploy to ${{ env.chart_repository }}"
+        uses: chrnorm/deployment-action@releases/v1
+        with:
+          token: "${{ github.token }}"
+          target_url: "${{ env.chart_repository }}"
+          environment: chartmuseum
+      -
+        id: deployment
         name: "Upload to Chartmuseum"
         run: |
           PACKAGE=$(ls -1 ${{ env.chart_package }}-*)
           curl --data-binary "@${PACKAGE}" ${{ env.chart_repository }}/api/charts
+      -
+        if: always()
+        name: "Update Deployment Status"
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          deployment_id: ${{ steps.deployment_info.outputs.deployment_id }}
+          token: "${{ github.token }}"
+          target_url: "${{ env.chart_repository }}"
+          state: ${{ steps.deployment.outcome }}
+
