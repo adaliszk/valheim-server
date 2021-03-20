@@ -26,11 +26,11 @@ function run {
   if [ -f "${SCRIPT}" ];
     then
       log "Executing \"${1}\" script..."
-      bash -c "${SCRIPT}" "${ARGS[@]}" 2>&1 | tee-server-raw | vhpretty | tee-server > "$(output-log)" &
+      bash -c "${SCRIPT}" "${ARGS[@]}" 2>&1 | tee-server-raw | vhpretty | vhtrigger | tee-server > "$(output-log)" &
       SERVER=$!
 
       echo "Script started on PID: ${SERVER}" | tee-server >> "$(output-log)"
-      tail --pid ${SERVER} -n +1 -f "${LOG_PATH}/output.log"
+      tail --pid ${SERVER} -n +1 -f "${LOG_PATH}/output.log" 2> /dev/null
       log "Script on ${SERVER} has exited!" | tee-exit
     else
       log "Script not found: ${1}"

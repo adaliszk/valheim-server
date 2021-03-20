@@ -4,6 +4,10 @@ function vhpretty {
   /srv/vhpretty.py
 }
 
+function vhtrigger {
+  /srv/vhtrigger.py
+}
+
 function output-log {
   echo "${LOG_PATH}/output.log"
 }
