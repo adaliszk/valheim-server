@@ -16,6 +16,7 @@ x-enabled-server: &enabled-server
   volumes:
     - ./temp/data:/data
     - ./temp/config:/config
+    - ./temp/config-mods:/server/BepInEx/config
     - ./temp/plugins:/plugins
     - ./temp/backups:/backups
     - ./temp/logs:/logs
@@ -39,6 +40,14 @@ services:
     container_name: "valheim_bepinex"
     image: "adaliszk/valheim-server:${VANILLA_TAG:-bepinex}"
     build: images/bepinex
+    <<: *enabled-server
+    depends_on:
+      - vanilla
+
+  bepinex-full:
+    container_name: "valheim_bepinex_full"
+    image: "adaliszk/valheim-server:${VANILLA_TAG:-bepinex-full}"
+    build: images/bepinex-full
     <<: *disabled-server
     depends_on:
       - vanilla
@@ -47,13 +56,13 @@ services:
     container_name: "valheim_plus"
     image: "adaliszk/valheim-server:${VANILLA_TAG:-plus}"
     build: images/plus
-    <<: *enabled-server
+    <<: *disabled-server
     depends_on:
       - vanilla
 
   metrics-exporter:
     container_name: "metrics_exporter"
-    image: "adaliszk/valheim-server:${EXPORTER_TAG:-metrics}"
+    image: "adaliszk/valheim-server-monitoring:${EXPORTER_TAG:-metrics}"
     build: images/metrics-exporter
 #    command:
 #      - --v 1
@@ -73,7 +82,7 @@ services:
   prometheus:
     container_name: "prometheus"
 #    image: "prom/prometheus:latest"
-    image: "adaliszk/valheim-server:${PROMETHEUS_TAG:-prometheus}"
+    image: "adaliszk/valheim-server-monitoring:${PROMETHEUS_TAG:-prometheus}"
     build: images/prometheus
     links:
       - metrics-exporter
