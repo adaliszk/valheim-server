@@ -120,7 +120,3 @@ When you run the image, docker will create persistent storage for multiple locat
 - `/config`: configuration files to load on start (typically Read-Only files (ConfigMaps))
 - `/plugins`: the desired server-side mod DLLs for `bepinex` and `plus`
 - `/logs`: log files for debugging and metrics
-
-## Kubernetes
-
-The image has a
