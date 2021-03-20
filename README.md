@@ -24,9 +24,11 @@ full feature-set for managing and monitoring your Valheim Server.
 
 
 ## Server:
-[adaliszk/valheim-server](https://hub.docker.com/r/adaliszk/valheim-server) - 
-[ghcr.io/adaliszk/valheim-server](https://ghcr.io/adaliszk/valheim-server) - 
-[quay.io/adaliszk/valheim-server](https://quay.io/adaliszk/valheim-server)
+[`adaliszk/valheim-server`](https://hub.docker.com/r/adaliszk/valheim-server)  
+
+Alternatives:
+[`ghcr.io/adaliszk/valheim-server`](https://ghcr.io/adaliszk/valheim-server), 
+[`quay.io/adaliszk/valheim-server`](https://quay.io/adaliszk/valheim-server)
 
 - `vanilla` `latest` - always the latest stable build of the server
 - `0.147.3` `0.147` - the server version released on 02/03/2021
@@ -58,9 +60,11 @@ services:
 [More details about using this image](images/vanilla/README.md)
 
 ## Monitoring companion:
-[adaliszk/valheim-server-monitoring](https://hub.docker.com/r/adaliszk/valheim-server-monitoring) - 
-[ghcr.io/adaliszk/valheim-server-monitoring](https://ghcr.io/adaliszk/valheim-server-monitoring) - 
-[quay.io/adaliszk/valheim-server-monitoring](https://quay.io/adaliszk/valheim-server-monitoring)
+[`adaliszk/valheim-server-monitoring`](https://hub.docker.com/r/adaliszk/valheim-server-monitoring)
+
+Alternatives:
+[`ghcr.io/adaliszk/valheim-server-monitoring`](https://ghcr.io/adaliszk/valheim-server-monitoring), 
+[`quay.io/adaliszk/valheim-server-monitoring`](https://quay.io/adaliszk/valheim-server-monitoring)
 
 - `metrics-0.147.3` `metrics-0.147` `metrics` - latest server's metrics exporter
 - `prometheus` - a pre-configured prometheus for docker environments
