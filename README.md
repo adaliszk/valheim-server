@@ -64,6 +64,13 @@ services:
 
 [More details about using this image](images/vanilla/README.md)
 
+## Kubernetes deployment:
+
+```bash
+helm repo add adaliszk https://charts.adaliszk.io
+helm upgrade --install --create-namespace --wait my-valheim-server adaliszk/valheim-server
+```
+
 ## Monitoring companion:
 [`adaliszk/valheim-server-monitoring`](https://hub.docker.com/r/adaliszk/valheim-server-monitoring)
 
