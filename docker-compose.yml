@@ -64,8 +64,8 @@ services:
     container_name: "metrics_exporter"
     image: "adaliszk/valheim-server-monitoring:${EXPORTER_TAG:-metrics}"
     build: images/metrics-exporter
-#    command:
-#      - --v 1
+    command:
+      - --v 1
     volumes:
       - ./temp/logs:/logs:ro
     ports:
