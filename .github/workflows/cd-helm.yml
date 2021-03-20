@@ -23,6 +23,7 @@ on:
 # =================================================================================================
 env:
   chart_repository: "https://charts.adaliszk.io"
+  chart_deployment: "https://charts.adaliszk.io/chart/?name=valheim-server"
   chart_name: "adaliszk/valheim-server"
   chart_package: "valheim-server"
 
@@ -72,6 +73,7 @@ jobs:
   # STAGE: PUSH
   #
   push:
+    #if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
     needs: [ "bundle" ]
     runs-on: ubuntu-latest
     name: "Push"
@@ -87,14 +89,14 @@ jobs:
         uses: chrnorm/deployment-action@releases/v1
         with:
           token: "${{ github.token }}"
-          target_url: "${{ env.chart_repository }}"
-          environment: chartmuseum
+          target_url: "${{ env.chart_deployment }}"
+          environment: charts.adaliszk.io
       -
         id: deployment
         name: "Upload to Chartmuseum"
         run: |
           PACKAGE=$(ls -1 ${{ env.chart_package }}-*)
-          curl --data-binary "@${PACKAGE}" ${{ env.chart_repository }}/api/charts
+          curl -u "${{ secrets.CHART_USERNAME }}:${{ secrets.CHART_PASSWORD }}" --data-binary "@${PACKAGE}" ${{ env.chart_repository }}/api/charts
       -
         if: always()
         name: "Update Deployment Status"
@@ -102,6 +104,6 @@ jobs:
         with:
           deployment_id: ${{ steps.deployment_info.outputs.deployment_id }}
           token: "${{ github.token }}"
-          target_url: "${{ env.chart_repository }}"
+          target_url: "${{ env.chart_deployment }}"
           state: ${{ steps.deployment.outcome }}
 

@@ -1,74 +1,108 @@
-
+# VALHEIM SERVER
+# =============================================================================
 server:
+  # Basic settings
   name: "Valheim"
   world: "Dedicated"
   password: "12345"
   public: "1"
-  adminlist: |
-    # one line per steam id
-  whitelist: |
-    # one line per steam id
-  blacklist: |
-    # one line per steam id
 
-data:
-  # Update this to your specific environment and storage class
-  storageClass: standard
-  storageSize: 2G
+  # Moderation
+  admins: [ ]
+  permitted: [ ]
+  banned: [ ]
 
-backups:
-  # Update this to your specific environment and storage class
-  storageClass: standard
-  storageSize: 3G
+  # Persistent Data
+  # Update the `storageClass` appropriately to your setup!
+  data:
+    storageClass: standard
+    storageSize: 2G
 
-logs:
-  # Update this to your specific environment and storage class
-  storageClass: standard
-  storageSize: 500M
+  backups:
+    storageClass: standard
+    storageSize: 3G
 
-resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-image:
-  name: adaliszk/valheim-server
-  tag: 0.147.3
-  pullPolicy: IfNotPresent
-  pullSecrets: []
-
-service:
-  enabled: true
-  type: LoadBalancer
-
-  ports:
-    valheim:
-      port: 2456
-      targetPort: 2456
-      protocol: UDP
-
-    msqp:
-      port: 2457
-      targetPort: 2457
-      protocol: UDP
-
-    msqp-default:
-      port: 27015
-      targetPort: 2457
-      protocol: UDP
+  logs:
+    storageClass: standard
+    storageSize: 500M
 
   # Additional annotations (e.g. for cloud provider specific config)
-  annotations: {}
+  annotations: { }
 
-  # Additional service labels (e.g. for filtering Service by custom labels)
-  labels: {}
+  # Additional service labels (e.g. for filtering Deployment by custom labels)
+  labels: { }
 
-  # Additional entries here will be added to the service spec. Cannot contains
-  # type, selector or ports entries.
-  spec: {}
+  # Resource limitations if needed
+  resources: { }
+    #limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    #requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+  service:
+    enabled: true
+    type: LoadBalancer
+
+    ports:
+      valheim:
+        port: 2456
+        targetPort: 2456
+        protocol: UDP
+
+      msqp:
+        port: 2457
+        targetPort: 2457
+        protocol: UDP
+
+      msqp-default:
+        port: 27015
+        targetPort: 2457
+        protocol: UDP
+
+    # Additional annotations (e.g. for cloud provider specific config)
+    annotations: { }
+
+    # Additional service labels (e.g. for filtering Service by custom labels)
+    labels: { }
+
+    # Additional entries here will be added to the service spec.
+    # Cannot contain: type, selector or ports entries.
+    spec: { }
     # externalTrafficPolicy: Cluster
     # loadBalancerIP: "1.2.3.4"
-  # clusterIP: "2.3.4.5"
+    # clusterIP: "2.3.4.5"
+
+  image:
+    name: adaliszk/valheim-server
+    tag: 0.147.3
+    pullPolicy: IfNotPresent
+    pullSecrets: [ ]
+
+
+# METRICS
+# =============================================================================
+metrics-exporter:
+  enabled: false
+
+  annotations:
+    prometheus.io/scrape: true
+    prometheus.io/port: 3903
+
+  labels: { }
+
+  service:
+    enabled: true
+    type: ClusterIP
+    ports:
+      http:
+        port: 3903
+        targetPort: 3903
+        protocol: TCP
+
+  image:
+    name: adaliszk/valheim-server-monitoring
+    tag: metrics-0.147.3
+    pullPolicy: IfNotPresent
+    pullSecrets: [ ]

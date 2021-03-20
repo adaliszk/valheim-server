@@ -2,9 +2,30 @@ apiVersion: v2
 
 type: application
 name: valheim-server
-version: "0.9.1"
-
+version: "0.10.0"
 appVersion: "0.147.3"
 
+home: https://github.com/adaliszk/valheim-server
+#icon: file://logo.png
+
+keywords:
+  - valheim
+  - server
+
+maintainers:
+  - name: adaliszk
+    email: hello@adaliszk.dev
+
 description: >
-  Valheim Server on Kubernetes
+  This chart wraps up [adaliszk/valheim-server](https://hub.docker.com/r/adaliszk/valheim-server) and allows
+  you to quickly deploy everything you'll need.
+
+  The setup is fairly simple:
+  - Server Deployment:
+    - Volumes for: /data, /backups, /logs
+    - LoadBalancer service (if enabled)
+
+  - Metrics Deployment:
+    - Uses /logs volume from the Server
+    - Prometheus scape annotations
+    - Ingress (if enabled)
