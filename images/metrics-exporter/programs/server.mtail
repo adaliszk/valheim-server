@@ -100,7 +100,7 @@ gauge garbage_collector_delete_objects_duration
 # Total: 329.310200 ms (FindLiveObjects: 65.498400 ms CreateObjectMapping: 16.332400 ms MarkObjects: 246.757300 ms DeleteObjects: 0.720600 ms)
 
 /Unloading / + UNLOADED_COUNT + / Unused Serialized files/ {
-    /Serialized files now loaded: (?P<loaded_count>\d+)/ {
+    /Serialized files now loaded: / + LOADED_COUNT {
         server_loaded_serialized_files = $loaded_count
     }
     otherwise {
@@ -109,11 +109,11 @@ gauge garbage_collector_delete_objects_duration
 }
 
 /Unloading / + UNLOADED_COUNT + / unused Assets/ {
-    /Loaded Objects now: (?P<loaded_count>\d+)/ {
-        server_loaded_objects = $loaded_objects
+    /.*/ {
+        garbage_collector_unloaded_objects = $unloaded_count
     }
-    otherwise {
-        garbage_collector_unloaded_files = $unloaded_count
+    /Loaded Objects now: / + LOADED_COUNT {
+        server_loaded_objects = $loaded_count
     }
 }
 
