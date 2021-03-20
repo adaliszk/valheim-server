@@ -9,4 +9,4 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.data.storageSize | default "100M" }}
+      storage: {{ .Values.data.storageSize | default "2G" }}

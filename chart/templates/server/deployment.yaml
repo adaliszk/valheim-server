@@ -66,9 +66,6 @@ spec:
               mountPath: /configs
               readOnly: true
             -
-              name: server-scripts
-              mountPath: /scripts
-            -
               name: server-backups
               mountPath: /backups
             -
@@ -89,9 +86,6 @@ spec:
           name: server-configs
           configMap:
             name: {{ include "server_config_name" . }}
-        -
-          name: server-scripts
-          emptyDir: {}
         -
           name: server-backups
           persistentVolumeClaim:

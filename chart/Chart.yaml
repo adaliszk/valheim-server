@@ -2,7 +2,7 @@ apiVersion: v2
 
 type: application
 name: valheim-server
-version: "0.9.0"
+version: "0.9.1"
 
 appVersion: "0.147.3"
 

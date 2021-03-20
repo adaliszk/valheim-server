@@ -14,7 +14,7 @@ server:
 data:
   # Update this to your specific environment and storage class
   storageClass: standard
-  storageSize: 1G
+  storageSize: 2G
 
 backups:
   # Update this to your specific environment and storage class
@@ -24,7 +24,7 @@ backups:
 logs:
   # Update this to your specific environment and storage class
   storageClass: standard
-  storageSize: 1G
+  storageSize: 500M
 
 resources: {}
   # limits:
