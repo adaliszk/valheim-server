@@ -2,7 +2,7 @@
 [![:latest image size](https://img.shields.io/docker/image-size/adaliszk/valheim-server/latest?label=Image%20Size)](https://hub.docker.com/r/adaliszk/valheim-server)
 [![server build](https://github.com/adaliszk/valheim-server/actions/workflows/cd-server.yml/badge.svg?label=Server)](https://github.com/adaliszk/valheim-server/actions/workflows/cd-server.yml)
 [![monitoring build](https://github.com/adaliszk/valheim-server/actions/workflows/cd-monitoring.yml/badge.svg?label=Monitoring)](https://github.com/adaliszk/valheim-server/actions/workflows/cd-monitoring.yml)
-[![helm build](https://github.com/adaliszk/valheim-server/actions/workflows/helm-build.yml/badge.svg)](https://github.com/adaliszk/valheim-server/actions/workflows/helm-build.yml)
+[![helm build](https://github.com/adaliszk/valheim-server/actions/workflows/cd-helm.yml/badge.svg)](https://github.com/adaliszk/valheim-server/actions/workflows/cd-helm.yml)
 [![license](https://img.shields.io/github/license/adaliszk/valheim-server?label=License)](https://github.com/adaliszk/valheim-server/LICENSE.md)
 
 # Valheim Docker Server & Helm Chart
@@ -21,6 +21,7 @@ full feature-set for managing and monitoring your Valheim Server.
 - **Sanitized server output**; say goodbye to the debug noise that is not important!
 - Health-checks to monitor the image's basic status
 - Companion image for monitoring: [adaliszk/valheim-server-monitoring](https://hub.docker.com/r/adaliszk/valheim-server-monitoring)
+- Helm chart for Kubernetes: [https://charts.adaliszk.io](https://charts.adaliszk.io/chart/?name=valheim-server)
 
 
 ## Server:
@@ -63,6 +64,13 @@ services:
 ```
 
 [More details about using this image](images/vanilla/README.md)
+
+## Kubernetes deployment:
+
+```bash
+helm repo add adaliszk https://charts.adaliszk.io
+helm upgrade --install --create-namespace --wait my-valheim-server adaliszk/valheim-server
+```
 
 ## Monitoring companion:
 [`adaliszk/valheim-server-monitoring`](https://hub.docker.com/r/adaliszk/valheim-server-monitoring)

@@ -1,9 +1,21 @@
 apiVersion: v2
-appVersion: "1.16.0"
 
-name: Valheim Server
 type: application
-version: "0.8.2"
+name: valheim-server
+version: "0.11.0"
+appVersion: "0.147.3"
+
+home: https://github.com/adaliszk/valheim-server
+icon: file://logo.png
+
+keywords:
+  - valheim
+  - server
+
+maintainers:
+  - name: adaliszk
+    email: hello@adaliszk.dev
 
 description: >
-  Valheim Server on Kubernetes
+  This chart wraps up https://hub.docker.com/r/adaliszk/valheim-server and allows
+  you to quickly deploy everything you'll need.
