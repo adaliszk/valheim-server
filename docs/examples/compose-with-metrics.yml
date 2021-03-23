@@ -34,7 +34,7 @@ services:
 
   prometheus:
     container_name: "prometheus"
-    image: "adaliszk/valheim-server:prometheus"
+    image: "adaliszk/valheim-server-monitoring:prometheus"
     links:
       - metrics-exporter
       - docker-exporter
