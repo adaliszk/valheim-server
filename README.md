@@ -33,11 +33,13 @@ Alternatives:
 - `vanilla` `latest` - always the latest stable build of the server
 - `0.148.6` `0.148` - the server version released on 23/03/2021
 - `0.147.3` `0.147` - the server version released on 02/03/2021
-- `bepinex-5.4.900` `bepinex-5.4.9` `bepinex-5.4` `bepinex` - server using [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
+- `bepinex-5.4.900` `bepinex-5.4.9` `bepinex-5.4` `bepinex` - latest server using [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
 - `bepinex-5.4.800` `bepinex-5.4.8` - old version of [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
-- `bepinex-full-1.0.5` `bepinex-full-1.0` `bepinex-full` - server using [1F31A's BepInEx](https://valheim.thunderstore.io/package/1F31A/BepInEx_Valheim_Full) mod loader
-- `plus-0.9.5-hotfix1` `plus-0.9.5` `plus-0.9` `plus` - server using Valheim Plus mod
+- `bepinex-full-1.0.5` `bepinex-full-1.0` `bepinex-full` - latest server using [1F31A's BepInEx](https://valheim.thunderstore.io/package/1F31A/BepInEx_Valheim_Full) mod loader
+- `plus-0.9.5-hotfix1` `plus-0.9.5` `plus-0.9` `plus` - latest server using Valheim Plus mod
 - `develop` - build any actively testing branch
+
+additionally, there are version prefixed tags from `bepinex`, `bepinex-full`, and `plus` variants!
 
 ```bash
 docker run -p 2456-2457:2456-2457/udp adaliszk/valheim-server -name "My Server" -password="super!secret"
@@ -68,7 +70,8 @@ Alternatives:
 [`ghcr.io/adaliszk/valheim-server-monitoring`](https://ghcr.io/adaliszk/valheim-server-monitoring), 
 [`quay.io/adaliszk/valheim-server-monitoring`](https://quay.io/adaliszk/valheim-server-monitoring)
 
-- `metrics-0.148.6` `metrics-0.148` `metrics` - mtail metrics from the 0.148.6 released on 23/03/2021
+- `metrics` - mtail metrics from the latest server version
+- `metrics-0.148.6` `metrics-0.148` - mtail metrics from the 0.148.6 released on 23/03/2021
 - `metrics-0.147.3` `metrics-0.147` - mtail metrics from the 0.147.3 released on 02/03/2021
 - `prometheus` - a pre-configured prometheus for docker environments
 
