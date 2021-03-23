@@ -3,6 +3,7 @@ name: "Server"
 
 # =================================================================================================
 on:
+  workflow_dispatch: {}
   pull_request:
     paths:
       - .github/workflows/cd-server.yml
