@@ -3,8 +3,8 @@
 # =================================================================================================
 FROM steamcmd/steamcmd:ubuntu as steam
 ENV APP_ID="896660" \
-    APP_VERSION="0.147.3" \
-    APP_BUILD="6315977" \
+    APP_VERSION="0.148.6" \
+    APP_BUILD="6394774" \
     APP_PATH="/server"
 
 # hadolint ignore=DL3018,DL3008
@@ -30,10 +30,11 @@ RUN dos2unix /srv/** && chmod +x /srv/**
 # Set up the Runtime Environment
 # =================================================================================================
 FROM frolvlad/alpine-glibc:alpine-3.13 as runtime
-ENV SERVER_NAME="Valheim v0.147.3" \
+ENV SERVER_NAME="Valheim v0.148.6" \
     SERVER_WORLD="Dedicated" \
     SERVER_PASSWORD="p4ssw0rd" \
     SERVER_PUBLIC="1" \
+    SERVER_CONSOLE="1" \
     SERVER_ADMINS="" \
     SERVER_PERMITTED="" \
     SERVER_BANNED="" \
