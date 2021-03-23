@@ -5,7 +5,7 @@ FROM alpine:3.13 as valheim-plus
 # hadolint ignore=DL3018
 RUN apk add --no-cache wget
 
-ENV MOD_SOURCE="https://github.com/valheimPlus/ValheimPlus/releases/download/0.9.5.5/UnixServer.tar.gz" \
+ENV MOD_SOURCE="https://github.com/valheimPlus/ValheimPlus/releases/download/0.9.6/UnixServer.tar.gz" \
     MOD_ARHIVE="/valheim-plus.zip" \
     MOD_PATH="/modpack"
 
@@ -15,10 +15,10 @@ RUN mkdir -p "${MOD_PATH}" && tar -xvf "${MOD_ARHIVE}" -C "${MOD_PATH}"
 
 # Install modpack on top of the Vanilla server
 # =================================================================================================
-FROM adaliszk/valheim-server:0.147.3 as server-modded
-ENV SERVER_NAME="Valheim Plus v0.9.5.5" \
+FROM adaliszk/valheim-server:0.148.6 as server-modded
+ENV SERVER_NAME="Valheim Plus v0.9.6" \
     MOD_PATH="/mod-valheim+" \
-    MOD_VERSION="0.9.5.5"
+    MOD_VERSION="0.9.6"
 
 COPY --from=valheim-plus /modpack "${MOD_PATH}"
 
