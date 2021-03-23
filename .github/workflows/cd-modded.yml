@@ -127,6 +127,7 @@ jobs:
     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stable'
     needs: [  "build" ]
     strategy:
+      fail-fast: false
       matrix:
         registry: [ "docker.io", "quay.io", "ghcr.io" ]
         tag: [  "bepinex", "bepinex-full", "plus" ]
