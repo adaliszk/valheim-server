@@ -187,6 +187,7 @@ jobs:
           password: ${{ secrets[matrix.registry_password] }}
       -
         name: "Push ${{ matrix.registry_name }} :${{ matrix.tag }}"
+        continue-on-error: true
         env:
           source_image: "${{ env.image_name }}:${{ env.image_tag }}"
           target_image: "${{ matrix.image_prefix }}${{ env.image_name }}${{ matrix.image_suffix }}"

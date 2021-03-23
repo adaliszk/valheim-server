@@ -181,6 +181,7 @@ jobs:
       -
         if: github.ref == 'refs/heads/develop'
         name: "Push ${{ matrix.registry_name }} :vanilla"
+        continue-on-error: true
         env:
           source_image: "${{ env.image_name }}:${{ env.image_tag }}"
           target_image: "${{ matrix.image_prefix }}${{ env.image_name }}${{ matrix.image_suffix }}:vanilla"
@@ -190,6 +191,7 @@ jobs:
       -
         #if: github.ref == 'refs/heads/stable'
         name: "Push ${{ matrix.registry_name }}"
+        continue-on-error: true
         env:
           source_image: "${{ env.image_name }}:${{ env.image_tag }}"
           target_image: "${{ matrix.image_prefix }}${{ env.image_name }}${{ matrix.image_suffix }}"
