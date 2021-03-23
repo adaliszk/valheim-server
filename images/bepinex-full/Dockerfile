@@ -18,7 +18,7 @@ RUN mkdir -p "${MOD_PATH}-raw" && unzip "${MOD_ARHIVE}" -d "${MOD_PATH}-raw" \
 
 # Install modpack on top of the Vanilla server
 # =================================================================================================
-FROM adaliszk/valheim-server:vanilla as server-modded
+FROM adaliszk/valheim-server:0.147.3 as server-modded
 ENV SERVER_NAME="Valheim BepInEx Full v1.0.5" \
     MOD_PATH="/mod-bepinex" \
     MOD_VERSION="1.0.5"
