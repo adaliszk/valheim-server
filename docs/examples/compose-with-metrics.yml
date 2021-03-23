@@ -1,13 +1,14 @@
 version: "3.8"
 
 volumes:
-  shared-logs: {}
-  prometeheus-data: {}
-  grafana-data: {}
+  shared-logs: { }
+  prometheus-data: { }
+  grafana-data: { }
 
 services:
 
   valheim:
+    container_name: "valheim_vanilla"
     image: "adaliszk/valheim-server:latest"
     environment:
       SERVER_NAME: "My Valheim Server"
