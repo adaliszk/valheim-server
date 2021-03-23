@@ -2,8 +2,8 @@ The image is based on **[Frolvlad's Alpine with glibc included](https://hub.dock
 
 ## Tags
 - `vanilla` `latest` - always the latest stable build of the server
-- `0.148.6` `0.148` - the server version released on 02/03/2021
-- `0.147.3` `0.147` - the server version released on 23/03/2021
+- `0.148.6` `0.148` - the server version released on 23/03/2021
+- `0.147.3` `0.147` - the server version released on 02/03/2021
 - `bepinex-5.4.900` `bepinex-5.4.9` `bepinex-5.4` `bepinex` - server using [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
 - `bepinex-5.4.800` `bepinex-5.4.8` - old version of [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
 - `bepinex-full-1.0.5` `bepinex-full-1.0` `bepinex-full` - server using [1F31A's BepInEx](https://valheim.thunderstore.io/package/1F31A/BepInEx_Valheim_Full) mod loader
