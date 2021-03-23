@@ -2,11 +2,11 @@ apiVersion: v2
 
 type: application
 name: valheim-server
-version: "0.10.0"
+version: "0.11.0"
 appVersion: "0.147.3"
 
 home: https://github.com/adaliszk/valheim-server
-#icon: file://logo.png
+icon: file://logo.png
 
 keywords:
   - valheim
@@ -17,15 +17,5 @@ maintainers:
     email: hello@adaliszk.dev
 
 description: >
-  This chart wraps up [adaliszk/valheim-server](https://hub.docker.com/r/adaliszk/valheim-server) and allows
+  This chart wraps up https://hub.docker.com/r/adaliszk/valheim-server and allows
   you to quickly deploy everything you'll need.
-
-  The setup is fairly simple:
-  - Server Deployment:
-    - Volumes for: /data, /backups, /logs
-    - LoadBalancer service (if enabled)
-
-  - Metrics Deployment:
-    - Uses /logs volume from the Server
-    - Prometheus scape annotations
-    - Ingress (if enabled)

@@ -1,89 +1,58 @@
-# VALHEIM SERVER
-# =============================================================================
 server:
-  # Basic settings
-  name: "Valheim"
+  codeName: "Valheim"
+  name: "Valheim on Kubernetes!"
   world: "Dedicated"
   password: "12345"
   public: "1"
 
-  # Moderation
   admins: [ ]
   permitted: [ ]
   banned: [ ]
 
-  # Persistent Data
-  # Update the `storageClass` appropriately to your setup!
-  data:
-    storageClass: standard
-    storageSize: 2G
-
-  backups:
-    storageClass: standard
-    storageSize: 3G
-
-  logs:
-    storageClass: standard
-    storageSize: 500M
-
-  # Additional annotations (e.g. for cloud provider specific config)
   annotations: { }
-
-  # Additional service labels (e.g. for filtering Deployment by custom labels)
   labels: { }
-
-  # Resource limitations if needed
   resources: { }
-    #limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-    #requests:
-    #  cpu: 100m
-    #  memory: 128Mi
 
-  service:
-    enabled: true
-    type: LoadBalancer
+data:
+  storageClass: standard
+  storageSize: 2G
 
-    ports:
-      valheim:
-        port: 2456
-        targetPort: 2456
-        protocol: UDP
+backups:
+  storageClass: standard
+  storageSize: 3G
+  retention: 6
 
-      msqp:
-        port: 2457
-        targetPort: 2457
-        protocol: UDP
+ingress:
+  enabled: true
+  type: LoadBalancer
 
-      msqp-default:
-        port: 27015
-        targetPort: 2457
-        protocol: UDP
+  ports:
+    valheim:
+      port: 2456
+      targetPort: 2456
+      protocol: UDP
 
-    # Additional annotations (e.g. for cloud provider specific config)
-    annotations: { }
+    msqp:
+      port: 2457
+      targetPort: 2457
+      protocol: UDP
 
-    # Additional service labels (e.g. for filtering Service by custom labels)
-    labels: { }
+    msqp-default:
+      port: 27015
+      targetPort: 2457
+      protocol: UDP
 
-    # Additional entries here will be added to the service spec.
-    # Cannot contain: type, selector or ports entries.
-    spec: { }
-    # externalTrafficPolicy: Cluster
-    # loadBalancerIP: "1.2.3.4"
-    # clusterIP: "2.3.4.5"
+  annotations: { }
+  labels: { }
+  spec: { }
 
-  image:
-    name: adaliszk/valheim-server
-    tag: 0.147.3
-    pullPolicy: IfNotPresent
-    pullSecrets: [ ]
+image:
+  name: adaliszk/valheim-server
+  tag: 0.148.6
+  pullPolicy: IfNotPresent
+  pullSecrets: [ ]
 
-
-# METRICS
-# =============================================================================
-metrics-exporter:
+metricsExporter:
   enabled: false
 
   annotations:

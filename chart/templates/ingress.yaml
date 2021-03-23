@@ -1,0 +1,30 @@
+{{- if .Values.ingress.enabled -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "server_name" . }}-ingress
+  labels:
+    {{- include "server_labels" . | nindent 4 }}
+    {{- with .Values.ingress.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- $type := default "LoadBalancer" .Values.ingress.type }}
+  type: {{ $type }}
+  {{- with .Values.ingress.spec }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  selector:
+    {{- include "server_selectorLabels" . | nindent 4 }}
+  ports:
+    {{- range $key, $value := .Values.ingress.ports }}
+    - name: {{ $key }}
+{{ toYaml $value | indent 6 }}
+    {{- end }}
+
+{{- end }}

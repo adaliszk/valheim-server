@@ -4,15 +4,15 @@ kind: Deployment
 metadata:
   name: {{ include "server_name" . }}
   labels:
-    {{- include "server.labels" . | nindent 4 }}
+    {{- include "server_labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      {{- include "server.selectorLabels" . | nindent 6 }}
+      {{- include "server_selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "server.selectorLabels" . | nindent 8 }}
+        {{- include "server_selectorLabels" . | nindent 8 }}
     spec:
       securityContext:
         runAsUser: 1001
@@ -24,21 +24,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 
-      initContainers:
-        -
-          name: "show-data"
-          image: k8s.gcr.io/busybox
-          command: [ "/bin/sh", "-c", "ls -la /data"]
-          volumeMounts:
-            - name: server-data
-              mountPath: /data
-        -
-          name: "show-backups"
-          image: k8s.gcr.io/busybox
-          command: [ "/bin/sh", "-c", "ls -la /backups" ]
-          volumeMounts:
-            - name: server-data
-              mountPath: /data
       containers:
         -
           name: {{ include "server_name" . }}
@@ -53,20 +38,24 @@ spec:
               value: "{{ .Values.server.world }}"
             - name: SERVER_PUBLIC
               value: "{{ .Values.server.public }}"
+
           ports:
-            - name: valheim
+            -
+              name: valheim
               containerPort: 2456
               protocol: UDP
-            - name: msqp
+            -
+              name: msqp
               containerPort: 2457
               protocol: UDP
+
           volumeMounts:
             -
               name: server-configs
               mountPath: /configs
               readOnly: true
             -
-              name: server-backups
+              name: auto-backups
               mountPath: /backups
             -
               name: server-data
@@ -77,9 +66,29 @@ spec:
 
           terminationMessagePath: /logs/exit.log
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.server.resources | nindent 12 }}
           securityContext:
             allowPrivilegeEscalation: true
+        {{- if .Values.metricsExporter.enabled -}}
+        -
+          name: {{ include "server_name" . }}-metrics
+          image: "{{ .Values.metricsExporter.image.name }}:{{ .Values.metricsExporter.image.tag | default "metrics" }}"
+          imagePullPolicy: {{ .Values.metricsExporter.image.pullPolicy }}
+          ports:
+            -
+              name: http
+              containerPort: 3903
+              protocol: TCP
+
+          volumeMounts:
+            -
+              name: server-logs
+              mountPath: /logs
+
+          terminationMessagePath: /logs/exit.log
+          securityContext:
+            allowPrivilegeEscalation: true
+        {{- end }}
       terminationGracePeriodSeconds: 60
       volumes:
         -
@@ -87,7 +96,7 @@ spec:
           configMap:
             name: {{ include "server_config_name" . }}
         -
-          name: server-backups
+          name: auto-backups
           persistentVolumeClaim:
             claimName: {{ include "pvc_backups_name" . }}
         -
@@ -96,5 +105,4 @@ spec:
             claimName: {{ include "pvc_data_name" . }}
         -
           name: server-logs
-          persistentVolumeClaim:
-            claimName: {{ include "pvc_logs_name" . }}
+          emptyDir: {}

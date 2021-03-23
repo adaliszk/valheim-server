@@ -7,7 +7,7 @@ Please also see https://adaliszk.io/valheim-server/kubernetes
 ## Prerequisites
 * Kubernetes with extensions/v1beta1 available
 * A persistent storage resource and RW access to it
-* [If enabled] Kubernetes StorageClass for dynamic provisioning
+* Kubernetes StorageClass for dynamic provisioning
 
 
 ## Configuration
@@ -24,5 +24,3 @@ You are also required to create the StorageClass resource ahead of time:
 kubectl create -f /path/to/storage_class.yaml
 ```
 
-The following table lists common configurable parameters of the chart, and
-their default values. See values.yaml for all available options.

@@ -1,11 +1,14 @@
-{{- define "server.selectorLabels" -}}
-cwl.network/type: Game
-cwl.network/game: Valheim
-cwl.network/name: {{ .Values.server.name }}
+{{- define "server_selectorLabels" -}}
+adaliszk.io/type: Game
+adaliszk.io/game: Valheim
+adaliszk.io/name: {{ .Values.server.codeName }}
 {{- end }}
 
-{{- define "server.labels" -}}
-{{ include "server.selectorLabels" . }}
+{{- define "server_labels" -}}
+{{ include "server_selectorLabels" . }}
+{{- with .Values.server.labels }}
+{{- toYaml . }}
+{{- end }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -13,25 +16,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{- define "server_name" -}}
-valheim-{{ .Values.server.name | lower }}-server
-{{- end }}
-
-{{- define "mods_config_name" -}}
-{{ .Values.server.name | lower | default "valheim" }}-mod-configs
+valheim-{{ .Values.server.codeName | lower }}-server
 {{- end }}
 
 {{- define "server_config_name" -}}
-{{ .Values.server.name | lower | default "valheim" }}-server-configs
+{{ .Values.server.codeName | lower | default "valheim" }}-server-configs
 {{- end }}
 
 {{- define "pvc_data_name" -}}
-{{ .Values.server.name | lower | default "valheim" }}-{{ .Values.server.world | lower | default "default" }}-{{ .Values.data.storageClass | default "standard" }}
+{{ .Values.server.codeName | lower | default "valheim" }}-{{ .Values.server.world | lower | default "default" }}-{{ .Values.data.storageClass | default "standard" }}
 {{- end }}
 
 {{- define "pvc_backups_name" -}}
-{{ .Values.server.name | lower | default "valheim" }}-backups-{{ .Values.logs.storageClass | default "standard" }}
-{{- end }}
-
-{{- define "pvc_logs_name" -}}
-{{ .Values.server.name | lower | default "valheim" }}-logs-{{ .Values.logs.storageClass | default "standard" }}
+{{ .Values.server.codeName | lower | default "valheim" }}-backups-{{ .Values.backups.storageClass | default "standard" }}
 {{- end }}

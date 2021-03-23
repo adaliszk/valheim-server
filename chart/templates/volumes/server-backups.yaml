@@ -7,6 +7,7 @@ spec:
   storageClassName: {{ .Values.backups.storageClass }}
   accessModes:
     - ReadWriteOnce
+    - ReadOnlyMany
   resources:
     requests:
       storage: {{ .Values.backups.storageSize | default "3G" }}
