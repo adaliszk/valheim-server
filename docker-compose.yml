@@ -3,13 +3,13 @@ version: "3.6"
 
 # ==============================================================================
 x-enabled-server: &enabled-server
-  stop_signal: SIGTERM
-  healthcheck:
-    test: [ "CMD", "health" ]
-    interval: 30s
-    timeout: 15s
-    retries: 5
-    start_period: 10s
+#  stop_signal: SIGTERM
+#  healthcheck:
+#    test: [ "CMD", "health" ]
+#    interval: 30s
+#    timeout: 15s
+#    retries: 5
+#    start_period: 10s
   environment:
     SERVER_PASSWORD: "12345"
     SERVER_ADMINS: "76561198108936133"
@@ -34,7 +34,8 @@ services:
     container_name: "valheim_vanilla"
     image: "adaliszk/valheim-server:${VANILLA_TAG:-vanilla}"
     build: images/vanilla
-    <<: *disabled-server
+    <<: *enabled-server
+    command: backup
 
   bepinex:
     container_name: "valheim_bepinex"
@@ -56,7 +57,7 @@ services:
     container_name: "valheim_plus"
     image: "adaliszk/valheim-server:${VANILLA_TAG:-plus}"
     build: images/plus
-    <<: *enabled-server
+    <<: *disabled-server
     depends_on:
       - vanilla
 

@@ -61,5 +61,5 @@ STOPSIGNAL SIGINT
 CMD ["start"]
 USER 1001
 
-HEALTHCHECK CMD ["health"]
+HEALTHCHECK CMD ["/valheim", "health"]
 EXPOSE 2456-2457/udp
