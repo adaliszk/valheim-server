@@ -35,7 +35,6 @@ services:
     image: "adaliszk/valheim-server:${VANILLA_TAG:-vanilla}"
     build: images/vanilla
     <<: *enabled-server
-    command: backup
 
   bepinex:
     container_name: "valheim_bepinex"

@@ -6,8 +6,6 @@ if [[ ! -d "${SERVER_PATH}/valheim_server_Data" ]];
   then
     echo "Extracting Server files in ${SERVER_PATH}"
 
-    exit 0
-
     # @TODO: Should use `time` but `-f` wasn't working, so this is a quick and dirty solution
     EXTRACT_BEGIN=$(date +%s.%N)
     tar -xzf "${SERVER_PATH}/valheim_server_Data.tar.gz"
