@@ -34,7 +34,6 @@ ENV SERVER_NAME="Valheim v0.148.6" \
     SERVER_WORLD="Dedicated" \
     SERVER_PASSWORD="p4ssw0rd" \
     SERVER_PUBLIC="1" \
-    SERVER_CONSOLE="1" \
     SERVER_ADMINS="" \
     SERVER_PERMITTED="" \
     SERVER_BANNED="" \
