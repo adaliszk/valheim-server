@@ -4,12 +4,12 @@ source /srv/init-env.sh
 
 NAME="${1:-backup}"
 
-function tee-backup {
+function tee-backup() {
   tee "${LOG_PATH}/backup.log"
 }
 
-function log-backup {
-  echo "backup> ${*}" | tee-backup
+function log-backup() {
+  echo "i> Backup> ${*}" | tee-backup
 }
 
 cd "${BACKUP_PATH}" || exit
@@ -35,5 +35,5 @@ tar -cf "${BACKUP_PATH}/${FILE_NAME}.tar.gz" -C "${DATA_PATH}" . | tee-backup
 COMPRESS_END=$(date +%s.%N)
 
 log-backup "Made a backup for \"${NAME}\" that $(stat --printf="%s" "${BACKUP_PATH}/${FILE_NAME}.tar.gz") bytes large"
-log-backup "Compressing files for \"${NAME}\" backup took $(bc -l <<< "(${COMPRESS_END}-${COMPRESS_BEGIN})*1000")ms"
+log-backup "Compressing files for \"${NAME}\" backup took $(bc -l <<<"(${COMPRESS_END}-${COMPRESS_BEGIN})*1000")ms"
 log-backup "Backups are $(du --bytes "${BACKUP_PATH}" | cut -f1) bytes large"

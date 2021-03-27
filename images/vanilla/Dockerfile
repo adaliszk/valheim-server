@@ -60,5 +60,5 @@ STOPSIGNAL SIGINT
 CMD ["start"]
 USER 1001
 
-HEALTHCHECK CMD ["/valheim", "health"]
+HEALTHCHECK --start-period=30s --timeout=5s CMD ["/scripts/health.sh"]
 EXPOSE 2456-2457/udp

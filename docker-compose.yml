@@ -32,7 +32,7 @@ services:
 
   vanilla:
     container_name: "valheim_vanilla"
-    image: "adaliszk/valheim-server:${VANILLA_TAG:-vanilla}"
+    image: "adaliszk/valheim-server:${VANILLA_TAG:-0.148.6}"
     build: images/vanilla
     <<: *enabled-server
 

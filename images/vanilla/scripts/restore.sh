@@ -4,7 +4,7 @@ source /srv/init-env.sh
 
 NAME="${1:-auto}"
 
-function log {
+function log() {
   echo "B> ${*}" | tee-backup
 }
 

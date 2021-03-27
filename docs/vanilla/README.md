@@ -4,7 +4,8 @@ The image is based on **[Frolvlad's Alpine with glibc included](https://hub.dock
 - `vanilla` `latest` - always the latest stable build of the server
 - `0.148.6` `0.148` - the server version released on 23/03/2021
 - `0.147.3` `0.147` - the server version released on 02/03/2021
-- `bepinex-5.4.900` `bepinex-5.4.9` `bepinex-5.4` `bepinex` - server using [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
+- `bepinex-5.4.901` `bepinex-5.4.9` `bepinex-5.4` `bepinex` - latest server using [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
+- `bepinex-5.4.900` - old version of [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
 - `bepinex-5.4.800` `bepinex-5.4.8` - old version of [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
 - `bepinex-full-1.0.5` `bepinex-full-1.0` `bepinex-full` - server using [1F31A's BepInEx](https://valheim.thunderstore.io/package/1F31A/BepInEx_Valheim_Full) mod loader
 - `plus-0.9.5-hotfix1` `plus-0.9.5` `plus-0.9` `plus` - server using Valheim Plus mod
@@ -94,7 +95,7 @@ The available variables are:
 | `SERVER_ADMINS`          | Comma separated list of SteamID64's for admin access        | (empty)                    |
 | `SERVER_PERMITTED`       | Comma separated list of SteamID64's for the permitted list  | (empty)                    |
 | `SERVER_BANNED`          | Comma separated list of SteamID64's for the banned list     | (empty)                    |
-| `BACKUP_RETENTION`          | The number of backups to keep from a particular `[name]`     | 6                    |
+| `BACKUP_RETENTION`       | The number of backups to keep from a particular `[name]`    | 6                          |
 | `TZ`                     | Timezone used within the container                          | Etc/UTC                    |
 
 

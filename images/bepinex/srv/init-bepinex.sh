@@ -1,25 +1,27 @@
 #!/bin/bash
 # shellcheck disable=SC1091
 source /srv/init-env.sh
+source /srv/init-configs.sh
 
+echo "BepInExInit" > /tmp/LOG_GROUP
 
-if [ "$(ls -A "${CONFIG_PATH}")" ];
-  then
-    log "Initialize config files from ${CONFIG_PATH}"
-    rm -rf "${SERVER_PATH}/BepInEx/config/"*
-    cp -rfa "${MOD_PATH}/BepInEx/config/"*.cfg "${SERVER_PATH}/BepInEx/config/"
-    cp -rfa "${CONFIG_PATH}/"*.cfg "${SERVER_PATH}/BepInEx/config/"
-  fi
+if [ "$(ls -A "${CONFIG_PATH}")" ]; then
+  echo "Initialize config files from ${CONFIG_PATH}"
+  cp -rf "${MOD_PATH}/BepInEx/config/". "${SERVER_PATH}/BepInEx/config/"
+  cp -rf "${CONFIG_PATH}/"*.{cfg,ini,json} "${SERVER_PATH}/BepInEx/config/" 2> /dev/null
+fi
 
+if [ -w "${CONFIG_PATH}" ]; then
+  echo "Copy new files back to ${CONFIG_PATH}"
+  cp -rf "${SERVER_PATH}/BepInEx/config/". "${CONFIG_PATH}/"
+fi
 
-if [ "$(ls -A "${PLUGINS_PATH}")" ];
-  then
-    log "Initialize plugins from ${PLUGINS_PATH}"
-    rm -rf "${SERVER_PATH}/BepInEx/plugins/"*
-    cp -rfa "${MOD_PATH}/BepInEx/plugins/." "${SERVER_PATH}/BepInEx/plugins/"
-    cp -rfa "${PLUGINS_PATH}/." "${SERVER_PATH}/BepInEx/plugins/"
-  fi
-
+if [ "$(ls -A "${PLUGINS_PATH}")" ]; then
+  echo "Initialize plugins from ${PLUGINS_PATH}"
+  rm -rf "${SERVER_PATH}/BepInEx/plugins/"*
+  cp -rf "${MOD_PATH}/BepInEx/plugins/". "${SERVER_PATH}/BepInEx/plugins/"
+  cp -rf "${PLUGINS_PATH}/". "${SERVER_PATH}/BepInEx/plugins/"
+fi
 
 # BepInEx-specific settings
 # NOTE: Do not edit unless you know what you are doing!

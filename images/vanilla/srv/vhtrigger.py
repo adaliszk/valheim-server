@@ -9,7 +9,6 @@ import re
 
 import datetime
 
-
 LOG_PATH = os.environ.get('LOG_PATH')
 stdin = sys.stdin.reconfigure(encoding='utf-8', errors='ignore')
 

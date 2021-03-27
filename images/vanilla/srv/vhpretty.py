@@ -10,8 +10,8 @@ import sys
 import fileinput
 import re
 
-
 LOG_PATH = os.environ.get('LOG_PATH')
+LOG_LEVEL = os.environ.get('LOG_LEVEL') or "debug"
 stdin = sys.stdin.reconfigure(encoding='utf-8', errors='ignore')
 
 
@@ -37,6 +37,19 @@ def ucfirst(text: str):
 set_server_connected(False)
 
 last_line = ""
+bepinex_started = False
+
+date_regex = re.compile(r'^\d+/\d+/\d+ \d+:\d+:\d+:', re.IGNORECASE)
+noisy_regex = re.compile(r'^\[Subsystems]|^-', re.IGNORECASE)
+trim_regex = re.compile(r'\s{2,}', re.IGNORECASE)
+group_regex = re.compile(r'^(\w+)> (.*)', re.IGNORECASE)
+bepinex_regex = re.compile(r'\[(\w+)\s*:\s*([^]]+)] (.*)', re.IGNORECASE)
+bepinex_loader_regex = re.compile(r'Chainloader ready')
+debug_regex = re.compile(r'(Section not|Loading config|Loading key|Load DLL:|Base:|Redirecting to)', re.IGNORECASE)
+warning_regex = re.compile(r'(Warning|Failed|Missing|Fallback|Wrong)', re.IGNORECASE)
+error_regex = re.compile(r'Error', re.IGNORECASE)
+severe_regex = re.compile(r'(Error|Warning|Failed|Missing|Fallback)', re.IGNORECASE)
+fallback_regex = re.compile(r'Fallback handler could not load library', re.IGNORECASE)
 
 for line in fileinput.input():
     # ignore empty lines
@@ -48,17 +61,14 @@ for line in fileinput.input():
         continue
 
     # remove DATETIME prefix as this is added outside of the STDOUT
-    date_regex = re.compile(r'^\d+/\d+/\d+ \d+:\d+:\d+:', re.IGNORECASE)
     if re.search(date_regex, line):
         line = re.sub(date_regex, r'', line)
 
     # remove Noisy prefixes
-    noisy_regex = re.compile(r'^\[Subsystems]|^-', re.IGNORECASE)
     if re.search(noisy_regex, line):
         line = re.sub(noisy_regex, r'', line)
 
     # trim needless space within the line
-    trim_regex = re.compile(r'\s{2,}', re.IGNORECASE)
     if re.search(trim_regex, line):
         line = re.sub(trim_regex, r' ', line)
 
@@ -70,36 +80,51 @@ for line in fileinput.input():
         set_server_connected(True)
 
     prefix = "i"
+    group = "Container"
 
-    bepinex_regex = re.compile(r'\[(\w+)\s*:\s*([^]]+)] (.*)', re.IGNORECASE)
+    try:
+        group = open("/tmp/LOG_GROUP", "r").read().rstrip()
+    except FileNotFoundError:
+        pass
+
+    if group is None:
+        group = "Container"
+
+    group_match = re.search(group_regex, line)
+    if group_match:
+        line = re.sub(group_regex, r'\2', line)
+        group = group_match.group(1)
+
     bepinex_match = re.search(bepinex_regex, line)
-
     if bepinex_match:
         levels = {"Info": "i", "Message": "m", "Debug": "d", "Warn": "w", "Error": "e"}
-        prefix = levels.get(bepinex_match.group(1), "I")
-        line = re.sub(bepinex_regex, r'\2> \3', line)
+        prefix = levels.get(bepinex_match.group(1), "i")
+        group = bepinex_match.group(2) or "BepInEx"
+        line = re.sub(bepinex_regex, r'\3', line)
 
         # No need to duplicate the Unity output
         if bepinex_match.group(2) == "Unity Log":
             line = ""
 
-    debug_regex = re.compile(r'(Section not|Loading config|Loading key|Load DLL:|Base:|Redirecting to)', re.IGNORECASE)
+    if re.search(bepinex_loader_regex, line):
+        bepinex_started = True
+
     if re.search(debug_regex, line):
         prefix = "d"
 
-    warning_regex = re.compile(r'(Warning|Failed|Missing|Fallback)', re.IGNORECASE)
     if re.search(warning_regex, line):
         prefix = "w"
 
-    error_regex = re.compile(r'Error', re.IGNORECASE)
     if re.search(error_regex, line):
         prefix = "e"
 
-    severe_regex = re.compile(r'(Error|Warning|Failed|Missing|Fallback|)', re.IGNORECASE)
     if re.search(severe_regex, line) or prefix in ["w", "e"]:
         log_error(line)
 
+    if re.search(fallback_regex, line) and not bepinex_started:
+        prefix = "d"
+
     if prefix not in ["d"] and len(line) > 0 and line != last_line:
-        print(prefix + "> " + line)
+        print(prefix + "> " + group + "> " + line)
         sys.stdout.flush()
         last_line = line

@@ -2,6 +2,8 @@
 # shellcheck disable=SC1091
 source /srv/init-server.sh
 
+echo "Server" > /tmp/LOG_FROUP
+
 TEMP_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="${SERVER_PATH}/linux64:$LD_LIBRARY_PATH"
 
@@ -14,11 +16,9 @@ SERVER_ARGS=(
   "-public" "${SERVER_PUBLIC}"
 )
 
-SERVER_ARGS_STR=$( IFS=$' '; echo "${SERVER_ARGS[*]}" )
+SERVER_CMD="${SERVER_PATH}/valheim_server.x86_64 -nographics -batchmode -port 2456"
 
-SERVER_CMD="${SERVER_PATH}/valheim_server.x86_64 -nographics -batchmode -logfile -port 2456"
-
-echo "Execute: ${SERVER_CMD} ${SERVER_ARGS_STR}"
+echo "Execute: ${SERVER_CMD}" "${SERVER_ARGS[@]}"
 ${SERVER_CMD} "${SERVER_ARGS[@]}"
 
 export LD_LIBRARY_PATH="$TEMP_LD_LIBRARY_PATH"

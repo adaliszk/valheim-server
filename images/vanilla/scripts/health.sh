@@ -2,42 +2,40 @@
 # shellcheck disable=SC1091
 source /srv/init-env.sh
 
-function log-health {
+function log-health() {
   echo "health> ${*}" | tee "${LOG_PATH}/health.log"
 }
 
 STATUS=0
 
-function status-to-word {
+function status-to-word() {
   STATUS_CODE="${1}"
 
   STATUS_TEXT="DOWN"
-  if [ "${STATUS_CODE}" = 0 ];
-    then
-      STATUS_TEXT="UP"
-    fi
+  if [ "${STATUS_CODE}" = 0 ]; then
+    STATUS_TEXT="UP"
+  fi
 
   echo $STATUS_TEXT
 }
 
-function check-server-connected {
+function check-server-connected() {
   CONNECTED_STATUS="$(cat "${LOG_PATH}/server-connected.status")"
   log-health "Server is $(status-to-word "$CONNECTED_STATUS")"
 }
 
-function check-port {
-  netstat -an | grep "${1}" > /dev/null
+function check-port() {
+  netstat -an | grep "${1}" >/dev/null
   PORT=$?
   log-health "Port ${1} is $(status-to-word "$PORT")"
-  if [ $PORT != 0 ]; then STATUS=1; fi;
+  if [ $PORT != 0 ]; then STATUS=1; fi
 }
 
 check-server-connected
 check-port 2456
 
-if [ "${SERVER_PUBLIC:-1}" == "1" ];
-  then
-    check-port 2457
-  fi
+if [ "${SERVER_PUBLIC:-1}" == "1" ]; then
+  check-port 2457
+fi
 
 exit $STATUS

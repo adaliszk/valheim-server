@@ -1,52 +1,51 @@
 #!/bin/bash
 
-function vhpretty {
+function vhpretty() {
   /srv/vhpretty.py
 }
 
-function vhtrigger {
+function vhtrigger() {
   /srv/vhtrigger.py
 }
 
-function output-log {
+function output-log() {
   echo "${LOG_PATH}/output.log"
 }
 
-function tee-output {
-   tee "$(output-log)"
+function tee-output() {
+  tee "$(output-log)"
 }
 
-function tee-server-raw {
+function tee-server-raw() {
   tee "${LOG_PATH}/server-raw.log"
 }
 
-function server-log {
+function server-log() {
   echo "${LOG_PATH}/server.log"
 }
 
-function tee-server {
+function tee-server() {
   tee "$(server-log)"
 }
 
-function tee-backup {
-   tee "${LOG_PATH}/backup.log" | tee-output
+function tee-backup() {
+  tee "${LOG_PATH}/backup.log" | tee-output
 }
 
-function tee-exit {
+function tee-exit() {
   tee "${LOG_PATH}/exit.log" | tee-output
 }
 
-function log {
+function log() {
   echo "c> ${*}" | tee-output
 }
 
-function log-env {
-  for VAR in "$@"
-  do
-      debug-log "$VAR: ${!VAR:-(empty)}"
+function log-env() {
+  for VAR in "$@"; do
+    log-debug "$VAR: ${!VAR:-(empty)}"
   done
 }
 
-function debug-log {
-  echo "d> ${*}" | tee-output
+function log-debug() {
+  echo "d> ${*}"
 }
