@@ -8,3 +8,6 @@ export SCRIPTS_PATH="/scripts"
 export BACKUP_PATH="/backups"
 export DATA_PATH="/data"
 export LOG_PATH="/logs"
+export STATUS_PATH="/status"
+
+echo "OCI" > /tmp/LOG_GROUP

@@ -9,13 +9,16 @@ import re
 
 import datetime
 
-LOG_PATH = os.environ.get('LOG_PATH')
 stdin = sys.stdin.reconfigure(encoding='utf-8', errors='ignore')
+
+LOG_LEVEL = os.environ.get('LOG_LEVEL') or "debug"
+LOG_PATH = os.environ.get('LOG_PATH')
+
+STATUS_PATH = os.environ.get('STATUS_PATH')
 
 server_boot = datetime.datetime.now()
 server_start = None
 server_initialized = None
-server_worldgen = None
 server_listen = None
 server_ready = None
 
@@ -25,16 +28,16 @@ client_spawn = None
 
 
 def echo(message: str):
-    print(message.rstrip())
+    print(message.strip())
     sys.stdout.flush()
 
 
 def echo_elapsed(message: str, elapsed_time):
-    echo("m> {} ( took {}s )".format(message, elapsed_time.total_seconds()))
+    echo("i> Metrics> {} ( took {}s )".format(message, elapsed_time.total_seconds()))
 
 
 def set_status(name: str, status: bool):
-    f = open(LOG_PATH + "/{}.status".format(name), "w")
+    f = open(STATUS_PATH + "/" + name, "w")
     f.write("0" if status else "1")
     f.close()
 
@@ -55,15 +58,12 @@ for line in fileinput.input():
     if re.search(r'Execute: /server/valheim_server.x86_64', line) and server_start is None:
         server_start = datetime.datetime.now()
         echo_elapsed("Game server initialized", server_start - server_boot)
-        set_status('world', False)
+        set_status('World', False)
 
-    if re.search(r'Initializing world generator', line):
-        server_worldgen = datetime.datetime.now()
-
-    if re.search(r'DungeonDB Start', line) and server_worldgen is not None:
+    if re.search(r'DungeonDB Start', line) and server_initialized is not None:
         server_listen = datetime.datetime.now()
-        echo_elapsed("World is ready", server_listen - server_worldgen)
-        set_status('world', True)
+        echo_elapsed("World is ready", server_listen - server_initialized)
+        set_status('World', True)
 
     if re.search(r'Steam game server initialized', line) and server_start is not None and server_initialized is None:
         server_initialized = datetime.datetime.now()

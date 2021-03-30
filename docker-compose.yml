@@ -13,12 +13,14 @@ x-enabled-server: &enabled-server
   environment:
     SERVER_PASSWORD: "12345"
     SERVER_ADMINS: "76561198108936133"
+    TZ: "Europe/Berlin"
   volumes:
     - ./temp/data:/data
     - ./temp/config:/config
     - ./temp/config-mods:/server/BepInEx/config
     - ./temp/plugins:/plugins
     - ./temp/backups:/backups
+    - ./temp/status:/status
     - ./temp/logs:/logs
   ports:
     - 2456:2456/udp

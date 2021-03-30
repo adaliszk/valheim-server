@@ -1,11 +1,15 @@
 #!/bin/bash
 
+function ts-prefix() {
+  /srv/ts-prefix.py
+}
+
 function vhpretty() {
   /srv/vhpretty.py
 }
 
-function vhtrigger() {
-  /srv/vhtrigger.py
+function vhwatch() {
+  /srv/vhwatch.py
 }
 
 function output-log() {
@@ -16,8 +20,12 @@ function tee-output() {
   tee "$(output-log)"
 }
 
+function server-raw-log() {
+  echo "${LOG_PATH}/server-raw.log"
+}
+
 function tee-server-raw() {
-  tee "${LOG_PATH}/server-raw.log"
+  tee "$(server-raw-log)"
 }
 
 function server-log() {
@@ -25,19 +33,35 @@ function server-log() {
 }
 
 function tee-server() {
-  tee "$(server-log)"
+  ts-prefix >> "$(server-log)"
+}
+
+function backup-log() {
+  echo "${LOG_PATH}/backup.log"
 }
 
 function tee-backup() {
-  tee "${LOG_PATH}/backup.log" | tee-output
+  ts-prefix | tee "$(server-log)" >> "$(backup-log)"
+}
+
+function health-log() {
+  echo "${LOG_PATH}/health.log"
+}
+
+function tee-health() {
+  tee-output | ts-prefix >> "$(health-log)"
+}
+
+function exit-log() {
+  echo "${LOG_PATH}/exit.log"
 }
 
 function tee-exit() {
-  tee "${LOG_PATH}/exit.log" | tee-output
+  tee "$(exit-log)" | tee-output
 }
 
 function log() {
-  echo "c> ${*}" | tee-output
+  log-info "OCI> ${*}" | tee-output
 }
 
 function log-env() {
@@ -46,6 +70,12 @@ function log-env() {
   done
 }
 
+function log-info() {
+  echo "i> ${*}"
+}
+
 function log-debug() {
-  echo "d> ${*}"
+  if [[ ${LOG_LEVEL:-info} =~ debug|verbose ]]; then
+    echo "d> ${*}"
+  fi
 }
