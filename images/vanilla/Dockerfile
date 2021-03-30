@@ -31,45 +31,11 @@ RUN dos2unix /srv/** && chmod +x /srv/**
 # =================================================================================================
 FROM alpine:3.13.3 as runtime
 
-COPY --from=steam --chown=1001 /server /server
-
-ARG GLIBC_VERSION="2.33-r0"
-
-# Create a user for the container
-RUN addgroup --gid 1001 container && adduser --uid 1001 --shell /bin/bash -G container -S container
-# Install glibc dependency (sadly needed as a barebone musl libc cannot be used)
-RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
- && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk \
- && apk --no-cache \
-   add \
-     glibc-${GLIBC_VERSION}.apk \
- && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-bin-${GLIBC_VERSION}.apk \
- && apk --no-cache \
-   add \
-     glibc-bin-${GLIBC_VERSION}.apk \
- && rm glibc*.apk /etc/apk/keys/sgerrand.rsa.pub \
- && apk del libc-utils
-
-# Install runtime dependendencies
-# @TODO: remove Python3 dependency via building the VhPretty as a Python/Go binary
-RUN apk --no-cache \
-    add \
-      bash=5.1.0-r0 \
-      coreutils=8.32-r2 \
-      multitail=6.5.0-r0 \
-      tzdata=2021a-r0 \
-      python3=3.8.8-r0 \
- # Install edge versions for up-to-date security
- && apk --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
-    add \
-      musl=1.2.2-r2 \
-      sdl2=2.0.14-r0 \
-      ca-certificates=20191127-r5 \
-      openssl=1.1.1k-r0
-
 ARG REF=""
 ARG TIMESTAMP=""
 ARG VERSION=""
+
+ARG GLIBC_VERSION="2.33-r0"
 
 # Apply OCI Annotations
 LABEL \
@@ -109,6 +75,42 @@ ENV \
   BACKUP_RETENTION="6" \
   LOG_LEVEL="info" \
   TZ="Etc/UTC"
+
+# Create a user for the container
+RUN addgroup --gid 1001 container && adduser --uid 1001 --shell /bin/bash -G container -S container
+
+COPY --from=steam --chown=1001 /server /server
+
+# Install glibc dependency (sadly needed as a barebone musl libc cannot be used)
+# hadolint ignore=DL3018
+RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
+ && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk \
+ && apk --no-cache \
+   add \
+     glibc-${GLIBC_VERSION}.apk \
+ && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-bin-${GLIBC_VERSION}.apk \
+ && apk --no-cache \
+   add \
+     glibc-bin-${GLIBC_VERSION}.apk \
+ && rm glibc*.apk /etc/apk/keys/sgerrand.rsa.pub \
+ && apk del libc-utils
+
+# Install runtime dependendencies
+# @TODO: remove Python3 dependency via building the VhPretty as a Python/Go binary
+RUN apk --no-cache \
+    add \
+      bash=5.1.0-r0 \
+      coreutils=8.32-r2 \
+      multitail=6.5.0-r0 \
+      tzdata=2021a-r0 \
+      python3=3.8.8-r0 \
+ # Install edge versions for up-to-date security
+ && apk --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
+    add \
+      musl=1.2.2-r2 \
+      sdl2=2.0.14-r0 \
+      ca-certificates=20191127-r5 \
+      openssl=1.1.1k-r0
 
 # Create & Own the runtime folders
 RUN bash -c "mkdir -p /{scripts,config,server,backup,data,logs,status}" \
