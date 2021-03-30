@@ -36,18 +36,23 @@ COPY --from=steam --chown=1001 /server /server
 ARG GLIBC_VERSION="2.33-r0"
 
 # Create a user for the container
-RUN addgroup --gid 1001 container && adduser --uid 1001 --shell /bin/bash -G container -S container \
- # Install glibc dependency (sadly needed as a barebone musl libc cannot be used)
- && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
+RUN addgroup --gid 1001 container && adduser --uid 1001 --shell /bin/bash -G container -S container
+# Install glibc dependency (sadly needed as a barebone musl libc cannot be used)
+RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
  && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk \
- && apk --no-cache add glibc-${GLIBC_VERSION}.apk \
- && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-bin-${GLIBC_VERSION}.apk \
- && apk --no-cache add glibc-bin-${GLIBC_VERSION}.apk \
- && rm glibc*.apk /etc/apk/keys/sgerrand.rsa.pub \
- && apk del libc-utils \
- # Install runtime dependendencies
- # @TODO: remove Python3 dependency via building the VhPretty as a Python/Go binary
  && apk --no-cache \
+   add \
+     glibc-${GLIBC_VERSION}.apk \
+ && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-bin-${GLIBC_VERSION}.apk \
+ && apk --no-cache \
+   add \
+     glibc-bin-${GLIBC_VERSION}.apk \
+ && rm glibc*.apk /etc/apk/keys/sgerrand.rsa.pub \
+ && apk del libc-utils
+
+# Install runtime dependendencies
+# @TODO: remove Python3 dependency via building the VhPretty as a Python/Go binary
+RUN apk --no-cache \
     add \
       bash=5.1.0-r0 \
       coreutils=8.32-r2 \
