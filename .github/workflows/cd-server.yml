@@ -90,6 +90,37 @@ jobs:
         run: |
           docker build -t ${{ env.image_name }}:${{ env.image_tag }} ./images/vanilla
           docker save ${{ env.image_name }}:${{ env.image_tag }} > vanilla.tar.gz
+
+  scan-vulnerabilities:
+    name: "Vulnerabilities"
+    runs-on: ubuntu-latest
+    needs: [ "build" ]
+    steps:
+      -
+        name: "Checkout"
+        uses: actions/checkout@v2
+      -
+        name: "Resolve Cache Hash"
+        env:
+          hash_path: "./images/vanilla"
+        run: |
+          IMAGE_TAG=${{ hashFiles( env.hash_path ) }}
+          echo "${IMAGE_TAG}" > vanilla.hash
+          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_ENV
+      -
+        id: docker-cache
+        name: "Use Docker Cache"
+        uses: actions/cache@v2
+        env:
+          hash_path: "./images/vanilla"
+        with:
+          key: cd-server-${{ matrix.tag }}-${{ env.image_tag }}
+          path: |
+            vanilla.*
+      -
+        name: "Load the saved Image"
+        run: |
+          docker load < vanilla.tar.gz
       -
         name: "Tag for the Security Scan"
         run: |
