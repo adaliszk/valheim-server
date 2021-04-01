@@ -32,7 +32,8 @@ Alternatives:
 [`quay.io/adaliszk/valheim-server`](https://quay.io/adaliszk/valheim-server)
 
 - `vanilla` `latest` - always the latest stable build of the server
-- `0.148.6` `0.148` - the server version released on 23/03/2021
+- `0.148.7` `0.148` - the server version released on 29/03/2021
+- `0.148.6` - the server version released on 23/03/2021
 - `0.147.3` `0.147` - the server version released on 02/03/2021
 - `bepinex-5.4.901` `bepinex-5.4.9` `bepinex-5.4` `bepinex` - latest server using [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader  
 - `bepinex-5.4.900` - old version of [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
@@ -81,7 +82,8 @@ Alternatives:
 [`quay.io/adaliszk/valheim-server-monitoring`](https://quay.io/adaliszk/valheim-server-monitoring)
 
 - `metrics` - mtail metrics from the latest server version
-- `metrics-0.148.6` `metrics-0.148` - mtail metrics from the 0.148.6 released on 23/03/2021
+- `metrics-0.148.7` `metrics-0.148` - mtail metrics from the 0.148.7 released on 29/03/2021
+- `metrics-0.148.6` - mtail metrics from the 0.148.6 released on 23/03/2021
 - `metrics-0.147.3` `metrics-0.147` - mtail metrics from the 0.147.3 released on 02/03/2021
 - `prometheus` - a pre-configured prometheus for docker environments
 
