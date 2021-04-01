@@ -29,7 +29,24 @@ RUN dos2unix /srv/** && chmod +x /srv/**
 
 # Set up the Runtime Environment
 # =================================================================================================
-FROM frolvlad/alpine-glibc:alpine-3.13 as runtime
+FROM alpine:3.13 as runtime
+
+ARG GLIBC_VERSION="2.33-r0"
+
+# Install glibc dependency (sadly needed as a barebone musl libc cannot be used)
+# hadolint ignore=DL3018
+RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
+ && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk \
+ && apk --no-cache \
+   add \
+     glibc-${GLIBC_VERSION}.apk \
+ && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-bin-${GLIBC_VERSION}.apk \
+ && apk --no-cache \
+   add \
+     glibc-bin-${GLIBC_VERSION}.apk \
+ && rm glibc*.apk /etc/apk/keys/sgerrand.rsa.pub \
+ && apk del libc-utils
+
 ENV SERVER_NAME="Valheim v0.148.7" \
     SERVER_WORLD="Dedicated" \
     SERVER_PASSWORD="p4ssw0rd" \
