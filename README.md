@@ -39,8 +39,8 @@ Alternatives:
 - `bepinex-5.4.900` - old version of [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
 - `bepinex-5.4.800` `bepinex-5.4.8` - old version of [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
 - `bepinex-full-1.0.5` `bepinex-full-1.0` `bepinex-full` - latest server using [1F31A's BepInEx](https://valheim.thunderstore.io/package/1F31A/BepInEx_Valheim_Full) mod loader
-- `plus-0.9.6` `plus-0.9` `plus` - latest server using [Valheim Plus](https://github.com/valheimPlus/ValheimPlus) modpack
-- `plus-0.9.5-hotfix1` `plus-0.9.5` - old version of server with [Valheim Plus](https://github.com/valheimPlus/ValheimPlus) modpack
+- `plus-0.9.7` `plus-0.9` `plus` - the latest server using [Valheim Plus](https://github.com/valheimPlus/ValheimPlus) modpack
+- `plus-0.9.6` - old version of server with [Valheim Plus](https://github.com/valheimPlus/ValheimPlus) modpack
 - `develop` - build any actively testing branch
 
 additionally, there are version prefixed tags from `bepinex`, `bepinex-full`, and `plus` variants!
