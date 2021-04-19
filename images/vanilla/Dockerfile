@@ -3,8 +3,8 @@
 # =================================================================================================
 FROM steamcmd/steamcmd:ubuntu as steam
 ENV APP_ID="896660" \
-    APP_VERSION="0.50.3" \
-    APP_BUILD="6437353" \
+    APP_VERSION="0.150.3" \
+    APP_BUILD="6508106" \
     APP_PATH="/server"
 
 # hadolint ignore=DL3018,DL3008
