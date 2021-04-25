@@ -59,7 +59,7 @@ gauge garbage_collector_delete_objects_duration
     server_id = $server_id
 }
 
-/Got handshake from client / + STEAM_ID {
+/Got handshake from client / {
     server_players_online++
 }
 
@@ -71,7 +71,7 @@ gauge garbage_collector_delete_objects_duration
     server_players_online = $player_count
 }
 
-/Closing socket / + STEAM_ID {
+/Closing socket / {
     server_players_online--
 }
 
