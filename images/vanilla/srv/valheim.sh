@@ -1,11 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC1091
-source /srv/init-env.sh
-source /srv/console.sh
-
-# Ensure that the logs exist
-touch "${LOG_PATH}"/{server-raw,server,output,error,backup,restore,health,exit}.log
-echo "Container" > /tmp/LOG_GROUP
+source /srv/init-container.sh
 
 cd "${SERVER_PATH}" || exit
 
@@ -22,11 +17,14 @@ log-debug "WORKDIR: $(pwd)"
 log-debug "CMD: ${CMD}"
 log-debug "ARGS: ${ARGS}"
 
+# Run command
 function run() {
   SCRIPT="${SCRIPTS_PATH}/${1}.sh"
   if [ -f "${SCRIPT}" ]; then
     log "Executing \"${1}\" script..."
-    bash -c "${SCRIPT}" "${ARGS[@]}" 2>&1 | tee-server-raw | vhpretty | vhtrigger | tee-server >"$(output-log)" &
+    export LOG_GROUP="OCI"
+
+    bash -c "${SCRIPT}" "${ARGS[@]}" 2>&1 | tee-server-raw | vhpretty | vhwatch | tee-output | tee-server &
     SERVER=$!
 
     tail --pid ${SERVER} -n +2 -f "${LOG_PATH}/output.log" 2>/dev/null

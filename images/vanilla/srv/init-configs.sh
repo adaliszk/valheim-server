@@ -2,6 +2,7 @@
 # shellcheck disable=SC1091
 source /srv/init-env.sh
 
+export LOG_GROUP="ConfigInit"
 echo "ConfigInit" > /tmp/LOG_GROUP
 
 if [ "$(ls -A "${CONFIG_PATH}"/*.txt 2>/dev/null)" ]; then

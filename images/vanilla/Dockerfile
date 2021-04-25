@@ -31,6 +31,37 @@ RUN dos2unix /srv/** && chmod +x /srv/**
 # =================================================================================================
 FROM alpine:3.13 as runtime
 
+ARG REF=""
+ARG TIMESTAMP=""
+ARG VERSION=""
+
+# Apply OCI Annotations
+LABEL \
+  org.opencontainers.image.created="${TIMESTAMP}" \
+  org.opencontainers.image.title="Valheim Server OCI" \
+  org.opencontainers.image.description="Secure Kubernetes-ready Valheim Server with Mod support, Automatic backups, Alpine." \
+  org.opencontainers.image.authors="Ádám Liszkai <valheim-server@adaliszk.dev>" \
+  org.opencontainers.image.license="MIT" \
+  org.opencontainers.image.url="https://adaliszk.github.io/valheim-server" \
+  org.opencontainers.image.documentation="https://adaliszk.github.io/valheim-server" \
+  org.opencontainers.image.source="https://github.com/adaliszk/valheim-server" \
+  org.opencontainers.image.version="${VERSION}" \
+  org.opencontainers.image.revision="${REF}" \
+  org.opencontainers.image.vendor="AdaLiszk"
+
+# Fallback Label-Schema Annotations
+LABEL \
+  org.label-schema.schema-version="1.0" \
+  org.label-schema.build-date="${TIMESTAMP}" \
+  org.label-schema.name="Valheim Server OCI" \
+  org.label-schema.description="Secure Kubernetes-ready Valheim Server with Mod support, Automatic backups, Alpine." \
+  org.label-schema.url="https://adaliszk.github.io/valheim-server" \
+  org.label-schema.usage="https://adaliszk.github.io/valheim-server/examples" \
+  org.label-schema.vcs-url="https://github.com/adaliszk/valheim-server" \
+  org.label-schema.version="${VERSION}" \
+  org.label-schema.vcs-ref="${REF}" \
+  org.label-schema.vendor="AdaLiszk"
+
 # Create a user for the container
 RUN addgroup --gid 1001 container && adduser --uid 1001 --shell /bin/bash -G container -S container
 
@@ -78,10 +109,11 @@ ENV \
  SERVER_PERMITTED="" \
  SERVER_BANNED="" \
  BACKUP_RETENTION="6" \
+ LOG_LEVEL="info" \
  TZ="Etc/UTC"
 
-RUN bash -c "mkdir -p /{scripts,config,server,backup,data,logs}" \
- && chown 1001:1001 /scripts /config /server /backup /data /logs
+RUN bash -c "mkdir -p /{scripts,config,server,backup,data,logs,status}" \
+ && chown 1001:1001 /scripts /config /server /backup /data /logs /status
 
 COPY --from=unix /scripts /scripts
 COPY --from=unix /srv /srv

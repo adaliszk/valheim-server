@@ -42,6 +42,12 @@ gauge world_mountain_count
 gauge world_river_count
 gauge world_lake_count
 
+gauge world_location_generation_time
+gauge world_location_generation_failed by location_name, location_placed
+
+gauge world_object_placed_total by type
+gauge world_object_placed by type
+
 # DAY STATE
 # =================================================================================================
 # Time 3023.79997801036, day:1 nextm:3870.00001072884 skipspeed:70.5166693932066
@@ -117,6 +123,11 @@ gauge world_lake_count
 # Placed locations in zone 4,10 duration 0.17 ms
 # Placed locations in zone 5,10 duration 0.339 ms
 # Placed locations in zone 8,10 duration 3.908 ms
+# Done generating locations, duration:24445.17 ms
+
+/Done generating locations, duration:/ + ELAPSED_TIME + / ms/ {
+    world_location_generation_time = $elapsed_time/1000
+}
 
 /Dungeon load time/ {
     /.*/ {
@@ -129,6 +140,12 @@ gauge world_lake_count
     }
 }
 
+/Placed (?P<object_count>\d+) (?P<object_type>\w+)s/ {
+    world_object_placed_total[$object_type] += $object_count
+    world_object_placed[$object_type] = $object_count
+    del world_object_placed[$object_type] after 3m
+}
+
 /Placed locations in zone/ {
     /.*/ {
         world_location_placed++
@@ -138,4 +155,15 @@ gauge world_lake_count
         world_location_placed_duration_sum += $elapsed_time/1000
         world_location_placed_duration = $elapsed_time/1000
     }
+}
+
+#
+# Failures
+#
+# Failed to place all StoneTowerRuins05, placed 42 out of 50
+# Failed to place all MountainWell1, placed 15 out of 25
+# Failed to place all Runestone_Mountains, placed 58 out of 100
+
+/Failed to place all (?P<location_name>\w+), placed (?P<location_placed>\d+) out of (?P<location_count>\d+)/ {
+    world_location_generation_failed[$location_name][$location_count] = $location_placed
 }

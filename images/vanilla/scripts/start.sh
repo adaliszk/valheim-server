@@ -2,7 +2,7 @@
 # shellcheck disable=SC1091
 source /srv/init-server.sh
 
-echo "Server" > /tmp/LOG_FROUP
+export LOG_GROUP="Server"
 
 TEMP_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="${SERVER_PATH}/linux64:$LD_LIBRARY_PATH"

@@ -10,7 +10,7 @@
 # backup> Backups are {bytes} bytes large
 #
 
-const NAME /(?P<name>\w+|\d+)/
+const NAME /(?P<name>.*)/
 const ELAPSED_TIME /(?P<elapsed_time>\d+\.\d+)/
 const BYTES /(?P<bytes>\d+)/
 

@@ -3,6 +3,7 @@
 source /srv/init-env.sh
 source /srv/init-configs.sh
 
+export LOG_GROUP="ServerInit"
 echo "ServerInit" > /tmp/LOG_GROUP
 
 # Extract the server data
