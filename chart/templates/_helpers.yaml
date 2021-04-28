@@ -1,7 +1,20 @@
 {{- define "server_selectorLabels" -}}
-adaliszk.io/type: Game
-adaliszk.io/game: Valheim
-adaliszk.io/name: {{ .Values.server.codeName }}
+adaliszk.io/type: server
+adaliszk.io/name: {{ .Values.server.name }}
+adaliszk.io/game: valheim
+{{- end }}
+
+{{- define "metrics_selectorLabels" -}}
+adaliszk.io/type: metrics
+adaliszk.io/name: {{ .Values.server.name }}
+adaliszk.io/game: valheim
+{{- end }}
+
+{{- define "shared_labels" -}}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{- define "server_labels" -}}
@@ -9,24 +22,29 @@ adaliszk.io/name: {{ .Values.server.codeName }}
 {{- with .Values.server.labels }}
 {{- toYaml . }}
 {{- end }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{ include "shared_labels" . }}
 {{- end }}
 
-{{- define "server_name" -}}
-valheim-{{ .Values.server.codeName | lower }}-server
+{{- define "metrics_labels" -}}
+{{ include "metrics_selectorLabels" . }}
+{{- with .Values.metrics.labels }}
+{{- toYaml . }}
+{{- end }}
+{{ include "shared_labels" . }}
 {{- end }}
 
-{{- define "server_config_name" -}}
-{{ .Values.server.codeName | lower | default "valheim" }}-server-configs
+{{- define "app_name" -}}
+{{ .Values.server.name | lower | default "valheim" }}
 {{- end }}
 
 {{- define "pvc_data_name" -}}
-{{ .Values.server.codeName | lower | default "valheim" }}-{{ .Values.server.world | lower | default "default" }}-{{ .Values.data.storageClass | default "standard" }}
+{{ .Values.server.name | lower | default "valheim" }}-{{ .Values.server.persistentData.storageClass | default "standard" }}-{{ .Values.server.world | default "dedicated" | b32enc }}
+{{- end }}
+
+{{- define "pvc_logs_name" -}}
+{{ .Values.server.name | lower | default "valheim" }}-{{ .Values.server.persistentLogs.storageClass | default "standard" }}-logs
 {{- end }}
 
 {{- define "pvc_backups_name" -}}
-{{ .Values.server.codeName | lower | default "valheim" }}-backups-{{ .Values.backups.storageClass | default "standard" }}
+{{ .Values.server.name | lower | default "valheim" }}-{{ .Values.server.persistentBackups.storageClass | default "standard" }}-backups
 {{- end }}

@@ -1,0 +1,57 @@
+{{- if .Values.metrics.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app_name" . }}-metrics-exporter
+  labels:
+    {{- include "server_labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "metrics_selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "metrics_selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+
+      {{- with .Values.metrics.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      containers:
+        -
+          name: {{ include "server_name" . }}-metrics
+          image: "{{ .Values.metrics.image.name }}:{{ .Values.metrics.image.tag | default "metrics" }}"
+          imagePullPolicy: {{ .Values.metrics.image.pullPolicy }}
+
+          ports:
+            -
+              name: metrics
+              containerPort: 3903
+              protocol: TCP
+
+          volumeMounts:
+            -
+              name: server-logs
+              mountPath: /logs
+              readOnly: true
+
+          terminationMessagePath: /logs/exit.log
+          resources:
+            {{- toYaml .Values.metrics.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: true
+      terminationGracePeriodSeconds: 60
+      volumes:
+        -
+          name: server-logs
+          persistentVolumeClaim:
+            claimName: {{ include "pvc_logs_name" . }}
+
+{{- end }}

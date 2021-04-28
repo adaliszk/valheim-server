@@ -1,103 +1,70 @@
 # ==============================================================================
-version: "3.6"
+version: "3.8"
 
 # ==============================================================================
-x-enabled-server: &enabled-server
-#  stop_signal: SIGTERM
-#  healthcheck:
-#    test: [ "CMD", "health" ]
-#    interval: 30s
-#    timeout: 15s
-#    retries: 5
-#    start_period: 10s
-  environment:
-    SERVER_PASSWORD: "12345"
-    SERVER_ADMINS: "76561198108936133"
-  volumes:
-    - ./temp/data:/data
-    - ./temp/config:/config
-    - ./temp/config-mods:/server/BepInEx/config
-    - ./temp/plugins:/plugins
-    - ./temp/backups:/backups
-    - ./temp/logs:/logs
-  ports:
-    - 2456:2456/udp
-    - 2457:2457/udp
+volumes:
+  server-data: {}
+  server-backups: {}
+  server-status: {}
+  server-logs: {}
+  server-plugins: {}
 
-x-disabled-server: &disabled-server
-  command: noop
+# ==============================================================================
+x-server-volumes: &mount-volumes
+  volumes:
+    - ./services/server/scripts:/scripts
+    - ./services/server/srv:/srv
+    - server-data:/data
+    - server-backups:/backups
+    - server-status:/status
+    - server-logs:/logs
+
+x-server-language: &set-language
+  LANG: "de_DE.UTF-8"
+
+x-server-timezone: &set-timezone
+  TZ: "Europe/Berlin"
 
 # ==============================================================================
 services:
 
-  vanilla:
-    container_name: "valheim_vanilla"
-    image: "adaliszk/valheim-server:${VANILLA_TAG:-0.148.7}"
-    build: images/vanilla
-    <<: *disabled-server
+#  docs:
+#    container_name: "docs"
 
-  bepinex:
-    container_name: "valheim_bepinex"
-    image: "adaliszk/valheim-server:${VANILLA_TAG:-bepinex}"
-    build: images/bepinex
-    <<: *disabled-server
-    depends_on:
-      - vanilla
+#  backups:
+#    container_name: "duplicity-backup"
+#    image: "adaliszk/duplicity-backup:develop"
+#    <<: *mount-volumes
+#    environment:
+#      <<: *set-language
+#      <<: *set-timezone
 
-  bepinex-full:
-    container_name: "valheim_bepinex_full"
-    image: "adaliszk/valheim-server:${VANILLA_TAG:-bepinex-full}"
-    build: images/bepinex-full
-    <<: *disabled-server
-    depends_on:
-      - vanilla
+#  backups-metrics:
+#    container_name: "duplicity-backup-metrics"
+#    image: "adaliszk/duplicity-backup-metrics:${BACKUP_TAG:-latest}"
 
-  plus:
-    container_name: "valheim_plus"
-    image: "adaliszk/valheim-server:${VANILLA_TAG:-plus}"
-    build: images/plus
-    <<: *enabled-server
-    depends_on:
-      - vanilla
+  server:
+    container_name: "valheim-server"
+    image: "adaliszk/valheim-server:${SERVER_TAG:-develop}"
+    build: services/server
+    <<: *mount-volumes
+    environment:
+      SERVER_PASSWORD: "12345"
+      SERVER_ADMINS: "76561198108936133"
+      SERVER_WORLD: "Something#With#Special@Characters"
+      <<: *set-language
+      <<: *set-timezone
+    ports:
+      - 2456:2456/udp
+      - 2457:2457/udp
 
-  metrics-exporter:
-    container_name: "metrics_exporter"
-    image: "adaliszk/valheim-server-monitoring:${EXPORTER_TAG:-metrics}"
-    build: images/metrics-exporter
+  server-metrics:
+    container_name: "valheim-server-metrics"
+    image: "adaliszk/valheim-server-metrics:${METRICS_TAG:-develop}"
+    build: services/server-metrics
     command:
       - --v 1
     volumes:
-      - ./temp/logs:/logs:ro
+      - server-logs:/logs:ro
     ports:
-      - 3903:3903
-
-  docker-exporter:
-    container_name: "docker_exporter"
-    image: "prometheusnet/docker_exporter:latest"
-    volumes:
-      - //var/run/docker.sock:/var/run/docker.sock:ro
-    ports:
-      - 3417:9417
-
-  prometheus:
-    container_name: "prometheus"
-#    image: "prom/prometheus:latest"
-    image: "adaliszk/valheim-server-monitoring:${PROMETHEUS_TAG:-prometheus}"
-    build: images/prometheus
-    links:
-      - metrics-exporter
-      - docker-exporter
-    volumes:
-      - ./temp/prometheus:/prometheus
-    ports:
-      - 3090:9090
-
-  grafana:
-    container_name: "grafana"
-    image: "grafana/grafana:latest"
-    depends_on:
-      - prometheus
-    volumes:
-      - ./temp/grafana:/var/lib/grafana
-    ports:
-      - 3000:3000
+      - 3903:3903/tcp

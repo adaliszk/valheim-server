@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "app_name" . }}-config
+  labels:
+    {{- include "server_labels" . | nindent 4 }}
+data:
+  {{- with .Values.server.admins }}
+  "adminlist.txt": |
+    {{ . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.server.permitted }}
+  "permittedlist.txt": |
+    {{ . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.server.banned }}
+  "bannedlist.txt": |
+    {{ . | nindent 4 }}
+  {{- end }}

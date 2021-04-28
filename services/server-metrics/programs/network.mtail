@@ -1,0 +1,45 @@
+
+hidden gauge steam_api_endpoint
+hidden gauge steam_api_connection_timestamp by endpoint
+
+counter network_steam_api_request_count by endpoint
+counter network_steam_api_response_total by endpoint
+gauge network_steam_api_response_avg by endpoint
+gauge network_steam_api_response_time by endpoint
+
+const ELAPSED_TIME /(?P<elapsed_time>\d+\.\d+)/
+
+counter network_response_total by port
+gauge network_response_time by port
+gauge network_response_avg by port
+
+
+#
+# Network statistics
+# included in `adaliszk/valheim-server`, lines to implement for custom setups:
+# ```
+# Valheim Network UDP Port (2456) check took 0.031245s
+# Steam Query UDP PORT (2457) check took 0.063134s
+# ```
+
+/UDP Port (?P<service_port>2456|2457) check took / + ELAPSED_TIME + /s/ {
+    network_response_time[$service_port] = $elapsed_time
+    network_response_avg[$service_port] = $elapsed_time * 0.9 + network_response_avg[$service_port] * 0.1
+    network_response_total[$service_port] += $elapsed_time
+}
+
+#
+# Measure Steam API speed
+#
+/Connecting to Steamworks.SteamNetworkIdentity/ {
+    steam_api_endpoint = "SteamNetworkIdentity"
+    steam_api_connection_timestamp[steam_api_endpoint] = timestamp()
+    network_steam_api_request_count[steam_api_endpoint]++
+}
+
+/Got connection SteamID/ {
+    steam_api_endpoint = "SteamNetworkIdentity"
+    network_steam_api_response_time[steam_api_endpoint] = timestamp() - steam_api_connection_timestamp[steam_api_endpoint]
+    network_steam_api_response_avg[steam_api_endpoint] = 0.9 * (network_steam_api_response_time[steam_api_endpoint]) + 0.1 * network_steam_api_response_avg[steam_api_endpoint]
+    network_steam_api_response_total[steam_api_endpoint] += network_steam_api_response_time[steam_api_endpoint]
+}
