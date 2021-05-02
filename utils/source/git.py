@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+
+#  Copyright (c) 2021, Ádám Liszkai
+#  Licensed under the Lesser General Public License, Version 3.0 (the "License"); this is free software,
+#  and you are welcome to redistribute it under certain conditions. Unless required by applicable law
+#  or agreed to in writing, the software distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OF ANY KIND, either express or implied.
+
+from pygit2 import Repository
+
+repo = Repository(".")
+origin = repo.remotes["origin"].url
+branch = repo.head.shorthand

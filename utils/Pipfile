@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[scripts]
+git = "python source/git.py"
+vhlookup = "python source/vhlookup.py"
+vhconsole = "python source/vhconsole.py"
+vhdata = "python source/vhdata.py"
+
+[packages]
+click = "*"
+pygit2 = "*"
+python-a2s = "*"
+
+[dev-packages]
+pyinstaller = "*"
+
+[requires]
+python_version = "3.8"

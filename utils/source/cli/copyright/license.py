@@ -1,3 +1,95 @@
+#  Copyright (c) 2021, Ádám Liszkai
+#  Licensed under the Lesser General Public License, Version 3.0 (the "License"); this is free software,
+#  and you are welcome to redistribute it under certain conditions. Unless required by applicable law
+#  or agreed to in writing, the software distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OF ANY KIND, either express or implied.
+
+def author():
+    return "Ádám Liszkai <hello@adaliszk.dev>"
+
+
+def notice():
+    return "Copyright (c) 2021 " + author()
+
+
+def name():
+    return "GNU Lesser GPLv3 Public License"
+
+
+def info():
+    return \
+        "Licensed under the Lesser General Public License, Version 3.0; " \
+        "This is free software, and you are welcome to redistribute it under " \
+        "certain conditions; type `show conditions' for details.\n\n" \
+        "This software comes with ABSOLUTELY NO WARRANTIES OF ANY KIND, " \
+        "either express or implied; type `show warranty` for details."
+
+
+def conditions():
+    return """
+The following is only a digest from the License and only meant to be used
+as a quick overview so you could easily understand the conditions of the
+license in layman's terms.
+
+For any legal proceeding you should always read the full License document;
+type `show license` for a verbatim copy.
+
+1. Source code must be made available when the Code is distributed.
+
+2. A copy of the license and copyright notice must be included with 
+   the distributed Code.
+
+3. Modifications must be released under the same license, however, you are free 
+   to switch to any related licenses (such as GPLv3, AGPLv3).
+
+4. If you using the code as a Library, you do not need to apply 3. in your
+   Derivative Works. However, you do need to include the License notice in
+   the appropriate section of your Work.
+
+5. Changes made to the code must be documented, and references, notices to the 
+   original code have to be updated.
+"""
+
+
+def warranty():
+    return """
+The following is only a digest from the License and only meant to be used
+as a quick overview so you could easily understand the warranty and liability 
+information in layman's terms.
+
+For any legal proceeding you should always read the full License document;
+type `show license` for a verbatim copy.
+
+1. Unless required by applicable law or agreed to in writing, the software 
+   distributed under the License is distributed WITHOUT WARRANTIES OF ANY KIND, 
+   either express or implied.
+   
+   a) The warranty is INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+      MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+      
+   b) THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM ON YOU.
+   
+   c) SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY 
+      SERVICING, REPAIR OR CORRECTION.
+
+2. Unless required by applicable law or agree to in writing, the copyright
+   holder or any other party who modifies and or conveys the Code described in
+   the conditions are NOT LIABLE TO YOU FOR ANY DAMAGES, INCLUDING ANY
+   GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE
+   USE OR INABILITY TO USE THE SOFTWARE.
+   
+   a) This non-liability INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
+      RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR 
+      A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS
+
+   b) This non-liability applies EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN 
+      ADVISED OF THE POSSIBILITY OF SUCH DAMAGES
+"""
+
+
+def copy():
+    return """
+                COPYRIGHT (C) 2021 by Ádám Liszkai under
                    GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
@@ -163,3 +255,4 @@ whether future versions of the GNU Lesser General Public License shall
 apply, that proxy's public statement of acceptance of any version is
 permanent authorization for you to choose that version for the
 Library.
+"""
