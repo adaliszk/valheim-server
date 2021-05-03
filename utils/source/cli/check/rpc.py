@@ -10,21 +10,18 @@
 from socket import *
 
 import time
-import signal
 import re
 
 from . import errors
+from . import ping
 
 
-def rtt(host: str = "0.0.0.0", port: int = 2456, timeout_time: int = 3, deadline_time: int = 3):
-    def timeout_handler(signum, frame):
-        raise errors.TimeoutReached()
+def rpc(pid: int, out: str, args: any):
+    host, port, deadline_time = args
 
-    signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(timeout_time)
-
+    # Establish a connection
     sock = socket(AF_INET, SOCK_DGRAM)
-    signal.alarm(0)
+    sock.settimeout(deadline_time)
 
     # Create k_ESteamNetworkingUDPMsg_ConnectionClosed packet with zero "to_connection_id".
     pkt = b"\x24\x05\x00\x25\x00\x00\x00\x00"
@@ -43,23 +40,27 @@ def rtt(host: str = "0.0.0.0", port: int = 2456, timeout_time: int = 3, deadline
     # we need to pad the Valheim packets to 512 byte length
     pkt = pkt + (b"\x00" * (512 - len(pkt)))
 
-    packet_sent_at = time.time()
-    sock.sendto(pkt, (host, port))
-    sock.settimeout(deadline_time)
-
     try:
+        # Send the Packet
+        packet_sent_at = time.time()
+        sock.sendto(pkt, (host, port))
+
         # get the response's first meaningful Byte
         resp, _ = sock.recvfrom(16)
         response_received_at = time.time()
 
-        resp = re.sub(b"^\xFF\xFF\xFF\xFF", b"", resp)
+        if re.match(b"^\xFF\xFF\xFF\xFF", resp):
+            resp = re.sub(b"^\xFF\xFF\xFF\xFF", b"", resp)
         resp = resp[:1]
 
         # the server should respond with a k_ESteamNetworkingUDPMsg_NoConnection
-        if resp == b"\x25":
-            return "%ss" % (response_received_at - packet_sent_at)
+        if not re.match(b"\x25", resp):
+            raise errors.InvalidResponse(resp.hex())
 
-        raise errors.InvalidResponse(resp.hex())
-
+        out[pid] = response_received_at - packet_sent_at
     except timeout:
         raise errors.DeadlineReached()
+
+
+def rtt(host: str = "0.0.0.0", port: int = 2456, timeout_time: int = 3, deadline_time: int = 3):
+    return ping.request(rpc, (host, port, deadline_time), timeout_time)

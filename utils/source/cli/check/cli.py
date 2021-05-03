@@ -7,6 +7,7 @@
 import click
 import sys
 
+from . import errors
 from . import options
 from . import query
 from . import rpc
@@ -30,26 +31,41 @@ def cli(**kwargs):
 )
 @options.host()
 @options.port("Master Server Query", default=2457)
-@options.timeout()
+# @options.timeout()
 @options.deadline()
 @options.limit_server_attributes()
 def query_check(**kwargs):
-    info = query.info(
-        host=kwargs.get("host"), port=kwargs.get("port"),
-        deadline_time=kwargs.get("deadline"),
-        timeout_time=kwargs.get("timeout"),
-    )
+    try:
+        response = query.rtt(
+            host=kwargs.get("host"), port=kwargs.get("port"),
+            deadline_time=kwargs.get("deadline"),
+            timeout_time=kwargs.get("timeout"),
+        )
+        info = response.get("data")
 
-    only_attr = kwargs.get("attr")
+        only_attr = kwargs.get("attr")
 
-    if only_attr:
-        attr = options.server_attributes[only_attr]
-        click.echo(getattr(info, attr))
-        return 0
+        if only_attr:
 
-    for key in list(options.server_attributes.keys()):
-        attr = options.server_attributes[key]
-        click.echo("{}: {}".format(key, getattr(info, attr)))
+            if only_attr == "rtt":
+                click.echo(response.get("rtt"))
+                return 0
+
+            attr = options.server_attributes[only_attr]
+            click.echo(getattr(info, attr))
+            return 0
+
+        for key in list(options.server_attributes.keys()):
+
+            if key == "rtt":
+                click.echo("rtt: {}".format(response.get("rtt")))
+                continue
+
+            attr = options.server_attributes[key]
+            click.echo("{}: {}".format(key, getattr(info, attr)))
+    except errors.CheckFailed as err:
+        click.echo(err.message)
+        sys.exit(1)
 
 
 @cli.command(
@@ -61,16 +77,16 @@ def query_check(**kwargs):
 )
 @options.host()
 @options.port("Steamworks Network RPC", default=2456)
-@options.timeout()
+# @options.timeout()
 @options.deadline()
 def rpc_check(**kwargs):
     try:
-        response_time = rpc.rtt(
+        rtt = rpc.rtt(
             host=kwargs.get("host"), port=kwargs.get("port"),
             deadline_time=kwargs.get("deadline"),
             timeout_time=kwargs.get("timeout"),
         )
-        click.echo(response_time)
-    except rpc.DeadlineReached or rpc.TimeoutReached as err:
+        click.echo(rtt)
+    except errors.CheckFailed as err:
         click.echo(err.message)
         sys.exit(1)

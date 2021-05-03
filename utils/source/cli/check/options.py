@@ -35,6 +35,7 @@ server_attributes = {
     "max_players": "max_players",
     "player_count": "player_count",
     "ping": "ping",
+    "rtt": "rtt",
 }
 
 

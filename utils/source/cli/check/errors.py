@@ -5,18 +5,28 @@
 #  WITHOUT WARRANTIES OF ANY KIND, either express or implied.
 
 
-class InvalidResponse(Exception):
+class CheckFailed(Exception):
+    def __init__(self):
+        self.message = "CheckFailed"
+
+
+class InvalidRequest(CheckFailed):
     def __init__(self, message):
-        self.message = "rpc_InvalidResponse"
+        self.message = "InvalidRequest:{}".format(message)
+
+
+class InvalidResponse(CheckFailed):
+    def __init__(self, message):
+        self.message = "InvalidResponse"
         if message:
             self.message += ":0x{}".format(message)
 
 
-class TimeoutReached(Exception):
+class TimeoutReached(CheckFailed):
     def __init__(self):
-        self.message = "rpc_TimeoutReached"
+        self.message = "TimeoutReached"
 
 
-class DeadlineReached(Exception):
+class DeadlineReached(CheckFailed):
     def __init__(self):
-        self.message = "rpc_DeadlineReached"
+        self.message = "DeadlineReached"

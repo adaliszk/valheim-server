@@ -1,15 +1,20 @@
-FROM python:3.8
+FROM adaliszk/alpine:3.13
 
-RUN apt-get update \
- && apt-get install -y gcc python3-dev gcc ccache fuse \
+ENV \
+  CLCACHE_DIR="/cache"
+
+RUN apk --no-cache add python3 py3-pip \
  && pip install pipenv
 
-COPY Pipfile /
+COPY ./Pipfile /Pipfile
+COPY ./dist /dist
+COPY ./source /source
 WORKDIR /
 
-RUN pipenv install --dev
+RUN pipenv install --dev \
+ && apk --no-cache add -t .build-deps python3-dev py3-pip gcc musl-dev ccache fuse-dev \
+ && pipenv run build \
+ && apk del .build-deps \
+ && rm -rf /root/.local
 
-COPY . /
-
-ENTRYPOINT ["pipenv", "run"]
-CMD ["build"]
+USER 1001

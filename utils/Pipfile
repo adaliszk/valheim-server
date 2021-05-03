@@ -7,7 +7,7 @@ name = "pypi"
 git = "python source/git.py"
 build = "pipenv run vhlookup-build"
 vhlookup = "python source/vhlookup.py"
-vhlookup-build = "python scripts/build.py vhlookup"
+vhlookup-build = "python source/build.py vhlookup"
 
 [packages]
 click = "*"
