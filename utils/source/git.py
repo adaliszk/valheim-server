@@ -6,8 +6,6 @@
 #  or agreed to in writing, the software distributed under the License is distributed on an "AS IS" BASIS,
 #  WITHOUT WARRANTIES OF ANY KIND, either express or implied.
 
-from pygit2 import Repository
 
-repo = Repository(".")
-origin = repo.remotes["origin"].url
-branch = repo.head.shorthand
+origin = "https://github.com/adaliszk/valheim-server"
+branch = "v1.0"

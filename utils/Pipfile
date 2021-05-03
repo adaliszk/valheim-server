@@ -5,17 +5,17 @@ name = "pypi"
 
 [scripts]
 git = "python source/git.py"
+build = "pipenv run vhlookup-build"
 vhlookup = "python source/vhlookup.py"
-vhconsole = "python source/vhconsole.py"
-vhdata = "python source/vhdata.py"
+vhlookup-build = "python scripts/build.py vhlookup"
 
 [packages]
 click = "*"
-pygit2 = "*"
 python-a2s = "*"
 
 [dev-packages]
-pyinstaller = "*"
+cython = "*"
+nuitka = "*"
 
 [requires]
 python_version = "3.8"
