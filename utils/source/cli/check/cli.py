@@ -31,7 +31,7 @@ def cli(**kwargs):
 )
 @options.host()
 @options.port("Master Server Query", default=2457)
-# @options.timeout()
+@options.timeout()
 @options.deadline()
 @options.limit_server_attributes()
 def query_check(**kwargs):
@@ -77,7 +77,7 @@ def query_check(**kwargs):
 )
 @options.host()
 @options.port("Steamworks Network RPC", default=2456)
-# @options.timeout()
+@options.timeout()
 @options.deadline()
 def rpc_check(**kwargs):
     try:
