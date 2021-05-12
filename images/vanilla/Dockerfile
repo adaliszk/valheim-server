@@ -3,8 +3,8 @@
 # =================================================================================================
 FROM steamcmd/steamcmd:ubuntu as steam
 ENV APP_ID="896660" \
-    APP_VERSION="0.150.3" \
-    APP_BUILD="6508106" \
+    APP_VERSION="0.153.2" \
+    APP_BUILD="6663900" \
     APP_PATH="/server"
 
 # hadolint ignore=DL3018,DL3008
@@ -29,7 +29,7 @@ RUN dos2unix /srv/** && chmod +x /srv/**
 
 # Set up the Runtime Environment
 # =================================================================================================
-FROM alpine:3.13 as runtime
+FROM adaliszk/alpine:3.13 as runtime
 
 ARG REF=""
 ARG TIMESTAMP=""
@@ -62,9 +62,6 @@ LABEL \
   org.label-schema.vcs-ref="${REF}" \
   org.label-schema.vendor="AdaLiszk"
 
-# Create a user for the container
-RUN addgroup --gid 1001 container && adduser --uid 1001 --shell /bin/bash -G container -S container
-
 COPY --from=steam --chown=1001 /server /server
 
 ARG GLIBC_VERSION="2.33-r0"
@@ -91,23 +88,24 @@ RUN apk --no-cache \
       coreutils=8.32-r2 \
       multitail=6.5.0-r0 \
       tzdata=2021a-r0 \
-      python3=3.8.8-r0 \
- # Install edge versions for up-to-date security
+      python3=3.8.10-r0 \
+ # Install edge packages for up-to-date security
  && apk --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
     add \
-      musl=1.2.2-r2 \
+      musl=1.2.2-r3 \
       sdl2=2.0.14-r0 \
       ca-certificates=20191127-r5 \
       openssl=1.1.1k-r0
 
 ENV \
- SERVER_NAME="Valheim v0.150.3" \
+ SERVER_NAME="Valheim v0.153.2" \
  SERVER_WORLD="Dedicated" \
  SERVER_PASSWORD="p4ssw0rd" \
  SERVER_PUBLIC="1" \
  SERVER_ADMINS="" \
  SERVER_PERMITTED="" \
  SERVER_BANNED="" \
+ LEGACY_BACKUP_SYSTEM="true" \
  BACKUP_RETENTION="6" \
  LOG_LEVEL="info" \
  TZ="Etc/UTC"
