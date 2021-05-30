@@ -36,7 +36,7 @@ Alternatives:
 - `0.150.3` `0.150` - the server version released on 19/04/2021
 - `bepinex-5.4.1001` `bepinex-5.4.10` `bepinex-5.4` `bepinex` - latest server using [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
 - `bepinex-full-1.0.5` `bepinex-full-1.0` `bepinex-full` - latest server using [1F31A's BepInEx](https://valheim.thunderstore.io/package/1F31A/BepInEx_Valheim_Full) mod loader
-- `plus-0.9.8` `plus-0.9` `plus` - the latest server using [Valheim Plus](https://github.com/valheimPlus/ValheimPlus) modpack
+- `plus-0.9.8.1` `plus-0.9.8`  `plus-0.9` `plus` - the latest server using [Valheim Plus](https://github.com/valheimPlus/ValheimPlus) modpack
 - `develop` - build any actively testing branch
 
 additionally, there are version prefixed tags from `bepinex`, `bepinex-full`, and `plus` variants!
