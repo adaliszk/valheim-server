@@ -3,13 +3,20 @@
 # =================================================================================================
 FROM steamcmd/steamcmd:ubuntu as steam
 ENV APP_ID="896660" \
-    APP_VERSION="0.153.2" \
-    APP_BUILD="6663900" \
+    APP_VERSION="0.154.1" \
+    APP_BUILD="6766400" \
     APP_PATH="/server"
 
 # hadolint ignore=DL3018,DL3008
 RUN apt-get -y install --no-install-recommends bash tar
-RUN steamcmd +login anonymous +force_install_dir "${APP_PATH}" +app_update ${APP_ID} validate +quit
+
+# Workaround for https://github.com/ValveSoftware/steam-for-linux/issues/7843
+# creating a steamapps folder for the install dir
+RUN mkdir -p "${APP_PATH}/steamapps"
+
+# Install the server
+RUN steamcmd +login anonymous +force_install_dir "${APP_PATH}" +app_update ${APP_ID} +quit
+
 # Compress files so the image can be small for the price of ~5-10s decompression on runtime
 RUN tar -czf "${APP_PATH}/valheim_server_Data.tar.gz" -C "${APP_PATH}" "valheim_server_Data" \
  && rm -rf "${APP_PATH}/valheim_server_Data"
@@ -62,8 +69,6 @@ LABEL \
   org.label-schema.vcs-ref="${REF}" \
   org.label-schema.vendor="AdaLiszk"
 
-COPY --from=steam --chown=1001 /server /server
-
 ARG GLIBC_VERSION="2.33-r0"
 
 # Install glibc dependency (sadly needed as a barebone musl libc cannot be used)
@@ -97,8 +102,10 @@ RUN apk --no-cache \
       ca-certificates=20191127-r5 \
       openssl=1.1.1k-r0
 
+COPY --from=steam --chown=1001 /server /server
+
 ENV \
- SERVER_NAME="Valheim v0.153.2" \
+ SERVER_NAME="Valheim v0.154.1" \
  SERVER_WORLD="Dedicated" \
  SERVER_PASSWORD="p4ssw0rd" \
  SERVER_PUBLIC="1" \

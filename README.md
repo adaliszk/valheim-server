@@ -32,14 +32,13 @@ Alternatives:
 [`quay.io/adaliszk/valheim-server`](https://quay.io/adaliszk/valheim-server)
 
 - `vanilla` `latest` - always the latest stable build of the server
-- `0.153.2` `0.153` - the server version released on 12/05/2021
-- `0.150.3` `0.150` - the server version released on 19/04/2021
-- `bepinex-5.4.1001` `bepinex-5.4.10` `bepinex-5.4` `bepinex` - latest server using [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
-- `bepinex-full-1.0.5` `bepinex-full-1.0` `bepinex-full` - latest server using [1F31A's BepInEx](https://valheim.thunderstore.io/package/1F31A/BepInEx_Valheim_Full) mod loader
+- `0.154.1` `0.154` - the server version released on 09/06/2021
+- `0.153.2` `0.153` - old server version released on 12/05/2021
+- `bepinex-5.4.1100` `bepinex-5.4.11` `bepinex-5.4` `bepinex` - latest server using [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
 - `plus-0.9.8.1` `plus-0.9.8`  `plus-0.9` `plus` - the latest server using [Valheim Plus](https://github.com/valheimPlus/ValheimPlus) modpack
 - `develop` - build any actively testing branch
 
-additionally, there are version prefixed tags from `bepinex`, `bepinex-full`, and `plus` variants!
+additionally, there are version prefixed tags from `bepinex`, and `plus` variants!
 
 ```bash
 docker run -p 2456-2457:2456-2457/udp adaliszk/valheim-server -name "My Server" -password="super!secret"
@@ -78,9 +77,6 @@ Alternatives:
 [`quay.io/adaliszk/valheim-server-monitoring`](https://quay.io/adaliszk/valheim-server-monitoring)
 
 - `metrics` - mtail metrics from the latest server version
-- `metrics-0.148.7` `metrics-0.148` - mtail metrics from the 0.148.7 released on 29/03/2021
-- `metrics-0.148.6` - mtail metrics from the 0.148.6 released on 23/03/2021
-- `metrics-0.147.3` `metrics-0.147` - mtail metrics from the 0.147.3 released on 02/03/2021
 - `prometheus` - a pre-configured prometheus for docker environments
 
 ```bash

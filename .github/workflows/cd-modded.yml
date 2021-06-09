@@ -61,7 +61,7 @@ jobs:
     needs: [ "lint" ]
     strategy:
       matrix:
-        tag: [  "bepinex", "bepinex-full", "plus" ]
+        tag: [  "bepinex", "plus" ]
     steps:
       -
         name: "Checkout"
@@ -130,7 +130,7 @@ jobs:
       fail-fast: false
       matrix:
         registry: [ "docker.io", "quay.io", "ghcr.io" ]
-        tag: [  "bepinex", "bepinex-full", "plus" ]
+        tag: [  "bepinex", "plus" ]
         include:
           -
             registry: "docker.io"
