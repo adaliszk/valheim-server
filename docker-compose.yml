@@ -32,7 +32,7 @@ services:
     container_name: "valheim_vanilla"
     image: "adaliszk/valheim-server:${VANILLA_TAG:-0.154.1}"
     build: images/vanilla
-    <<: *enabled-server
+    <<: *disabled-server
 
   bepinex:
     container_name: "valheim_bepinex"
@@ -46,7 +46,7 @@ services:
     container_name: "valheim_plus"
     image: "adaliszk/valheim-server:${VANILLA_TAG:-plus}"
     build: images/plus
-    <<: *disabled-server
+    <<: *enabled-server
     depends_on:
       - vanilla
 
@@ -54,8 +54,8 @@ services:
     container_name: "metrics_exporter"
     image: "adaliszk/valheim-server-monitoring:${EXPORTER_TAG:-metrics}"
     build: images/metrics-exporter
-    command:
-      - --v 1
+#    command:
+#      - --v 1
     volumes:
       - ./temp/logs:/logs:ro
     ports:
@@ -68,7 +68,7 @@ services:
 #      - //var/run/docker.sock:/var/run/docker.sock:ro
 #    ports:
 #      - 3417:9417
-#
+
 #  prometheus:
 #    container_name: "prometheus"
 ##    image: "prom/prometheus:latest"
@@ -81,7 +81,7 @@ services:
 #      - ./temp/prometheus:/prometheus
 #    ports:
 #      - 3090:9090
-#
+
 #  grafana:
 #    container_name: "grafana"
 #    image: "grafana/grafana:latest"

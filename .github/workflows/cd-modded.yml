@@ -11,6 +11,7 @@ on:
     branches:
       - develop
       - stable
+
   pull_request:
     paths:
       - .github/workflows/cd-modded.yml
