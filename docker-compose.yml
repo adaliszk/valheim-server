@@ -30,9 +30,9 @@ services:
 
   vanilla:
     container_name: "valheim_vanilla"
-    image: "adaliszk/valheim-server:${VANILLA_TAG:-0.154.1}"
+    image: "adaliszk/valheim-server:${VANILLA_TAG:-0.155.7}"
     build: images/vanilla
-    <<: *disabled-server
+    <<: *enabled-server
 
   bepinex:
     container_name: "valheim_bepinex"
@@ -46,7 +46,7 @@ services:
     container_name: "valheim_plus"
     image: "adaliszk/valheim-server:${VANILLA_TAG:-plus}"
     build: images/plus
-    <<: *enabled-server
+    <<: *disabled-server
     depends_on:
       - vanilla
 
