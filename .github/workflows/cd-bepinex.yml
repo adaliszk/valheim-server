@@ -1,5 +1,5 @@
 # =================================================================================================
-name: "Modded Server"
+name: "BepInEx"
 
 # =================================================================================================
 on:
@@ -11,14 +11,16 @@ on:
     branches:
       - develop
       - stable
+    paths:
+      - .github/workflows/cd-bepinex.yml
+      - images/bepinex/**/*
+      - images/bepinex/*
 
   pull_request:
     paths:
-      - .github/workflows/cd-modded.yml
+      - .github/workflows/cd-bepinex.yml
       - images/bepinex/**/*
       - images/bepinex/*
-      - images/plus/**/*
-      - images/plus/*
 
 # =================================================================================================
 env:
@@ -34,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tag: [ "bepinex", "plus" ]
+        tag: [ "bepinex" ]
 
     runs-on: ubuntu-latest
     name: "Lint"
@@ -62,7 +64,7 @@ jobs:
     needs: [ "lint" ]
     strategy:
       matrix:
-        tag: [  "bepinex", "plus" ]
+        tag: [  "bepinex" ]
     steps:
       -
         name: "Checkout"
@@ -131,7 +133,7 @@ jobs:
       fail-fast: false
       matrix:
         registry: [ "docker.io", "quay.io", "ghcr.io" ]
-        tag: [  "bepinex", "plus" ]
+        tag: [  "bepinex" ]
         include:
           -
             registry: "docker.io"

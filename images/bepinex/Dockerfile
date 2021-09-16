@@ -1,12 +1,12 @@
 # Download Modpack
 # =================================================================================================
-FROM alpine:3.13 as bepinex
+FROM alpine:3.14.2 as bepinex
 
 # hadolint ignore=DL3018
 RUN apk add --no-cache zip wget
 
 # denkinson's BepInEx: https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/
-ENV MOD_SOURCE="https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.1100" \
+ENV MOD_SOURCE="https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.1500" \
     MOD_ARHIVE="/bepinex.zip" \
     MOD_PATH="/modpack"
 
@@ -17,10 +17,10 @@ RUN wget -O "${MOD_ARHIVE}" "${MOD_SOURCE}" \
 
 # Install modpack on top of the Vanilla server
 # =================================================================================================
-FROM adaliszk/valheim-server:0.156.2 as server-modded
-ENV SERVER_NAME="Valheim v0.156.2 with BepInEx v5.4.1100" \
+FROM adaliszk/valheim-server:0.202.14 as server-modded
+ENV SERVER_NAME="Valheim v0.202.14 with BepInEx v5.4.1500" \
     MOD_PATH="/mod-bepinex" \
-    MOD_VERSION="5.4.1100"
+    MOD_VERSION="5.4.1500"
 
 COPY --from=bepinex /modpack "${MOD_PATH}"
 RUN cp -rfa "${MOD_PATH}/." /server/ && chown -R "1001:1001" /server
