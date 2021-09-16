@@ -36,6 +36,7 @@ RUN dos2unix /srv/** && chmod +x /srv/**
 
 # Set up the Runtime Environment
 # =================================================================================================
+# hadolint ignore=DL3007
 FROM adaliszk/alpine:latest as runtime
 
 ARG REF=""
