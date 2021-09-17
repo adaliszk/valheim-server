@@ -34,11 +34,12 @@ Alternatives:
 - `vanilla` `latest` - always the latest stable build of the server
 - `0.202.14` `0.202` - the server version released on 16/09/2021
 - `0.156.2` `0.156` - the server version released on 01/07/2021
-- `bepinex-5.4.1500` `bepinex-5.4.15` `bepinex-5.4` `bepinex` - latest server using [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
-- `plus-0.9.8.2` `plus-0.9.8`  `plus-0.9` `plus` - the latest server using [Valheim Plus](https://github.com/valheimPlus/ValheimPlus) modpack
+- `bepinex-5.4.1501` `bepinex-5.4.15` `bepinex-5.4` `bepinex` - latest server using [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
+- `plus-0.9.8.2` `plus-0.9.8`  `plus-0.9` `plus` - the latest server using [Valheim Plus](https://github.com/valheimPlus/ValheimPlus) mod
 - `develop` - build any actively testing branch
 
-additionally, there are version prefixed tags from `bepinex`, and `plus` variants!
+additionally, there are version prefixed tags from `bepinex`, and `plus` variants, so you could specify exactly which
+server you want to use, like: `0.202.14-bepinex-5.4.1501`
 
 ```bash
 docker run -p 2456-2457:2456-2457/udp adaliszk/valheim-server -name "My Server" -password="super!secret"
