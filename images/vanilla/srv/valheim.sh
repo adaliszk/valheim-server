@@ -24,7 +24,7 @@ function run() {
     log "Executing \"${1}\" script..."
     export LOG_GROUP="OCI"
 
-    bash -c "${SCRIPT}" "${ARGS[@]}" 2>&1 | tee-server-raw | vhpretty | vhwatch | tee-output | tee-server &
+    "${SCRIPT}" "${ARGS[@]}" 2>&1 | tee-server-raw | vhpretty | vhwatch | tee-output | tee-server &
     SERVER=$!
 
     tail --pid ${SERVER} -n +2 -f "${LOG_PATH}/output.log" 2>/dev/null
