@@ -6,7 +6,7 @@ FROM alpine:3.14.2 as bepinex
 RUN apk add --no-cache zip wget
 
 # denkinson's BepInEx: https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/
-ENV MOD_SOURCE="https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.1502" \
+ENV MOD_SOURCE="https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.1600" \
     MOD_ARHIVE="/bepinex.zip" \
     MOD_PATH="/modpack"
 
@@ -17,8 +17,8 @@ RUN wget -O "${MOD_ARHIVE}" "${MOD_SOURCE}" \
 
 # Install modpack on top of the Vanilla server
 # =================================================================================================
-FROM adaliszk/valheim-server:0.202.19 as server-modded
-ENV SERVER_NAME="Valheim v0.202.19 with BepInEx v5.4.1502" \
+FROM adaliszk/valheim-server:0.203.10 as server-modded
+ENV SERVER_NAME="Valheim v0.203.10 with BepInEx v5.4.1502" \
     MOD_PATH="/mod-bepinex" \
     MOD_VERSION="5.4.1502"
 
