@@ -79,7 +79,7 @@ RUN apk --no-cache \
     add \
       bash=5.1.4-r0 \
       coreutils=8.32-r2 \
-      tzdata=2021a-r0 \
+      tzdata=2021c-r0 \
       python3=3.9.5-r1 \
  # Install edge packages for up-to-date security
  && apk --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
