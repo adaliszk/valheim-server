@@ -3,8 +3,8 @@
 # =================================================================================================
 FROM steamcmd/steamcmd:ubuntu as steam
 ENV APP_ID="896660" \
-    APP_VERSION="0.203.10" \
-    APP_BUILD="7466247" \
+    APP_VERSION="0.204.4" \
+    APP_BUILD="7614743" \
     APP_PATH="/server"
 
 # hadolint ignore=DL3018,DL3008
@@ -79,7 +79,7 @@ RUN apk --no-cache \
     add \
       bash=5.1.4-r0 \
       coreutils=8.32-r2 \
-      tzdata=2021c-r0 \
+      tzdata=2021e-r0 \
       python3=3.9.5-r1 \
  # Install edge packages for up-to-date security
  && apk --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
@@ -92,7 +92,7 @@ RUN apk --no-cache \
 COPY --from=steam --chown=1001 /server /server
 
 ENV \
- SERVER_NAME="Valheim v0.203.10" \
+ SERVER_NAME="Valheim v0.204.4" \
  SERVER_WORLD="Dedicated" \
  SERVER_PASSWORD="p4ssw0rd" \
  SERVER_PUBLIC="1" \

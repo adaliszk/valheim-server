@@ -30,26 +30,26 @@ services:
 
   vanilla:
     container_name: "valheim_vanilla"
-    image: "adaliszk/valheim-server:${VANILLA_TAG:-0.202.19}"
+    image: "adaliszk/valheim-server:${VANILLA_TAG:-0.204.4}"
     build: images/vanilla
     command: -password "super!secret"
     <<: *enabled-server
 
-  bepinex:
-    container_name: "valheim_bepinex"
-    image: "adaliszk/valheim-server:${VANILLA_TAG:-bepinex}"
-    build: images/bepinex
-    <<: *disabled-server
-    depends_on:
-      - vanilla
-
-  plus:
-    container_name: "valheim_plus"
-    image: "adaliszk/valheim-server:${VANILLA_TAG:-plus}"
-    build: images/plus
-    <<: *disabled-server
-    depends_on:
-      - vanilla
+#  bepinex:
+#    container_name: "valheim_bepinex"
+#    image: "adaliszk/valheim-server:${VANILLA_TAG:-bepinex}"
+#    build: images/bepinex
+#    <<: *disabled-server
+#    depends_on:
+#      - vanilla
+#
+#  plus:
+#    container_name: "valheim_plus"
+#    image: "adaliszk/valheim-server:${VANILLA_TAG:-plus}"
+#    build: images/plus
+#    <<: *disabled-server
+#    depends_on:
+#      - vanilla
 
   metrics-exporter:
     container_name: "metrics_exporter"

@@ -21,8 +21,9 @@ full feature-set for managing and monitoring your Valheim Server.
 - **Sanitized server output**; say goodbye to the debug noise that is not important!
 - Health-checks to monitor the image's basic status
 - Companion image for monitoring: [adaliszk/valheim-server-monitoring](https://hub.docker.com/r/adaliszk/valheim-server-monitoring)
+<!--
 - Helm chart for Kubernetes: [https://charts.adaliszk.io](https://charts.adaliszk.io/chart/?name=valheim-server)
-
+-->
 
 ## Server:
 [`adaliszk/valheim-server`](https://hub.docker.com/r/adaliszk/valheim-server)  
@@ -32,15 +33,14 @@ Alternatives:
 [`quay.io/adaliszk/valheim-server`](https://quay.io/adaliszk/valheim-server)
 
 - `vanilla` `latest` - always the latest stable build of the server
+- `0.204.4` `0.204` - the server version released on 08/11/2021
 - `0.203.11` `0.203` - the server version released on 04/10/2021
-- `0.203.10` - the server version released on 04/10/2021  
-- `0.202.19` `0.202` - the server version released on 17/09/2021
 - `bepinex-5.4.1600` `bepinex-5.4.16` `bepinex-5.4` `bepinex` - latest server using [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
 - `plus-0.9.9`  `plus-0.9` `plus` - the latest server using [Valheim Plus](https://github.com/valheimPlus/ValheimPlus) mod
 - `develop` - build any actively testing branch
 
 additionally, there are version prefixed tags from `bepinex`, and `plus` variants, so you could specify exactly which
-server you want to use, like: `0.202.14-bepinex-5.4.1501`
+server you want to use, like: `0.204.04-bepinex-5.4.1601`
 
 ```bash
 docker run -p 2456-2457:2456-2457/udp adaliszk/valheim-server -name "My Server" -password="super!secret"
