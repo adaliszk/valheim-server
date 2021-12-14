@@ -3,8 +3,8 @@
 # =================================================================================================
 FROM steamcmd/steamcmd:ubuntu as steam
 ENV APP_ID="896660" \
-    APP_VERSION="0.205.5" \
-    APP_BUILD="7754469" \
+    APP_VERSION="0.206.5" \
+    APP_BUILD="7879451" \
     APP_PATH="/server"
 
 # hadolint ignore=DL3018,DL3008
@@ -15,7 +15,7 @@ RUN apt-get -y install --no-install-recommends bash tar
 RUN mkdir -p "${APP_PATH}/steamapps"
 
 # Install the server
-RUN steamcmd +login anonymous +force_install_dir "${APP_PATH}" +app_update ${APP_ID} +quit
+RUN steamcmd +force_install_dir "${APP_PATH}" +login anonymous +app_update ${APP_ID} +quit
 
 # Compress files so the image can be small for the price of ~5-10s decompression on runtime
 RUN tar -czf "${APP_PATH}/valheim_server_Data.tar.gz" -C "${APP_PATH}" "valheim_server_Data" \
@@ -37,7 +37,7 @@ RUN dos2unix /srv/** && chmod +x /srv/**
 # Set up the Runtime Environment
 # =================================================================================================
 # hadolint ignore=DL3007
-FROM adaliszk/alpine:latest as runtime
+FROM adaliszk/alpine:3.15 as runtime
 
 ARG REF=""
 ARG TIMESTAMP=""
@@ -57,9 +57,10 @@ LABEL \
   org.opencontainers.image.revision="${REF}" \
   org.opencontainers.image.vendor="AdaLiszk"
 
-ARG GLIBC_VERSION="2.33-r0"
 
 # Install glibc dependency (sadly needed as a barebone musl libc cannot be used)
+ARG GLIBC_VERSION="2.34-r0"
+
 # hadolint ignore=DL3018
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
  && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk \
@@ -77,22 +78,22 @@ RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/s
 # @TODO: remove Python3 dependency via building the VhPretty as a Python/Go binary
 RUN apk --no-cache \
     add \
-      bash=5.1.4-r0 \
-      coreutils=8.32-r2 \
+      bash=5.1.8-r0 \
+      coreutils=9.0-r2 \
       tzdata=2021e-r0 \
-      python3=3.9.5-r2 \
+      python3=3.9.7-r4 \
  # Install edge packages for up-to-date security
  && apk --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
     add \
-      musl=1.2.2-r3 \
-      sdl2=2.0.14-r1 \
-      ca-certificates=20191127-r5 \
-      openssl=1.1.1l-r0
+      musl=1.2.2-r7 \
+      sdl2=2.0.16-r4 \
+      ca-certificates=20191127-r7 \
+      openssl=1.1.1l-r7
 
 COPY --from=steam --chown=1001 /server /server
 
 ENV \
- SERVER_NAME="Valheim v0.205.5" \
+ SERVER_NAME="Valheim v0.206.5" \
  SERVER_WORLD="Dedicated" \
  SERVER_PASSWORD="p4ssw0rd" \
  SERVER_PUBLIC="1" \

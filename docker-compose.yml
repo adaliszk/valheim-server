@@ -11,7 +11,6 @@ volumes:
 # ==============================================================================
 x-enabled-server: &enabled-server
   environment:
-    LOG_LEVEL: "debug"
     SERVER_ADMINS: "76561198108936133"
   volumes:
     - server-data:/data
@@ -30,7 +29,7 @@ services:
 
   vanilla:
     container_name: "valheim_vanilla"
-    image: "adaliszk/valheim-server:${VANILLA_TAG:-0.205.5}"
+    image: "adaliszk/valheim-server:${VANILLA_TAG:-0.206.5}"
     build: images/vanilla
     command: -password "super!secret"
     <<: *enabled-server
