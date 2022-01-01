@@ -17,21 +17,28 @@ on:
     - cron: "* 0-8 * * * "
 
 
+env:
+  cache_version: v1
+
+
 jobs:
 
   check-steam-update:
     runs-on: ubuntu-latest
     outputs:
-      has-update: ${{ steps.steam-update.outputs.has-update }}
+      has-update: ${{ steps.steam_update.outputs.has_update }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
         with:
-          key: steamapp-cache-values
+          key: steamapp-cache-${{ env.cache_version }}
           path: "steamapp-*"
       -
-        run: "echo \"::set-output name=has-update::$(bash .github/scripts/check-steam-update.sh)\""
-        id: steam-update
+        run: |
+          echo "UPDATE_OUTPUT=$(bash .github/scripts/check-steam-update.sh)"
+          echo "check-steam-update(${?}):\n${UPDATE_OUTPUT}"
+          echo "::set-output name=has_update::${UPDATE_OUTPUT}"
+        id: steam_update
       -
         uses: actions/upload-artifact@v2
         with:
