@@ -25,17 +25,17 @@ jobs:
       has-update: ${{ steps.steam-update.outputs.has-update }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
+      - uses: actions/cache@v2
         with:
-          name: steam-update
+          key: steamapp-cache-values
+          path: "steamapp-*"
       -
-        if: always()
         run: "echo \"::set-output name=has-update::$(bash .github/scripts/check-steam-update.sh)\""
         id: steam-update
       -
         uses: actions/upload-artifact@v2
         with:
-          name: steam-update
+          name: steamapp-cache-values
           path: "steamapp-*"
           retention-days: 1
 
