@@ -7,7 +7,7 @@ on:
     # Check semi-frequently after noon on workdays
     - cron: "*/15 12-18 * * 1-5"
     # Check infrequently by default
-    - cron: "* 18-0 * * * "
+    - cron: "* 18-23 * * * "
     - cron: "* 0-8 * * * "
 
 
