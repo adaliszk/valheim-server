@@ -36,7 +36,7 @@ jobs:
       -
         run: |
           echo "UPDATE_OUTPUT=$(bash .github/scripts/check-steam-update.sh)"
-          echo "check-steam-update(${?}):\n${UPDATE_OUTPUT}"
+          echo -e "check-steam-update(${?}):\n${UPDATE_OUTPUT:-(none-found)}"
           echo "::set-output name=has_update::${UPDATE_OUTPUT}"
         id: steam_update
       -
