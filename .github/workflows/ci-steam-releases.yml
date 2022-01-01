@@ -3,10 +3,9 @@ on:
   workflow_dispatch:
     inputs:
       clear_cache:
-        type: boolean
         description: "Force the cache to be cleared"
         required: true
-        default: false
+        type: boolean
   push:
     paths:
       - .github/workflows/ci-steam-releases.yml
