@@ -39,8 +39,8 @@ jobs:
           retention-days: 1
 
   trigger-workflows:
-    if: ${{ jobs.check-steam-update.outputs.has-update }}
     needs: [ check-update ]
+    if: ${{ needs.check-steam-update.outputs.has-update }}
     runs-on: ubuntu-latest
     steps:
       - run: "echo \"Trigger other workflows that require a steam update\""
