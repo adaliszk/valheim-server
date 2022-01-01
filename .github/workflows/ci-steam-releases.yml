@@ -1,6 +1,12 @@
 name: "Steam Update"
 on:
   workflow_dispatch: {}
+  push:
+#    branches:
+#      - develop
+#      - stable
+    paths:
+      - .github/workflows/ci-steam-releases.yml
   schedule:
     # Check frequently before noon on workdays
     - cron: "*/5 8-12 * * 1-5"
