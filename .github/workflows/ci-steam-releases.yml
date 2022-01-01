@@ -26,6 +26,7 @@ env:
 jobs:
 
   check-steam-update:
+    name: "Check Steam for Updates"
     runs-on: ubuntu-latest
     outputs:
       has-update: ${{ steps.steam_update.outputs.has_update }}
@@ -52,7 +53,8 @@ jobs:
           path: "steamapp-*"
           retention-days: 1
 
-  trigger-workflows:
+  trigger-ci-workflows:
+    name: "Trigger CI Workflows"
     needs: [ check-steam-update ]
     if: ${{ needs.check-steam-update.outputs.has-update }}
     runs-on: ubuntu-latest
