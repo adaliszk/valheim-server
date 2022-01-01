@@ -29,6 +29,7 @@ jobs:
         with:
           name: steam-update
       -
+        if: always()
         run: "echo \"::set-output name=has-update::$(bash .github/scripts/check-steam-update.sh)\""
         id: steam-update
       -
