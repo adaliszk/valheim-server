@@ -21,13 +21,16 @@ jobs:
 
   check-steam-update:
     runs-on: ubuntu-latest
+    outputs:
+      has-update: ${{ steps.steam-update.outputs.has-update }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
         with:
           name: steam-update
       -
-        run: "echo \"::set-output name=has_update::$(bash .github/scripts/check-steam-update.sh)\""
+        run: "echo \"::set-output name=has-update::$(bash .github/scripts/check-steam-update.sh)\""
+        id: steam-update
       -
         uses: actions/upload-artifact@v2
         with:
@@ -36,7 +39,7 @@ jobs:
           retention-days: 1
 
   trigger-workflows:
-    if: ${{ jobs.check-steam-update.outputs.has_update }}
+    if: ${{ jobs.check-steam-update.outputs.has-update }}
     needs: [ check-update ]
     runs-on: ubuntu-latest
     steps:
