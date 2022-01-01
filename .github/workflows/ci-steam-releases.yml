@@ -20,7 +20,6 @@ on:
 jobs:
 
   check-steam-update:
-    id: steam-update
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -37,7 +36,7 @@ jobs:
           retention-days: 1
 
   trigger-workflows:
-    if: ${{ steps.steam_update.outputs.has_update }}
+    if: ${{ jobs.check-steam-update.outputs.has_update }}
     needs: [ check-update ]
     runs-on: ubuntu-latest
     steps:
