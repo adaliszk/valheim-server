@@ -1,6 +1,12 @@
 name: "Steam Update"
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      clear_cache:
+        type: boolean
+        description: "Force the cache to be cleared"
+        required: true
+        default: false
   push:
 #    branches:
 #      - develop
@@ -33,6 +39,10 @@ jobs:
         with:
           key: steamapp-cache-${{ env.cache_version }}
           path: "steamapp-*"
+      -
+        if: ${{ github.event.inputs.clear_cache }}
+        run: |
+          rm -f stemapp-*
       -
         run: |
           UPDATE_OUTPUT=$(bash .github/scripts/check-steam-update.sh)
