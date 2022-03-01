@@ -3,7 +3,7 @@
 # =================================================================================================
 FROM steamcmd/steamcmd:ubuntu as steam
 ENV APP_ID="896660" \
-    APP_VERSION="0.206.5" \
+    APP_VERSION="0.207.20" \
     APP_BUILD="7879451" \
     APP_PATH="/server"
 
@@ -78,22 +78,24 @@ RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/s
 # @TODO: remove Python3 dependency via building the VhPretty as a Python/Go binary
 RUN apk --no-cache \
     add \
-      bash=5.1.8-r0 \
-      coreutils=9.0-r2 \
-      tzdata=2021e-r0 \
-      python3=3.9.7-r4 \
+      'bash>=5.1.16-r0' \
+      'coreutils>=9.0-r2' \
+      'tzdata>=2021e-r0' \
+      'python3>=3.9.7-r4' \
  # Install edge packages for up-to-date security
- && apk --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
+ && apk --no-cache --repository="https://dl-cdn.alpinelinux.org/alpine/edge/main" \
     add \
-      musl=1.2.2-r7 \
-      sdl2=2.0.16-r4 \
-      ca-certificates=20191127-r7 \
-      openssl=1.1.1l-r7
+      'musl>=1.2.2-r7' \
+      'ca-certificates>=20211220-r0' \
+      'openssl>=1.1.1m-r2' \
+ && apk --no-cache --repository="https://dl-cdn.alpinelinux.org/alpine/edge/community" \
+    add \
+      'sdl2>=2.0.20-r1'
 
 COPY --from=steam --chown=1001 /server /server
 
 ENV \
- SERVER_NAME="Valheim v0.206.5" \
+ SERVER_NAME="Valheim v0.207.20" \
  SERVER_WORLD="Dedicated" \
  SERVER_PASSWORD="p4ssw0rd" \
  SERVER_PUBLIC="1" \
