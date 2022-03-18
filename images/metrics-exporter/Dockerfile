@@ -1,6 +1,6 @@
 # Download MTail Binary
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-FROM alpine:3.13 as binary
+FROM alpine:3.15 as binary
 
 # hadolint ignore=DL3018
 RUN apk add --no-cache wget ca-certificates bash && update-ca-certificates
@@ -41,7 +41,7 @@ RUN dos2unix docker-entrypoint.sh && chmod +x /docker-entrypoint.sh \
 
 # Execute Mtail
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-FROM alpine:3.13 as runtime
+FROM alpine:3.15 as runtime
 
 # hadolint ignore=DL3018
 RUN apk add --no-cache bash
