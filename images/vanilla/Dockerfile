@@ -3,8 +3,8 @@
 # =================================================================================================
 FROM steamcmd/steamcmd:ubuntu as steam
 ENV APP_ID="896660" \
-    APP_VERSION="0.207.20" \
-    APP_BUILD="7879451" \
+    APP_VERSION="0.208.1" \
+    APP_BUILD="8449481" \
     APP_PATH="/server"
 
 # hadolint ignore=DL3018,DL3008
@@ -95,7 +95,7 @@ RUN apk --no-cache \
 COPY --from=steam --chown=1001 /server /server
 
 ENV \
- SERVER_NAME="Valheim v0.207.20" \
+ SERVER_NAME="Valheim v0.208.1" \
  SERVER_WORLD="Dedicated" \
  SERVER_PASSWORD="p4ssw0rd" \
  SERVER_PUBLIC="1" \
