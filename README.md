@@ -8,8 +8,8 @@
 # Valheim Docker Server & Helm Chart
 Clean, fast and standalone Docker & Kubernetes helm deployments.
 
-While there are many other images out there, they tend to fall into the bad habit of using anti-patterns, like using 
-Supervisor and Cron in a single image. The images included here aim to avoid these bad habits, while still offering a 
+While there are many other images out there, they tend to fall into the bad habit of using anti-patterns, like using
+Supervisor and Cron in a single image. The images included here aim to avoid these bad habits, while still offering a
 full feature-set for managing and monitoring your Valheim Server.
 
 
@@ -26,14 +26,14 @@ full feature-set for managing and monitoring your Valheim Server.
 -->
 
 ## Server:
-[`adaliszk/valheim-server`](https://hub.docker.com/r/adaliszk/valheim-server)  
+[`adaliszk/valheim-server`](https://hub.docker.com/r/adaliszk/valheim-server)
 
 Alternatives:
-[`ghcr.io/adaliszk/valheim-server`](https://ghcr.io/adaliszk/valheim-server), 
+[`ghcr.io/adaliszk/valheim-server`](https://ghcr.io/adaliszk/valheim-server),
 [`quay.io/adaliszk/valheim-server`](https://quay.io/adaliszk/valheim-server)
 
 - `vanilla` `latest` - always the latest stable build of the server
-- `0.208.1` `0.208` - the server version released on 11/04/2022
+- `0.209.10` `0.209` - the server version released on 21/06/2022
 - `0.207.20` `0.207` - the server version released on 01/03/2022
 - `bepinex-5.4.1900` `bepinex-5.4.19` `bepinex-5.4` `bepinex` - latest server using [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
 - `plus-0.9.9.8` `plus-0.9.9`  `plus-0.9` `plus` - the latest server using [Valheim Plus](https://github.com/valheimPlus/ValheimPlus) mod
@@ -51,7 +51,7 @@ or
 ```yaml
 version: "3.8"
 services:
-    
+
   valheim:
     image: adaliszk/valheim-server
     environment:
@@ -75,7 +75,7 @@ helm upgrade --install --create-namespace --wait my-valheim-server adaliszk/valh
 [`adaliszk/valheim-server-monitoring`](https://hub.docker.com/r/adaliszk/valheim-server-monitoring)
 
 Alternatives:
-[`ghcr.io/adaliszk/valheim-server-monitoring`](https://ghcr.io/adaliszk/valheim-server-monitoring), 
+[`ghcr.io/adaliszk/valheim-server-monitoring`](https://ghcr.io/adaliszk/valheim-server-monitoring),
 [`quay.io/adaliszk/valheim-server-monitoring`](https://quay.io/adaliszk/valheim-server-monitoring)
 
 - `metrics` - mtail metrics from the latest server version
@@ -104,7 +104,7 @@ services:
     ports:
       - 2456:2456/udp
       - 2457:2457/udp
-  
+
   metrics:
     image: adaliszk/valheim-server-monitoring:metrics
     volumes:
@@ -113,10 +113,10 @@ services:
       - 3903:3903
 ```
 
-## Examples 
+## Examples
 - [Basic Docker setup using Docker managed volumes](docs/basic-Docker-setup.md)
 - [Basic Docker-Compose setup](docs/basic-Docker-Compose-setup.md)
-- [Basic Docker-Compose setup (docker-compose.yml)](docs/examples/compose-simple.yml)  
+- [Basic Docker-Compose setup (docker-compose.yml)](docs/examples/compose-simple.yml)
 - [Basic Compose with Modded server (docker-compose.yml)](docs/examples/compose-modded.yml)
 - [Export Metrics with MTail](docs/export-metrics-with-MTail.md)
 - [Export Metrics with MTail (docker-compose.yml)](docs/examples/compose-with-metrics.yml)
@@ -126,5 +126,5 @@ services:
 Feel free to open Tickets or Pull-Requests, however, keep in mind that the idea is to keep it simple, and separate the
 concerns into multiple small images that are ready without needing to download anything from the internet.
 
-If you have questions, please use the [Discussions](https://github.com/adaliszk/valheim-server/discussions) tab or ping 
+If you have questions, please use the [Discussions](https://github.com/adaliszk/valheim-server/discussions) tab or ping
 me on the [Valheim Discord server](https://discord.gg/valheim): `Kicsivazz#2537`

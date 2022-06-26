@@ -21,10 +21,18 @@ else
 fi
 
 # Print out some stats for the Metrics exporter
-WORLD_FILE="${DATA_PATH}/worlds/${SERVER_WORLD}.db"
+
+# worlds save directory has been renamed into worlds_local in 0.209.8
+OLD_WORLD_FILE="${DATA_PATH}/worlds/${SERVER_WORLD}.db"
+if [ -f "${OLD_WORLD_FILE}" ]; then
+  echo "Old World \"${SERVER_WORLD}\" is $(stat --printf="%s" "${OLD_WORLD_FILE}") bytes large"
+  echo "Old Worlds are $(du --bytes "${DATA_PATH}/worlds" | cut -f1) bytes large"
+fi
+
+WORLD_FILE="${DATA_PATH}/worlds_local/${SERVER_WORLD}.db"
 if [ -f "${WORLD_FILE}" ]; then
   echo "World \"${SERVER_WORLD}\" is $(stat --printf="%s" "${WORLD_FILE}") bytes large"
-  echo "Worlds are $(du --bytes "${DATA_PATH}/worlds" | cut -f1) bytes large"
+  echo "Worlds are $(du --bytes "${DATA_PATH}/worlds_local" | cut -f1) bytes large"
 fi
 
 # Parse the input parameters
