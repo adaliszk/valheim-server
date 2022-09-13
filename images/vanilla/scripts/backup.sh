@@ -4,7 +4,7 @@ source /srv/init-env.sh
 source /srv/console.sh
 
 NAME="${1:-backup}"
-SERVER_WORLD_FILE="${DATA_PATH}/worlds/${SERVER_WORLD}.db"
+SERVER_WORLD_FILE="${DATA_PATH}/worlds_local/${SERVER_WORLD}.db"
 
 function log-backup() {
   log-info "Backup> ${*}" | tee-output | tee-backup
@@ -19,7 +19,7 @@ if [[ -f "${SERVER_WORLD_FILE}" ]]; then
   SERVER_WORLD_SIZE=$(stat --printf="%s" "${SERVER_WORLD_FILE}")
   log-backup "World \"${SERVER_WORLD}\" is ${SERVER_WORLD_SIZE} bytes large"
 
-  WORLDS_SIZE=$(du --bytes "${DATA_PATH}/worlds" | cut -f1)
+  WORLDS_SIZE=$(du --bytes "${DATA_PATH}/worlds_local" | cut -f1)
   log-backup "Worlds are ${WORLDS_SIZE} bytes large"
 
   log-backup "Saving a new \"${NAME}\" backup..."

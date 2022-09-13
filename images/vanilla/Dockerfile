@@ -3,8 +3,8 @@
 # =================================================================================================
 FROM steamcmd/steamcmd:ubuntu as steam
 ENV APP_ID="896660" \
-    APP_VERSION="0.208.1" \
-    APP_BUILD="8449481" \
+    APP_VERSION="0.210.6" \
+    APP_BUILD="9384143" \
     APP_PATH="/server"
 
 # hadolint ignore=DL3018,DL3008
@@ -15,7 +15,10 @@ RUN apt-get -y install --no-install-recommends bash tar
 RUN mkdir -p "${APP_PATH}/steamapps"
 
 # Install the server
-RUN steamcmd +force_install_dir "${APP_PATH}" +login anonymous +app_update ${APP_ID} +quit
+RUN steamcmd +force_install_dir "${APP_PATH}" \
+             +login anonymous \
+             +app_update ${APP_ID} \
+             +quit
 
 # Compress files so the image can be small for the price of ~5-10s decompression on runtime
 RUN tar -czf "${APP_PATH}/valheim_server_Data.tar.gz" -C "${APP_PATH}" "valheim_server_Data" \
@@ -95,7 +98,7 @@ RUN apk --no-cache \
 COPY --from=steam --chown=1001 /server /server
 
 ENV \
- SERVER_NAME="Valheim v0.208.1" \
+ SERVER_NAME="Valheim v0.210.6" \
  SERVER_WORLD="Dedicated" \
  SERVER_PASSWORD="p4ssw0rd" \
  SERVER_PUBLIC="1" \
