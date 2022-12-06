@@ -126,7 +126,6 @@ ENV SERVER_NAME="Valheim v0.207.20 with BepInEx v5.4.1900" \
     MOD_VERSION="5.4.1900"
 
 COPY --from=bepinex /modpack "${MOD_PATH}"
-RUN cp -rfa "${MOD_PATH}/." /server/ && chown -R "1001:1001" /server
 
 #
 # Secure the image with a non-root user
