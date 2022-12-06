@@ -1,5 +1,9 @@
 # IDE
-/.idea/workspace.xml
+.idea
+.vscode
 
 # Steam Update Workflow
-/steamapp-*
+steamapp-*
+
+# Any deployment values
+values-*

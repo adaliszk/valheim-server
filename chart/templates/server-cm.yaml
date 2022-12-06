@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "valheim-server.name" . }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    {{- include "valheim-server.annotations" . | indent 4 }}
+  labels:
+    {{- include "valheim-server.labels" . | indent 4 }}
+data:
+  adminlist.txt: |
+    {{- join "\n" .Values.server.admins | nindent 4  }}
+
+  permittedlist.txt: |
+    {{- join "\n" .Values.server.permitted | nindent 4  }}
+
+  bannedlist.txt: |
+    {{- join "\n" .Values.server.banned | nindent 4  }}

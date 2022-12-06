@@ -1,0 +1,128 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "valheim-server.name" . }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    {{- include "valheim-server.annotations" . | indent 4 }}
+  labels:
+    {{- include "valheim-server.labels" . | indent 4 }}
+spec:
+  serviceName: {{ include "valheim-server.name" . }}
+  replicas: 1
+
+  revisionHistoryLimit: 5
+  minReadySeconds: 60
+
+  selector:
+    matchLabels:
+      {{- include "valheim-server.selectorLabels" . | indent 6 }}
+
+  template:
+    metadata:
+      labels:
+        {{- include "valheim-server.selectorLabels" . | indent 8 }}
+
+    spec:
+      terminationGracePeriodSeconds: 600
+
+      initContainers:
+        - name: chown-data
+          image: busybox:latest
+          command: [ "sh","-c","chmod 774 -R /data && chown -R 1001:1001 /data && ls -lad /data" ]
+          volumeMounts:
+            - mountPath: /data
+              name: data
+          securityContext:
+            privileged: true
+            runAsGroup: 0
+            runAsUser: 0
+        - name: chown-serverfiles
+          image: busybox:latest
+          command: [ "sh","-c","chmod 774 -R /data && chown -R 1001:1001 /data && ls -lad /data" ]
+          volumeMounts:
+            - mountPath: /data
+              name: serverfiles
+          securityContext:
+            privileged: true
+            runAsGroup: 0
+            runAsUser: 0
+
+      containers:
+        - name: valheim-server
+          image: {{ include "valheim-server.image" . }}
+          imagePullPolicy: {{ include "valheim-server.imagePullPolicy" . }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsUser: 1001
+          env:
+            - name: SERVER_NAME
+              value: {{ .Values.server.name | quote }}
+            - name: SERVER_WORLD
+              value: {{ .Values.server.world | quote }}
+            - name: SERVER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "valheim-server.name" . }}
+                  key: password
+            - name: SERVER_PUBLIC
+              value: {{ .Values.server.public | quote }}
+            - name: SERVER_CROSSPLAY
+              value: {{ .Values.server.crossplay | quote }}
+            - name: TZ
+              value: {{ .Values.server.timezone | quote }}
+          ports:
+            - name: valheim
+              containerPort: 2456
+              protocol: UDP
+            - name: msqp
+              containerPort: 2457
+              protocol: UDP
+          volumeMounts:
+            - mountPath: /data
+              name: data
+            - mountPath: /config
+              name: configs
+              readOnly: true
+            - mountPath: /server/valheim_server_Data
+              name: serverfiles
+            - mountPath: /.config/unity3d/IronGate
+              name: vendorfiles
+            - mountPath: /tmp/state
+              name: statefiles
+            - mountPath: /tmp/valheim-server
+              name: workdir
+      volumes:
+        - name: configs
+          configMap:
+            name: {{ include "valheim-server.name" . }}
+        - name: vendorfiles
+          emptyDir:
+            sizeLimit: 100Mi
+        - name: statefiles
+          emptyDir:
+            medium: Memory
+        - name: workdir
+          emptyDir: {}
+            # medium: Memory
+
+  volumeClaimTemplates:
+    - metadata:
+        name: serverfiles
+      spec:
+        storageClassName: {{ include "valheim-server.storageClass" . | quote }}
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 4Gi
+    - metadata:
+        name: data
+      spec:
+        storageClassName: {{ include "valheim-server.storageClass" . | quote }}
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ include "valheim-server.storageSize" . }}
