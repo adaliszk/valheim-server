@@ -1,142 +1,44 @@
+global:
+  storageClass: ""
+  imagePullSecrets: []
+  imagePullPolicy: Always
+  commonLabels: {}
+  commonAnnotations: {}
 
-# SERVER CONFIGURATION
-# =============================================================================
+persistence:
+  storageClass: ""
+  size: 12Gi
+
+commonLabels: {}
+labels: {}
+
+commonAnnotations: {}
+annotations: {}
+
+image:
+  registry: docker.io
+  repository: adaliszk
+  name: valheim-server
+  tag: develop
+
 server:
-  name: "Valheim"
-  motd: "Valheim on Kubernetes!"
-  world: "Dedicated"
+  timezone: Etc/UTC
+  name: "Secure Valheim-Server by AdaLiszk"
+  world: "dedicated"
+  seed: ""
   password: "p4ssw0rd"
-  public: "1"
+  crossplay: false
+  public: true
+  admins: []
+  permitted: []
+  banned: []
 
-  admins: [ ]
-  permitted: [ ]
-  banned: [ ]
+backups:
+  retention: 4
+  interval: 7200
 
-  labels: { }
-  annotations: { }
-  resources: { }
-  affinity: { }
-
-  persistentData:
-    storageClass: default
-    storageSize: 3G
-
-  persistentBackups:
-    storageClass: default
-    storageSize: 6G
-    retention: 6
-
-  persistentLogs:
-    storageClass: default
-    storageSize: 3G
-
-  image:
-    name: adaliszk/valheim-server
-    tag: 0.150.3
-    pullPolicy: IfNotPresent
-    pullSecrets: [ ]
-
-  ports:
-    valheim:
-      port: 2456
-      targetPort: 2456
-      protocol: UDP
-    msqp:
-      port: 2457
-      targetPort: 2457
-      protocol: UDP
-
-
-# PORT FORWARD CONFIGURATION
-# =============================================================================
-ingress:
-  enabled: false
+service:
   type: LoadBalancer
-
-  ports:
-    valheim:
-      port: 2456
-      targetPort: 2456
-      protocol: UDP
-
-    msqp:
-      port: 2457
-      targetPort: 2457
-      protocol: UDP
-
-    msqp-default:
-      port: 27015
-      targetPort: 2457
-      protocol: UDP
-
-  labels: { }
-  annotations: { }
-  spec: { }
-
-
-# METRICS EXPORTER
-# =============================================================================
-metrics:
-  enabled: false
-
-  labels: { }
-  annotations:
-    prometheus.io/scrape: true
-  resources: { }
-  affinity: { }
-
-  server:
-    enabled: true
-
-    service:
-      enabled: true
-      type: ClusterIP
-      ports:
-        http:
-          port: 3903
-          targetPort: 3903
-          protocol: TCP
-
-    image:
-      name: adaliszk/valheim-server-monitoring
-      tag: metrics-0.150.3
-      pullPolicy: IfNotPresent
-      pullSecrets: [ ]
-
-  node:
-    enabled: true
-
-    service:
-      enabled: true
-      type: ClusterIP
-      ports:
-
-
-    image:
-      name: ""
-      tag: ""
-      pullPolicy: IfNotPresent
-      pullSecrets: [ ]
-
-
-# METRICS DASHBOARD
-# =============================================================================
-dashboard:
-  enabled: false
-
-  labels: { }
-  annotations: { }
-  resources: { }
-  affinity: { }
-
-  adminPassword: p4ssw0rd
-
-  service:
-    enabled: true
-    type: ClusterIP
-    ports:
-      http:
-        port: 3000
-        targetPort: 3000
-        protocol: TCP
-
+  annotations: {}
+  valheimPort: 2456
+  steamPort: 2457

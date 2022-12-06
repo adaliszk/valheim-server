@@ -2,22 +2,16 @@ apiVersion: v2
 type: application
 
 name: valheim-server
-appVersion: "0.150.3"
-version: "0.12.0"
-
 home: https://github.com/adaliszk/valheim-server
-icon: file://logo.png
-
-description: >
-  This chart wraps up https://hub.docker.com/r/adaliszk/valheim-server and allows
-  you to quickly deploy everything you'll need.
 
 keywords:
   - valheim
   - server
 
 maintainers:
-  -
-    name: adaliszk
+  - name: adaliszk
     email: hello@adaliszk.dev
     url: adaliszk.io
+
+appVersion: 0.212.5
+version: 1.0

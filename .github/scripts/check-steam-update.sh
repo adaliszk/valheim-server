@@ -33,7 +33,7 @@ main()
 		[[ $(jq -r '.title' <<<"${SteamVersionNews}") =~ ([0-9]+\.[0-9]+\.[0-9]+) ]] && LatestVersion="${BASH_REMATCH[1]}"
 		echo "${LatestVersion}" >"${VersionFile}"
 
-		echo "New Version: ${LatestVersion}"
+		echo "Version: ${LatestVersion}"
 		echo "Build: ${CurrentBuild}"
 	fi
 
@@ -47,7 +47,7 @@ usage()
 
 	cat <<-HELP
 		$0 [OPTIONS]
-		s
+
 		A simple script to fetch depot information and compare it with already existing cached data.
 		By default, it will have no output, but if there is an update, it will print out the latest
 		build number and version.

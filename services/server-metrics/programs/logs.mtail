@@ -1,7 +1,0 @@
-counter logs_lines_read_count by filename
-gauge logs_file_last_read by filename
-
-/.*/ {
-  logs_lines_read_count[getfilename()]++
-  logs_file_last_read[getfilename()] = timestamp()
-}

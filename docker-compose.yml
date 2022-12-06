@@ -1,70 +1,37 @@
 # ==============================================================================
 version: "3.8"
 
-# ==============================================================================
 volumes:
-  server-data: {}
-  server-backups: {}
-  server-status: {}
-  server-logs: {}
-  server-plugins: {}
-
-# ==============================================================================
-x-server-volumes: &mount-volumes
-  volumes:
-    - ./services/server/scripts:/scripts
-    - ./services/server/srv:/srv
-    - server-data:/data
-    - server-backups:/backups
-    - server-status:/status
-    - server-logs:/logs
-
-x-server-language: &set-language
-  LANG: "de_DE.UTF-8"
-
-x-server-timezone: &set-timezone
-  TZ: "Europe/Berlin"
+  installation: {}
+  vendorfiles: {}
 
 # ==============================================================================
 services:
 
-#  docs:
-#    container_name: "docs"
-
-#  backups:
-#    container_name: "duplicity-backup"
-#    image: "adaliszk/duplicity-backup:develop"
-#    <<: *mount-volumes
-#    environment:
-#      <<: *set-language
-#      <<: *set-timezone
-
-#  backups-metrics:
-#    container_name: "duplicity-backup-metrics"
-#    image: "adaliszk/duplicity-backup-metrics:${BACKUP_TAG:-latest}"
-
   server:
     container_name: "valheim-server"
     image: "adaliszk/valheim-server:${SERVER_TAG:-develop}"
-    build: services/server
-    <<: *mount-volumes
+    build:
+      dockerfile: Dockerfile
+      target: secure-runtime
+      context: .
+      args:
+        STEAMCMD_EXTRAS: "-beta public-test -betapassword yesimadebackups"
+        APP_VERSION: "0.212.7"
+        APP_BUILD: "10062081"
     environment:
       SERVER_PASSWORD: "12345"
       SERVER_ADMINS: "76561198108936133"
       SERVER_WORLD: "Something#With#Special@Characters"
-      <<: *set-language
-      <<: *set-timezone
-    ports:
-      - 2456:2456/udp
-      - 2457:2457/udp
-
-  server-metrics:
-    container_name: "valheim-server-metrics"
-    image: "adaliszk/valheim-server-metrics:${METRICS_TAG:-develop}"
-    build: services/server-metrics
-    command:
-      - --v 1
     volumes:
-      - server-logs:/logs:ro
+      # - installation:/server/valheim_server_Data:uid=1001,gid=1001
+      # - vendorfiles:/.config/unity3d/IronGate:uid=1001,gid=1001
+      - ./temp/config:/config:uid=1001,gid=1001,ro # simulate ConfigMap readonly-ness
+      - ./temp/data:/data:uid=1001,gid=1001
+      - ./temp/logs:/logs:uid=1001,gid=1001
+    tmpfs:
+      - /tmp/valheim-server:uid=1001,gid=1001
+      - /tmp/state:uid=1001,gid=1001
     ports:
-      - 3903:3903/tcp
+      - "2456:2456/udp"
+      - "2457:2457/udp"
