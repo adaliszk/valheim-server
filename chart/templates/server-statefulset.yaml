@@ -53,7 +53,7 @@ spec:
           image: {{ include "valheim-server.image" . }}
           imagePullPolicy: {{ include "valheim-server.imagePullPolicy" . }}
           securityContext:
-            readOnlyRootFilesystem: true
+            readOnlyRootFilesystem: false
             runAsGroup: 1001
             runAsUser: 1001
           env:
@@ -76,7 +76,7 @@ spec:
             - name: valheim
               containerPort: 2456
               protocol: UDP
-            - name: msqp
+            - name: steam
               containerPort: 2457
               protocol: UDP
           volumeMounts:
@@ -87,6 +87,10 @@ spec:
               readOnly: true
             - mountPath: /server/valheim_server_Data
               name: serverfiles
+            - mountPath: /server/BepInEx/config
+              name: bepinex-configs
+            - mountPath: /server/BepInEx/plugins
+              name: bepinex-plugins
             - mountPath: /.config/unity3d/IronGate
               name: vendorfiles
             - mountPath: /tmp/state
@@ -106,6 +110,10 @@ spec:
         - name: workdir
           emptyDir: {}
             # medium: Memory
+        - name: bepinex-configs
+          emptyDir: {}
+        - name: bepinex-plugins
+          emptyDir: {}
 
   volumeClaimTemplates:
     - metadata:

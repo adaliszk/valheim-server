@@ -30,6 +30,20 @@ RUN tar -czf /server/valheim_server_Data.tar.gz -C /server valheim_server_Data \
 
 
 #
+# Download BepInEx from Thunderstore
+#
+FROM alpine:3.17 as bepinex
+RUN apk add --no-cache zip>=3.0-r10
+
+# denkinson's BepInEx: https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim
+ARG BEPINEX_VERSION="5.4.1901"
+ADD https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/${BEPINEX_VERSION} /tmp/bepinex.zip
+RUN mkdir -p /tmp/bepinex && unzip /tmp/bepinex.zip -d /tmp/bepinex \
+ && mv /tmp/bepinex/BepInExPack_Valheim /bepinex \
+ && chmod +x /bepinex/*.sh
+
+
+#
 # Set up the Runtime Environment
 #
 FROM alpine:3.17 as valheim-server
@@ -117,4 +131,20 @@ LABEL org.opencontainers.image.created="${TIMESTAMP}" \
 # Secure the image with a non-root user
 #
 FROM ${SERVER_IMAGE} as secure-valheim-server
+USER 1001
+
+
+#
+# Installing BepInEx for modding
+#
+FROM ${SERVER_IMAGE} as valheim-server-bepinex
+COPY --from=bepinex /bepinex /server
+COPY ./scripts-bepinex /scripts
+RUN chown -R 1001:1001 /scripts /server/BepInEx
+
+
+#
+# Secure the image with a non-root user
+#
+FROM valheim-server-bepinex as secure-valheim-server-bepinex
 USER 1001
