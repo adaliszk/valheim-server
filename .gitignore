@@ -2,6 +2,9 @@
 .idea
 .vscode
 
+# Temporary files
+temp/*
+
 # Steam Update Workflow
 steamapp-*
 
