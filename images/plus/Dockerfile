@@ -15,8 +15,8 @@ RUN mkdir -p "${MOD_PATH}" && tar -xvf "${MOD_ARHIVE}" -C "${MOD_PATH}"
 
 # Install modpack on top of the Vanilla server
 # =================================================================================================
-FROM adaliszk/valheim-server:0.212.7 as server-modded
-ENV SERVER_NAME="Valheim 0.212.7 with Plus v0.9.9.11" \
+FROM adaliszk/valheim-server:0.212.9 as server-modded
+ENV SERVER_NAME="Valheim 0.212.9 with Plus v0.9.9.11" \
     MOD_PATH="/valheim+" \
     MOD_VERSION="0.9.9.11"
 
