@@ -179,21 +179,23 @@ Garbage Collector:
 - `world_size_total_bytes`
 - `world_size_bytes` by `name`
 
-
 ### Player metrics
-- `player_connected` by `steam_id`
-- `player_disconnected` by `steam_id`
-- `player_character`: The ZDOID of the character after connection by `steam_id` (SteamID64 (dec))
-- `character_player`: The `SteamID64 (dec)` by `player_id` (ZDOID)
-- `player_active_character` by `player_id`, `player_nick`
+- `player_connected_count` by `steam_id`
+- `player_connected_last` by `steam_id`
+- `player_disconnected_count` by `steam_id`
+- `player_disconnected_last` by `steam_id`
+- `player_zdoid_by_steamid` by `steam_id`
+- `player_nick_by_steamid` by `steam_id`
+- `player_steamid_by_zdoid` by `player_id`
+- `player_steamid_by_nick` by `player_nick`
+- `player_character` by `steam_id`, `player_id`, `player_nick`
 - `player_game_version` by `steam_id`, `version`
-
+- `player_died` by `steam_id`, `player_nick`
 
 ### Event metrics
-- `event_random_possible`
-- `event_found_location` by `location`
-- `event_random` by `name`
-
+- `server_random_event_possible`: total events possible
+- `player_found_location` by `location`: vegvisir stone interaction counter 
+- `server_random_event` by `name`: random event counter
 
 ### Backups
 

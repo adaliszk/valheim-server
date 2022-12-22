@@ -45,7 +45,7 @@ function check-port() {
   LAST_STATUS_FILE="${STATUS_PATH}/Port-${1}"
   LAST_PORT_STATUS="$(cat "${LAST_STATUS_FILE}" 2> /dev/null || echo 999)"
 
-  echo "PING" 2>/dev/null >"/dev/udp/0.0.0.0/${1}"
+  nc -u 0.0.0.0 "${1}"
   PORT_STATUS=$?
 
   log-debug-health "Port ${1} is $(status-to-word "${PORT_STATUS}")"
