@@ -4,7 +4,7 @@
 FROM steamcmd/steamcmd:ubuntu as steam
 ENV APP_ID="896660" \
     APP_VERSION="0.212.9" \
-    APP_BUILD="10153241" \
+    APP_BUILD="10153247" \
     APP_PATH="/server"
 
 # hadolint ignore=DL3018,DL3008
