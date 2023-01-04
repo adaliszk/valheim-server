@@ -66,6 +66,7 @@ done
 # COLLECT & DISPLAY SERVER INFO
 #
 export WORLD_SEED="(undefined)"
+# TODO: Parse seed from the .fwl file
 
 cat <<-SERVER_INFO
 	> LAN Address: $(hostname -i):${SERVER_PORT}

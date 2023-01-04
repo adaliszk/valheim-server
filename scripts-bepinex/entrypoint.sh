@@ -12,4 +12,4 @@ trap gracefully-terminate SIGINT
 source /scripts/setup-bepinex.sh
 source /scripts/setup.sh
 
-/scripts/start-bepinex-server.sh 2>&1 | log Server
+valheim-bepinex-server 2>&1 | log Server

@@ -40,9 +40,20 @@ function sync-workdir {
 		rsync-matched /tmp/valheim-server/worlds_local/ /data/worlds/ |
 		log "${1}" DEBUG
 
+	cleanup-backups "${1}"
 	echo "Syncing backups to /data" | log "${1}"
 	find-with-regex /tmp/valheim-server/worlds_local/ "[0-9]{14,}\.(db|fwl|db\.old|fwl\.old)$" |
 		rsync-matched /tmp/valheim-server/worlds_local/ "/data/backups/${SERVER_WORLD}/" |
+		log "${1}" DEBUG
+}
+
+function cleanup-backups {
+	echo "Removing old backups" | log "${1}"
+	find-with-regex /tmp/valheim-server/worlds_local/ "[0-9]{14,}\.(db|fwl|db\.old|fwl\.old)$" \
+		-type f -mtime +1 -exec rm {} \; |
+		log "${1}" DEBUG
+
+	find "/data/backups/${SERVER_WORLD}/" -type f -mtime +5 -exec rm {} \; |
 		log "${1}" DEBUG
 }
 

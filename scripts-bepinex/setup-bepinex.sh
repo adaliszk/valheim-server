@@ -1,21 +1,13 @@
 # Copyright © 2022 by Ádám Liszkai using BSD 2-Clause License
 # https://source.adaliszk.io/valheim-server/license
 
+export BEPINEX_VERSION="${BEPINEX_VERSION:-(unspecified)}"
+
 #
 # INITIALIZE DATA VOLUME
 #
 
 mkdir -p /data/plugins
-
-#
-# MODDING INFO
-#
-cat <<-MODS_INFO
-	> BepInEx Version:
-	> Pre-installed Plugins: $(find /server/BepInEx/plugins/ -type f -name '*.dll' -exec basename {} .po \;)
-	> Added Plugins: $(find /data/plugins -type f -name '*.dll' -exec basename {} .po \;)
-
-MODS_INFO
 
 #
 # LOAD CONFIGS
@@ -39,3 +31,14 @@ if [ "$(ls -A /data/plugins/* 2>/dev/null)" ]; then
 	echo "Install plugins from /data" | log BepInExInit
 	cp -rf /data/plugins/* /server/BepInEx/plugins
 fi
+
+#
+# MODDING INFO
+#
+cat <<-MODS_INFO
+
+	> BepInEx Version: ${BEPINEX_VERSION}
+	> Pre-installed Plugins: $(find /server/BepInEx/plugins -type f -name '*.dll' -exec basename {} .po \;)
+	> Added Plugins: $(find /data/plugins -type f -name '*.dll' -exec basename {} .po \;)
+
+MODS_INFO

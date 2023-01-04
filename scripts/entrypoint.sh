@@ -10,4 +10,4 @@ trap gracefully-terminate SIGTERM
 trap gracefully-terminate SIGINT
 
 source /scripts/setup.sh
-/scripts/start-server.sh 2>&1 | log Server
+valheim-server 2>&1 | log Server

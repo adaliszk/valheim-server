@@ -17,22 +17,21 @@ services:
     image: "adaliszk/valheim-server:${SERVER_TAG:-develop}"
     build:
       dockerfile: Dockerfile
-      target: secure-valheim-server-bepinex
+      target: secure-valheim-server
       context: .
       args:
         #STEAMCMD_EXTRAS: "-beta public-test -betapassword yesimadebackups"
-        APP_VERSION: "0.212.7"
-        APP_BUILD: "10062081"
+        APP_VERSION: "${APP_VERSION}"
+        APP_BUILD: "${APP_BUILD}"
     environment:
       SERVER_PASSWORD: "12345"
       SERVER_ADMINS: "76561198108936133"
-      #SERVER_WORLD: "Something#With#Special@Characters"
     volumes:
+      - ./temp/mods:/data/plugins:uid=1001,gid=1001
       #- installation:/server/valheim_server_Data:uid=1001,gid=1001
       #- vendorfiles:/.config/unity3d/IronGate:uid=1001,gid=1001
       - configs:/data/configs:uid=1001,gid=1001,ro # simulate ConfigMap readonly-ness
       - data:/data:uid=1001,gid=1001
-      - ./temp/mods:/data/plugins:uid=1001,gid=1001
     tmpfs:
       - /tmp/valheim-server:uid=1001,gid=1001
       - /tmp/state:uid=1001,gid=1001

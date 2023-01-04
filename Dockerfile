@@ -63,7 +63,7 @@ RUN wget -q -O /etc/apk/keys/${GLIBC_KEY_FILE} ${GLIBC_KEY_MIRROR}/${GLIBC_KEY_F
 
 ## Runtime depenency cache layer as this is bumped automatically
 RUN apk --no-cache --repository="https://dl-cdn.alpinelinux.org/alpine/3.17/main" \
-    add  \
+    add \
        tzdata>=2022f-r1 \
        binutils>=2.39-r2 \
        procps>=3.3.17-r2 \
@@ -103,10 +103,11 @@ WORKDIR /server
 
 RUN mkdir -p /{scripts,server,data} /tmp/valheim-server /.config \
  && chown -R 1001:1001 /scripts /server /data /tmp/valheim-server /.config \
+ && ln -s /scripts/start-server.sh /usr/local/bin/valheim-server \
  && ln -s /scripts/healthcheck.sh /usr/local/bin/healthcheck \
- && ln -s /scripts/entrypoint.sh /usr/local/bin/valheim-server
+ && ln -s /scripts/entrypoint.sh /usr/local/bin/server
 
-ENTRYPOINT ["valheim-server"]
+ENTRYPOINT ["server"]
 HEALTHCHECK --start-period=30s --interval=30s --timeout=5s CMD ["healthcheck"]
 STOPSIGNAL SIGTERM
 EXPOSE 2456-2457/udp
@@ -138,9 +139,14 @@ USER 1001
 # Installing BepInEx for modding
 #
 FROM ${SERVER_IMAGE} as valheim-server-bepinex
+ARG BEPINEX_VERSION="5.4.1901"
+ENV BEPINEX_VERSION="${BEPINEX_VERSION}"
+
 COPY --from=bepinex /bepinex /server
 COPY ./scripts-bepinex /scripts
-RUN chown -R 1001:1001 /scripts /server/BepInEx
+
+RUN ln -s /scripts/start-bepinex-server.sh /usr/local/bin/valheim-bepinex-server \
+ && chown -R 1001:1001 /scripts /server/BepInEx
 
 
 #
