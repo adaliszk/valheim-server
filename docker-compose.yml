@@ -29,7 +29,7 @@ services:
 
   vanilla:
     container_name: "valheim_vanilla"
-    image: "adaliszk/valheim-server:${VANILLA_TAG:-0.212.9}"
+    image: "adaliszk/valheim-server:${VANILLA_TAG:-0.213.4}"
     build: images/vanilla
     command: -password "super!secret"
     <<: *enabled-server
