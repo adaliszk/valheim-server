@@ -33,7 +33,7 @@ Alternatives:
 [`quay.io/adaliszk/valheim-server`](https://quay.io/adaliszk/valheim-server)
 
 - `vanilla` `latest` - always the latest stable build of the server
-- `0.213.4` `0.213` - the server version released on 20/12/2022
+- `0.214.2` `0.214` - the server version released on 13/03/2023
 - `bepinex-5.4.1901` `bepinex-5.4.19` `bepinex-5.4` `bepinex` - latest server using [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
 - `plus-0.9.9.11` `plus-0.9.9`  `plus-0.9` `plus` - the latest server using [Valheim Plus](https://github.com/valheimPlus/ValheimPlus) mod
 - `develop` - build any actively testing branch
