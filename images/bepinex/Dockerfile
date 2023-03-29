@@ -17,7 +17,7 @@ RUN wget -O "${MOD_ARHIVE}" "${MOD_SOURCE}" \
 
 # Install modpack on top of the Vanilla server
 # =================================================================================================
-FROM adaliszk/valheim-server:0.216.9 as server-modded
+FROM adaliszk/valheim-server:0.217.24 as server-modded
 ENV SERVER_NAME="Valheim Server with BepInEx" \
     MOD_PATH="/mod-bepinex" \
     MOD_VERSION="5.4.2105"
