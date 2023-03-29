@@ -34,7 +34,7 @@ Alternatives:
 
 - `vanilla` `latest` - always the latest stable build of the server
 
-- `0.214.300` `0.214.3` `0.214` - the server version released on 28/03/2023
+- `0.214.305` `0.214.3` `0.214` - the server version released on 29/03/2023
 - `0.214.2` - the server version released on 13/03/2023
 - `bepinex-5.4.2101` `bepinex-5.4.21` `bepinex-5.4` `bepinex` - latest server using [denkinson's BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim) mod loader
 - `plus-0.9.9.11` `plus-0.9.9`  `plus-0.9` `plus` - the latest server using [Valheim Plus](https://github.com/valheimPlus/ValheimPlus) mod

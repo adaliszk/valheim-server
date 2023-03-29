@@ -3,7 +3,7 @@
 # =================================================================================================
 FROM steamcmd/steamcmd:ubuntu as steam
 ENV APP_ID="896660" \
-    APP_VERSION="0.214.300" \
+    APP_VERSION="0.214.305" \
     APP_BUILD="" \
     APP_PATH="/server"
 
