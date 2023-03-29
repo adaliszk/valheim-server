@@ -3,7 +3,7 @@
 # =================================================================================================
 FROM steamcmd/steamcmd:ubuntu as steam
 ENV APP_ID="896660" \
-    APP_VERSION="0.214.300" \
+    APP_VERSION="0.214.305" \
     APP_BUILD="" \
     APP_PATH="/server"
 
@@ -99,7 +99,7 @@ RUN apk --no-cache \
 COPY --from=steam --chown=1001 /server /server
 
 ENV \
- SERVER_NAME="Valheim v0.213.4" \
+ SERVER_NAME="Valheim Server" \
  SERVER_WORLD="Dedicated" \
  SERVER_PASSWORD="p4ssw0rd" \
  SERVER_PUBLIC="1" \
